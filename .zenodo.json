@@ -1,0 +1,21 @@
+{
+  "title": "Pilotage: an MCP extension for guided program authoring and verified execution",
+  "description": "<p>Pilotage is an extension profile over the Model Context Protocol (MCP) that lets AI agents safely author and execute programs — SQL, automation rules, workflow documents — against any live system. It standardizes a small set of pieces expressed with MCP's own primitives: a manifest, navigable guides (the grammar), a versioned catalog (the live world), a mandatory side-effect-free validate verb returning structured diagnostics plus a pre-run plan with per-step risk, execution traces carrying per-step inputs, outputs and branch decisions, and one standard client loop. Governing rule: standardize the loop, not the language.</p>",
+  "creators": [
+    {
+      "name": "Alaboosi, Jaafar Nadher Jaafar"
+    }
+  ],
+  "upload_type": "software",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "MCP",
+    "Model Context Protocol",
+    "AI agents",
+    "agent guidance",
+    "program synthesis",
+    "validation",
+    "execution trace",
+    "MCP extension"
+  ]
+}
