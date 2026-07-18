@@ -24,7 +24,7 @@ against any system that adopts it**.
 - **Read the specification:** [SPEC.md](./SPEC.md)
 - **Read the illustrated overview:** [index.html](./index.html) (open locally, or
   via GitHub Pages once enabled)
-- **Status:** v1.0 draft · extension id `io.github.jafarsa0.pilotage`
+- **Status:** v1.0.1 · extension id `io.github.jafarsa0.pilotage`
 - **Author:** Jaafar Nadher Jaafar Alaboosi
 
 ---
@@ -99,7 +99,9 @@ model — if your system speaks MCP today, Pilotage is additive.
 
 ## Status & roadmap
 
-- **v1.0 (draft, this repository)** — the full specification.
+- **v1.0.1 (this repository)** — the full specification, with the trace
+  control-flow rule, program-or-reference execute, and native/adapted
+  diagnostic tiers firmed up from the first reference implementation.
 - **v1.1** — long-running executions (progress notifications), firmed-up
   catalog `changed_since`.
 - **v2** — assertions (agent-declared postconditions checked against the

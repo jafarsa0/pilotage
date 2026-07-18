@@ -16,8 +16,8 @@ authors:
   - family-names: "Alaboosi"
     given-names: "Jaafar Nadher Jaafar"
 doi: "10.5281/zenodo.21396027"
-version: "1.0-draft"
-date-released: "2026-07-16"
+version: "1.0.1"
+date-released: "2026-07-18"
 url: "https://github.com/jafarsa0/pilotage"
 repository-code: "https://github.com/jafarsa0/pilotage"
 license: CC-BY-4.0

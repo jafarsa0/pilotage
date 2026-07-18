@@ -1,10 +1,14 @@
-# Pilotage — an MCP extension for guided program authoring and verified execution, v1.0 (draft)
+# Pilotage — an MCP extension for guided program authoring and verified execution, v1.0.1
 
 **The Pilotage extension lets agents safely author and execute PROGRAMS — not
 just call tools — against any live system, and converge on a result that is
 both fully and correctly achieved.**
 
-- Status: v1.0 DRAFT — first drafted 2026-07-13/14.
+- Status: v1.0.1 — first drafted 2026-07-13/14; refined 2026-07-16 from the
+  first reference implementation (execute takes program-or-reference + a
+  re-validate guard §6.6; the flat control-flow trace rule + `trace_subprogram`
+  flag §6.8; native-vs-adapted diagnostic tiers §6.4; promoted programs as
+  catalog entries §6.3; implementation guidance §8.8–8.9).
 - Author: Jaafar Nadher Jaafar Alaboosi.
 - Naming note: *pilotage* is a real word from the sea and the air — navigating
   by reference to the environment's own marks and lights. Guidance that comes
@@ -325,6 +329,7 @@ Legend: **M** = mandatory for conformance, **O** = optional (declared in
   "conformance": {
     "plan": true,
     "trace": "full",          // "none" | "summary" | "full"
+    "trace_subprogram": "opaque", // "opaque" | "expanded" (§6.8)
     "narration": false,
     "assertions": false,       // v2
     "catalog_search": true,
@@ -391,6 +396,13 @@ Verbs (via resource templates and/or the `pilotage_catalog` mirror tool):
 - (M) Every list/get response carries a **`catalog_version`** (opaque string) —
   the anti-staleness token used in §6.5/§6.6.
 
+The catalog holds BOTH primitive operations and **promoted programs**: when an
+agent's ad-hoc program is saved (§9.3), it SHOULD appear here as a callable
+entry (an engine-defined `kind`, e.g. `workflow`) with its declared input —
+so `execute {program_ref}` resolves it and yesterday's composition is today's
+tool. This is the loop that makes the language surface grow its own vocabulary
+surface.
+
 ### 6.4 Diagnostics (M) — the validator's report, LSP-shaped
 
 ```json
@@ -403,6 +415,16 @@ Verbs (via resource templates and/or the `pilotage_catalog` mirror tool):
 
 The `hint` field is optional but strongly recommended — it is the cheapest
 convergence accelerator a server can offer.
+
+**Two conformance tiers for the codes (reference-implementation note
+2026-07-16).** The `code` set is CLOSED per engine, but a server may reach it
+two ways: *native* — the validator emits the codes directly; or *adapted* — a
+thin shim CLASSIFIES an existing validator's prose messages into the closed set
+(the low-cost path for an engine that already has a parser/linter, and the one
+the reference implementation used). Either is conformant. The one rule: `code`
+MUST always be a member of the closed set — a message the shim cannot classify
+MUST fall back to a catch-all code (e.g. `constraint`), **never** an open
+string. An agent keys off the code, so the code must never leak.
 
 ### 6.5 Validate (M)
 
@@ -428,7 +450,7 @@ Request: `{ program }` (plus any engine context). Response:
 
 ### 6.6 Execute (O) — with the trace riding along
 
-Request: `{ program, input?, trace_level?: "none"|"summary"|"full",
+Request: `{ program | program_ref, input?, trace_level?: "none"|"summary"|"full",
 expected_catalog_version? }`. Response:
 
 ```json
@@ -437,6 +459,18 @@ expected_catalog_version? }`. Response:
   "trace":   { … §6.8 … } }
 ```
 
+- The runnable is EITHER an inline `program` document OR a `program_ref` naming
+  a **promoted** program that lives in the catalog (§6.3) as a callable entry —
+  this is how the promote loop (§9.3) closes: a program the agent authored once
+  and saved becomes callable by reference forever after. A server MUST accept
+  the inline form; accepting `program_ref` is what turns compositions into
+  reusable tools. *(Reference-implementation note 2026-07-16: one execute verb
+  that takes either shape is the natural design — do not split ad-hoc and
+  stored execution into two tools.)*
+- A conformant execute SHOULD **re-validate** an inline program before running
+  it — a client may call execute without a prior validate. On failure it
+  returns the `validation_error` outcome with `diagnostics` and performs **no
+  side effects** (defense in depth; validation stays free).
 - `outcome` MUST be a **closed** status set (engine-defined, enumerated in a
   guide) — failures are values, not exceptions.
 - If `expected_catalog_version` is stale, the server MAY reject with a
@@ -489,6 +523,26 @@ branch went and the evaluated reason). Engine-opaque: the *contents* of
 resolves "different engines have different outcomes": the LOOP only needs the
 envelope; the payloads are for the agent's domain reasoning.
 
+**Trace structure — control flow (normative; reference-implementation gap
+closed 2026-07-16).** Without a fixed rule here, two conformant engines produce
+traces of the same branching program that the same agent cannot read. So:
+
+- `steps[]` is the **flat execution order** — every executed step appears
+  exactly once, with a unique `id`.
+- A control-flow step (a **branch** or a **loop**) appears as its **own** entry
+  carrying `decisions[]` (a branch: which arm and why; a loop: an
+  iteration/`partial` summary). The steps *inside* a taken branch arm or a loop
+  body appear as their own top-level entries in execution order — **not nested**
+  under the control-flow step. (Corollary the reference implementation learned
+  the hard way: a branch/loop language MUST document its scope rules in a guide,
+  §6.2 — *where* an arm/body step's result becomes addressable is the single
+  most common place an authoring agent mis-paths.)
+- A call to a **sub-program** appears as **one** entry with the sub-program's
+  own `outcome`. Whether the sub-program's *internal* steps are also emitted is
+  declared by `conformance.trace_subprogram`: `"opaque"` (default — one row, the
+  sub-program is a black box) or `"expanded"` (its steps are inlined into the
+  flat list). An agent reads the flag once and knows what to expect.
+
 Reason `decisions` is mandated: it is precisely the field that catches the
 "plausible output, wrong logic" class — the agent sees *the branch it did not
 expect*. (Neighbor note: A2A's sample Traceability Extension carries step ids,
@@ -498,9 +552,14 @@ course was taken.)
 
 ### 6.9 Explain (O)
 
-`explain_run { run_id, question? }` → `{ trace, narration? }`.
-`narration` (prose "why") is optional conformance — interpretations may be
-expensive; facts (the trace) are the contract.
+The default, deterministic contract is `explain_run { run_id }` → `{ trace }`:
+recorded facts, nothing more. The full shape,
+`explain_run { run_id, question? }` → `{ trace, narration? }`, adds two fields
+that BOTH belong to the optional narration conformance tier — they are only
+meaningful on servers that declare `conformance.narration: true` (e.g. an
+AI-narrating explainer). A deterministic explainer — the common case — ignores
+`question` and returns facts only. `narration` (prose "why") is optional
+because interpretations may be expensive; facts (the trace) are the contract.
 
 ### 6.10 The standard agent loop (normative for clients)
 
@@ -560,6 +619,18 @@ server without domain code.
    `io.github.jafarsa0.pilotage` (repo convention `ext-pilotage`). Adoption path: the
    Extensions Track of the SEP process. Still open: spec repo location,
    versioning policy, conformance tests.
+8. **Implementation guidance (from the first reference implementation).** A
+   conformant server needs a **build/boot smoke test** — does the endpoint
+   mount, does the manifest resolve, do the tools list — not only handler-level
+   unit tests. Wiring is where integration bugs hide: the reference
+   implementation's handlers were fully unit-tested yet a router-mounting bug
+   still crashed the server at boot, because the tests never built the app.
+   Test the loop end to end, from the endpoint in.
+9. **Transport — confirmed sufficient.** The reference implementation runs the
+   whole learn→author→validate→run→explain loop over plain request/response
+   (MCP Streamable HTTP), no WebSocket: the "live connection" is a *logical*
+   session (a session-id header), not a held socket. The only piece that would
+   need a stream is long-running progress (challenge 4) — deferred, as claimed.
 
 ---
 
@@ -665,10 +736,13 @@ A server is Pilotage v1 conformant when it provides:
    reference (§6.2);
 4. a catalog with list/get + `catalog_version`, when the language references a
    live environment (§6.3);
-5. a side-effect-free validator returning the standard diagnostics (§6.4/6.5);
-6. if it executes: the closed outcome + the standard trace envelope (§6.6/6.8);
-7. truthful `conformance` flags for everything optional (plan, narration,
-   search, changed-since, assertions).
+5. a side-effect-free validator returning the standard diagnostics (§6.4/6.5),
+   whose `code` is always a member of the closed set (native or adapter-mapped);
+6. if it executes: the closed outcome + the standard trace envelope with the
+   flat control-flow rule (§6.6/6.8), and — for inline programs — a re-validate
+   guard before any side effect;
+7. truthful `conformance` flags for everything optional (plan, `trace_subprogram`,
+   narration, search, changed-since, assertions).
 
 A client (agent) is conformant when it declares the extension at `initialize`,
 runs the standard loop (§6.10), and respects the risk gate before executing
