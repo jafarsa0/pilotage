@@ -556,5 +556,6 @@ against, and the branch decision is on the record.
   (why), [II](../spec/part-ii-abstract-model.md) (the model),
   [III](../spec/part-iii-mcp-binding.md) (the MCP binding),
   [IV](../spec/part-iv-implementation-notes.md) (building servers).
-- **The conformance harness**: run the same 54 vectors this server passes:
+- **The conformance harness**: run the same 54 vectors this server is
+  tested against:
   [`conformance/`](../conformance/README.md).

@@ -1,10 +1,13 @@
 # Pilotage
 
-[![DOI](https://zenodo.org/badge/1302736087.svg)](https://doi.org/10.5281/zenodo.21396027)
+[![DOI](https://zenodo.org/badge/1302736087.svg)](https://doi.org/10.5281/zenodo.21396027) [![docs-replay](https://github.com/jafarsa0/pilotage/actions/workflows/docs-replay.yml/badge.svg)](https://github.com/jafarsa0/pilotage/actions/workflows/docs-replay.yml)
 
 **A competence layer for complex MCP tools.**
 
 > Schemas teach the moves. **Pilotage teaches the game.**
+
+**Website:** [pilotagespec.org](https://pilotagespec.org): guides,
+reference, and the proof, rendered.
 
 MCP standardizes how agents connect to tools. But many real tools do not
 accept simple arguments; they accept queries, workflows, automation rules,
@@ -26,7 +29,11 @@ manifest → guides → catalog → validate + plan → execute → trace
 ```
 
 Seven layers, five tools, one handshake, and the agent at the center,
-deciding what to call and when.
+deciding what to call and when. The arithmetic is deliberate: the manifest
+rides the MCP handshake, the plan rides validate's response, and the trace
+rides execute's response, which leaves five working tools: the guide tool,
+the catalog tool, and up to three loop tools (validate, execute, trace
+fetch).
 
 **MCP addressed N×M connectivity. Pilotage addresses the N×M competence
 problem that appears after the connection is established.**
@@ -44,6 +51,9 @@ problem that appears after the connection is established.**
 - **[conformance/](./conformance/README.md)**: 54 engine-neutral test
   vectors, plus a runnable harness that executes them against any live
   server
+- **[proof/](./proof/README.md)**: a recorded experiment, run twice
+  (2026-07-24 and 2026-07-26): three models from three providers complete
+  real work in a language that exists nowhere, transcripts unedited
 - **[Harborview](https://github.com/jafarsa0/harborview)**: the public
   example server: a simulated smart building at
   `POST https://harborview.pilotagespec.org/mcp`, isolated per session
@@ -63,13 +73,13 @@ the specification.
 
 ## Status
 
-- **1.1.0**, the current release: the four-part specification, JSON
+- **1.1.1**, the current release: the four-part specification, JSON
   Schemas, conformance vectors with a runnable harness, and executable
   guides backed by a public example server. Supports MCP `2025-06-18` and later,
   including the stateless `2026-07-28` revision (a release candidate at the time of writing; final scheduled 2026-07-28).
-- Earlier: 1.0.1 (2026-07-18), the first published specification, refined
-  from the first reference implementation. See
-  [CHANGELOG.md](./CHANGELOG.md).
+- Earlier: 1.1.0 (2026-07-26), the restructured four-part release; 1.0.1
+  (2026-07-18), the first published specification, refined from the first
+  reference implementation. See [CHANGELOG.md](./CHANGELOG.md).
 
 ## Contributing, security, citing
 
@@ -80,5 +90,6 @@ the specification.
   repository" button) · archived on Zenodo under concept DOI
   [10.5281/zenodo.21396027](https://doi.org/10.5281/zenodo.21396027)
 
-Text © 2026 Jaafar Nadher Jaafar Alaboosi, CC BY 4.0. Schemas and
-conformance vectors: Apache-2.0.
+Text © 2026 Jaafar Nadher Jaafar Alaboosi, [CC BY 4.0](./LICENSE.md).
+Schemas, conformance vectors, and the runnable tooling:
+[Apache-2.0](./LICENSE-APACHE).

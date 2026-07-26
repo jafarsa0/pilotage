@@ -2,7 +2,16 @@
 
 All notable changes to the Pilotage specification.
 
-## 1.1.0 (2026-07, this release)
+## 1.1.1 (2026-07-26)
+
+Documentation and packaging patch; no model or wire changes (the wire
+version stays `1.1`). Citation metadata corrected (release date, canonical
+website links), the license class for the runnable tooling clarified, the
+proof kit index completed and its report-card names aligned with the
+rendered pages, the roadmap refreshed, a code of conduct added, and the
+legacy landing page pointed at the canonical website and server endpoint.
+
+## 1.1.0 (2026-07-26)
 
 The specification was restructured and substantially hardened through
 multi-round adversarial review. Wire version: `1.1`.
@@ -77,6 +86,10 @@ multi-round adversarial review. Wire version: `1.1`.
   stateless revisions, the mandatory `pilotage_manifest` discovery tool,
   fixed access tools with schemas, reserved argument names, permissive
   loop-tool schema rules, result envelopes, complete wire examples.
+
+Zenodo version DOI 10.5281/zenodo.21591184 minted under concept DOI
+10.5281/zenodo.21396027 (the concept DOI always resolves to the latest
+version).
 
 ## 1.0.1 (2026-07-18)
 

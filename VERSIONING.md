@@ -17,7 +17,7 @@ The manifest's `pilotage` field carries the wire version as `major.minor`
 
 ## Document releases
 
-Specification documents carry `major.minor.patch` (currently **1.1.0**).
+Specification documents carry `major.minor.patch` (currently **1.1.1**).
 The patch component is editorial only (clarifications, typo fixes, example
 corrections that change no requirement) and never appears on the wire.
 
@@ -40,8 +40,13 @@ A document release that changes any requirement increments the wire minor
 
 1. Changes land via pull request (see CONTRIBUTING.md), mapped in the PR to
    patch / minor / major per this policy.
-2. A release updates: the wire version where applicable, SPEC.md front
-   matter, CHANGELOG.md, CITATION.cff, and (for wire-version changes) a
-   new `schemas/<version>/` directory.
+2. A release updates every file that states the version: the wire version
+   where applicable, SPEC.md front matter, CHANGELOG.md, CITATION.cff
+   (version, date-released, and the version sentence in the abstract),
+   .zenodo.json (version and the version sentence in the description),
+   llms.txt, index.html (the version chip), the current-release note in
+   README.md, the harness package.json, the two "currently" markers in
+   this file, and (for wire-version changes) a new `schemas/<version>/`
+   directory plus the links that reference it.
 3. Each GitHub release is archived on Zenodo, minting a version DOI under
    the concept DOI 10.5281/zenodo.21396027.

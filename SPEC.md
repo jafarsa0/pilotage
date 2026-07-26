@@ -1,14 +1,14 @@
-# Pilotage: Specification, version 1.1.0
+# Pilotage: Specification, version 1.1.1
 
 **An MCP extension for guided program authoring and verified execution.**
 
 - **Extension identifier:** `io.github.jafarsa0/pilotage`
 - **Wire version:** `1.1` (the manifest's `pilotage` field; Part II §11.1)
-- **Document version:** 1.1.0
+- **Document version:** 1.1.1
 - **Status:** Release
 - **Author:** Jaafar Nadher Jaafar Alaboosi
-- **License:** specification text CC BY 4.0; schemas and conformance
-  vectors Apache-2.0 (see [LICENSE.md](./LICENSE.md))
+- **License:** specification text CC BY 4.0; schemas, conformance
+  vectors, and tooling Apache-2.0 (see [LICENSE.md](./LICENSE.md))
 - **Cite:** [CITATION.cff](./CITATION.cff) · concept DOI
   [10.5281/zenodo.21396027](https://doi.org/10.5281/zenodo.21396027)
 
@@ -48,8 +48,9 @@ normative; Parts I and IV are informative.
 | [`conformance/vectors.json`](./conformance/vectors.json) | 54 engine-neutral test vectors keyed to Part II/III requirements ([usage](./conformance/README.md)) |
 
 The wire examples in Part III §9 validate against the schema file; the
-schema's negative space (what it rejects) is exercised by an accompanying
-test suite as part of this repository's maintenance.
+54 vectors, the runnable harness, and the weekly docs-replay CI
+(`.github/workflows/docs-replay.yml`) exercise the conformance surface
+against the live example server.
 
 ## Reading paths
 
@@ -63,6 +64,6 @@ test suite as part of this repository's maintenance.
 ## Versioning
 
 The wire version is `major.minor` (`1.1`); minor versions are strictly
-additive. Document releases carry an additional patch number (1.1.0) that
+additive. Document releases carry an additional patch number (1.1.1) that
 never appears on the wire. Policy: [VERSIONING.md](./VERSIONING.md) ·
 history: [CHANGELOG.md](./CHANGELOG.md).

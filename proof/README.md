@@ -13,8 +13,10 @@ agent achieves here, it learned live, through the
 
 **Two recordings, one kit.** This directory holds two dated recordings. The
 2026-07-24 originals were made against the pre-1.1 wire and are kept
-byte-for-byte as recorded (the exact kit files that produced them are
-preserved in `source-snapshot/proof/` of the documentation package). On
+byte-for-byte as recorded; the exact kit files that produced them are
+preserved at
+[pilotagespec.org/source-snapshot/proof](https://pilotagespec.org/source-snapshot/proof/)
+(runner, grader, exam, results, rendered transcripts, as recorded). On
 2026-07-26 the same experiment was repeated, unchanged, against the migrated
 v1.1 server: see [`RESULTS-v11.md`](RESULTS-v11.md). The kit here tracks the
 current server: the grader fetches fired runs through `trace_run`.
@@ -24,9 +26,12 @@ current server: the grader fetches fired runs through `trace_run`.
 | file | role |
 |---|---|
 | `exam.md` | the work order: it describes the *job*, never the method. No tool names, no language teaching, no hints. |
-| `runner.mjs` | the **entire** agent (~250 lines, no SDKs). The model receives the one-paragraph system prompt printed in the transcript, the server's own self-description, the tool list, and the exam. Nothing else. |
+| `runner.mjs` | the **entire** agent (~280 lines, no SDKs). The model receives the one-paragraph system prompt printed in the transcript, the server's own self-description, the tool list, and the exam. Nothing else. |
 | `grader.mjs` | the answer key. No AI inside, just a fact-checker that reads the building's end state, fires the dock-door event, and prints a PASS/FAIL report card. |
+| `render-transcript.mjs` | the mechanical JSONL-to-markdown renderer that produced `rendered/`: nothing added, removed, or reworded. |
 | `transcripts/` | raw, unedited JSONL recordings of the published runs: every model turn, every tool call, every server response. |
+| `rendered/` | human-readable renderings of each transcript, mechanically generated; the raw JSONL remains the authority. |
+| `report-*.txt` | the grader's report cards for the published runs; the `report-v11-*` cards belong to the 2026-07-26 recording, and take markers (`take1-FAILED`, `postfixA-FAILED`, `postfixB`, `take2`) match the `rendered/` names. |
 | `RESULTS.md` | the 2026-07-24 recording: which models ran, how many tool calls, and their report cards. |
 | `RESULTS-v11.md` | the 2026-07-26 recording against the v1.1 wire: same exam, same runner, fresh takes. |
 
@@ -35,6 +40,7 @@ current server: the grader fetches fired runs through `trace_run`.
 With any of the three providers (a normal-tier model is enough):
 
 ```bash
+cd proof
 export ANTHROPIC_API_KEY=...   # or OPENAI_API_KEY / GEMINI_API_KEY
 node runner.mjs --provider anthropic --model claude-sonnet-5
 # the runner prints the agent's final report, the session id, and the transcript path

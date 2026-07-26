@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pilotage: guided program authoring and verified execution for MCP</title>
 <meta name="description" content="Pilotage is an open extension of the Model Context Protocol: agents learn a server's program language, validate before running, see risk in the plan, and get every run's decisions on the record.">
+<link rel="canonical" href="https://pilotagespec.org/">
 <style>
 :root{
   --ink0:#0A0D14; --ink1:#10141F; --ink2:#161B2A; --ink3:#1C2334; --line:#232B3F;
@@ -106,8 +107,9 @@ footer a{color:var(--dim)}
   <div class="wrap">
     <div class="brand">PILOTAGE<span>an MCP extension</span></div>
     <nav>
-      <a href="https://github.com/jafarsa0/pilotage/blob/main/SPEC.md">Specification</a>
-      <a href="https://github.com/jafarsa0/pilotage/blob/main/guides/01-your-first-verified-run.md">Guides</a>
+      <a href="https://pilotagespec.org">pilotagespec.org</a>
+      <a href="https://pilotagespec.org/reference/index.html">Specification</a>
+      <a href="https://pilotagespec.org/tutorial/00-guided-journey.html">Guides</a>
       <a href="https://github.com/jafarsa0/pilotage/blob/main/conformance/README.md">Conformance</a>
       <a href="https://github.com/jafarsa0/harborview">Example server</a>
       <a href="https://github.com/jafarsa0/pilotage">GitHub</a>
@@ -126,12 +128,12 @@ footer a{color:var(--dim)}
     <div class="chips">
       <div class="chip">spec <b>v1.1</b></div>
       <div class="chip">id <b>io.github.jafarsa0/pilotage</b></div>
-      <div class="chip">text <b>CC&nbsp;BY&nbsp;4.0</b> · schemas &amp; vectors <b>Apache-2.0</b></div>
+      <div class="chip">text <b>CC&nbsp;BY&nbsp;4.0</b> · schemas, vectors &amp; tooling <b>Apache-2.0</b></div>
       <div class="chip">DOI <b>10.5281/zenodo.21396027</b></div>
     </div>
     <div class="ctas">
-      <a class="btn primary" href="https://github.com/jafarsa0/pilotage/blob/main/SPEC.md">Read the specification</a>
-      <a class="btn ghost" href="https://github.com/jafarsa0/pilotage/blob/main/guides/01-your-first-verified-run.md">Run it live in five minutes</a>
+      <a class="btn primary" href="https://pilotagespec.org/reference/index.html">Read the specification</a>
+      <a class="btn ghost" href="https://pilotagespec.org/tutorial/00-guided-journey.html">Run it live in five minutes</a>
       <a class="btn ghost" href="https://github.com/jafarsa0/pilotage/blob/main/conformance/README.md">Test a server</a>
     </div>
   </div>
@@ -235,7 +237,7 @@ footer a{color:var(--dim)}
     <p style="margin-top:16px;font-size:14px;color:var(--dim)">Not a stack trace, not a guess:
     a closed code, a path, a hint. An agent repairs this deterministically and re-validates,
     then runs with the catalog token pinned. Walk the whole loop in
-    <a href="https://github.com/jafarsa0/pilotage/blob/main/guides/01-your-first-verified-run.md">the first guide</a>, and the failure modes in
+    <a href="https://pilotagespec.org/tutorial/00-guided-journey.html">the first guide</a>, and the failure modes in
     <a href="https://github.com/jafarsa0/pilotage/blob/main/guides/02-drift-risk-and-recovery.md">the second</a>.</p>
   </div>
 </section>
@@ -265,13 +267,18 @@ node check-guides.mjs</pre>
       </div>
       <div class="card">
         <div class="big">1</div>
-        <div class="cap">public reference server, free to try, isolated per session</div>
+        <div class="cap">public example server, free to try, isolated per session</div>
         <pre>POST https://harborview
-     .jafarsa0.workers.dev/mcp</pre>
+     .pilotagespec.org/mcp</pre>
         <p style="margin-top:10px">Apache-2.0, zero runtime dependencies, deterministic world.
         Point any MCP client at it and drive a building.</p>
       </div>
     </div>
+    <p style="margin-top:16px;font-size:14px;color:var(--dim)">There is also a recorded
+    experiment: models from three providers complete real work in a language that exists
+    nowhere, transcripts unedited. See <a href="https://pilotagespec.org/proof.html">the
+    rendered proof</a> or <a href="https://github.com/jafarsa0/pilotage/tree/main/proof">the
+    raw kit and transcripts</a>.</p>
   </div>
 </section>
 
@@ -287,7 +294,7 @@ node check-guides.mjs</pre>
       </a>
       <a class="card" href="https://github.com/jafarsa0/pilotage/blob/main/spec/part-ii-abstract-model.md">
         <span class="part">PART II</span><h3>The abstract model</h3>
-        <p>Actors, capability declarations, the seven shapes, reserved statuses and codes,
+        <p>Actors, capability declarations, the eight shapes, reserved statuses and codes,
         trace identity, the processing order, and the trust model: the normative core.</p>
       </a>
       <a class="card" href="https://github.com/jafarsa0/pilotage/blob/main/spec/part-iii-mcp-binding.md">
@@ -320,7 +327,7 @@ node check-guides.mjs</pre>
     <p class="lead" style="margin-bottom:0">Pilotage is archived on Zenodo; the concept DOI
     always resolves to the latest version.</p>
     <pre>Alaboosi, J. N. J. (2026). Pilotage: an MCP extension for guided program authoring
-and verified execution (v1.1). Zenodo. https://doi.org/10.5281/zenodo.21396027</pre>
+and verified execution. Zenodo. https://doi.org/10.5281/zenodo.21396027</pre>
   </div>
 </section>
 
@@ -329,6 +336,7 @@ and verified execution (v1.1). Zenodo. https://doi.org/10.5281/zenodo.21396027</
     <div>© 2026 Jaafar Nadher Jaafar Alaboosi</div>
     <div class="mono">io.github.jafarsa0/pilotage</div>
     <div style="margin-left:auto;display:flex;gap:16px">
+      <a href="https://pilotagespec.org">pilotagespec.org</a>
       <a href="https://github.com/jafarsa0/pilotage">GitHub</a>
       <a href="https://doi.org/10.5281/zenodo.21396027">DOI</a>
       <a href="llms.txt">llms.txt</a>

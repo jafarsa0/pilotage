@@ -4,14 +4,14 @@
 
 This part defines the Pilotage abstract model independently of any carrier protocol. It specifies:
 
-* the participating actors and their responsibilities;
-* the terminology used throughout the specification;
-* the core data structures;
-* the available capabilities and operations;
-* the semantics of the standard client loop;
-* the error and outcome model;
-* the trust and security model;
-* versioning and conformance requirements.
+- the participating actors and their responsibilities;
+- the terminology used throughout the specification;
+- the core data structures;
+- the available capabilities and operations;
+- the semantics of the standard client loop;
+- the error and outcome model;
+- the trust and security model;
+- versioning and conformance requirements.
 
 Part III, **The MCP Binding**, defines how this model is represented over MCP, including capability negotiation, discovery addresses, message envelopes, and wire encodings.
 
@@ -31,8 +31,8 @@ Each data structure is defined using a field table.
 
 The **Req** column uses:
 
-* **M**: the field MUST be present;
-* **O**: the field MAY be present.
+- **M**: the field MUST be present;
+- **O**: the field MAY be present.
 
 These abbreviations are exact synonyms for **MUST** and **MAY**. They carry no additional meaning.
 
@@ -72,10 +72,10 @@ A field marked as an **engine-defined set** has a value set chosen by the Engine
 
 That set:
 
-* MUST be finite;
-* MUST remain fixed for a particular Language version;
-* MUST be treated as closed;
-* MUST be enumerated in the Language's closed-sets guide defined in Section 5.2.
+- MUST be finite;
+- MUST remain fixed for a particular Language version;
+- MUST be treated as closed;
+- MUST be enumerated in the Language's closed-sets guide defined in Section 5.2.
 
 This convention applies only to value-set fields such as `kind`, `risk`, and status fields.
 
@@ -104,11 +104,11 @@ Pilotage distinguishes between the party that provides a Language and the compon
 
 Normative duties in this specification are assigned only to the following defined parties:
 
-* Server;
-* Engine;
-* Client;
-* Host;
-* Model.
+- Server;
+- Engine;
+- Client;
+- Host;
+- Model.
 
 The term **Surface** is descriptive only.
 
@@ -148,13 +148,13 @@ A **Program** is a value supplied as a tool argument whose meaning satisfies at 
 
 The value refers to names resolved against live Server state, such as:
 
-* tables;
-* fields;
-* entities;
-* capabilities;
-* devices;
-* workflows;
-* other Server-owned objects.
+- tables;
+- fields;
+- entities;
+- capabilities;
+- devices;
+- workflows;
+- other Server-owned objects.
 
 Its validity can therefore change while the program text remains unchanged.
 
@@ -162,12 +162,12 @@ Its validity can therefore change while the program text remains unchanged.
 
 The value expresses behavior through constructs such as:
 
-* steps;
-* ordering;
-* dependencies;
-* branching;
-* loops;
-* data flow between parts.
+- steps;
+- ordering;
+- dependencies;
+- branching;
+- loops;
+- data flow between parts.
 
 #### C. Step-wise observable behavior
 
@@ -185,8 +185,8 @@ A Language has **environment-bound names** if and only if the validity of its pr
 
 A Server:
 
-* MUST declare the `catalog` capability for every Language with environment-bound names;
-* SHOULD NOT declare `catalog` for a pure Language whose validity depends only on its grammar.
+- MUST declare the `catalog` capability for every Language with environment-bound names;
+- SHOULD NOT declare `catalog` for a pure Language whose validity depends only on its grammar.
 
 A catalog for a pure Language would normally be empty and would carry no useful meaning.
 
@@ -243,8 +243,8 @@ For a Language whose grammar does not define program step identifiers, such as a
 
 The identifier-generation scheme:
 
-* MUST be documented in the Language's closed-sets guide;
-* MUST produce identical identifiers in the validation plan and execution
+- MUST be documented in the Language's closed-sets guide;
+- MUST produce identical identifiers in the validation plan and execution
   trace for the same program text at the same `catalog_version`.
 
 ---
@@ -257,9 +257,9 @@ A **program reference**, represented as `program_ref`, is an identifier that res
 
 Requirements governing promoted programs and their references are defined in:
 
-* Section 5.4;
-* Section 6.5.2;
-* Section 10.4.
+- Section 5.4;
+- Section 6.5.2;
+- Section 10.4.
 
 ---
 
@@ -271,14 +271,14 @@ Every Run is identified by a `run_id`, regardless of whether execution begins.
 
 A Run is classified as one of the following:
 
-* **started Run**: execution began;
-* **refused Run**: the request was accepted for processing but refused before execution.
+- **started Run**: execution began;
+- **refused Run**: the request was accepted for processing but refused before execution.
 
 A Run is refused when its outcome is one of:
 
-* `validation_error`;
-* `catalog_drift`;
-* `promotion_drift`.
+- `validation_error`;
+- `catalog_drift`;
+- `promotion_drift`.
 
 The rules governing later retrieval of a Run through the trace fetch door are defined in Section 6.6.
 
@@ -332,8 +332,8 @@ A sub-feature is meaningful only when its parent capability is declared.
 
 A **capability declaration** is a map from a capability identifier to either:
 
-* `true`; or
-* an object containing boolean sub-feature declarations.
+- `true`; or
+- an object containing boolean sub-feature declarations.
 
 For example:
 
@@ -348,8 +348,8 @@ For example:
 
 A capability is **undeclared** when it is:
 
-* absent from the effective capability map; or
-* explicitly mapped to `false`.
+- absent from the effective capability map; or
+- explicitly mapped to `false`.
 
 A sub-feature is declared only when:
 
@@ -360,22 +360,22 @@ A sub-feature is declared only when:
 
 The manifest MAY contain:
 
-* a Server-level capability declaration that acts as a default;
-* a separate capability declaration on each Language entry.
+- a Server-level capability declaration that acts as a default;
+- a separate capability declaration on each Language entry.
 
 The **effective capability map** is computed independently for each Language and each capability identifier.
 
 For a given capability:
 
-* when the Language-level declaration contains that capability identifier, the Language-level value governs the capability in full, including all of its sub-features;
-* otherwise, the Server-level declaration governs it.
+- when the Language-level declaration contains that capability identifier, the Language-level value governs the capability in full, including all of its sub-features;
+- otherwise, the Server-level declaration governs it.
 
 A Language-level declaration replaces the Server-level declaration for that capability. It does not merge individual sub-feature values with the Server-level declaration.
 
 For every Language, at least one of the following MUST exist:
 
-* a Server-level capability declaration;
-* a Language-level capability declaration.
+- a Server-level capability declaration;
+- a Language-level capability declaration.
 
 A manifest that provides neither is invalid.
 
@@ -389,8 +389,8 @@ The effective capability map of each Language MUST satisfy all of the following 
 
 Every Language MUST declare at least:
 
-* `guides`;
-* `validate`.
+- `guides`;
+- `validate`.
 
 There is no conformant Language that provides guidance without validation or validation without guidance.
 
@@ -406,17 +406,17 @@ When a capability is declared, every capability on which it depends MUST also be
 
 In particular:
 
-* `validate` requires `guides`;
-* `plan` requires `validate`;
-* `execute` requires `validate`;
-* `trace_fetch` requires `execute`.
+- `validate` requires `guides`;
+- `plan` requires `validate`;
+- `execute` requires `validate`;
+- `trace_fetch` requires `execute`.
 
 #### 4. Trace obligation
 
 A Language that declares `execute` MUST support traces at either:
 
-* `summary`; or
-* `full`.
+- `summary`; or
+- `full`.
 
 Pilotage defines no conformant execute capability without trace support.
 
@@ -430,12 +430,12 @@ A Language MUST NOT declare `trace_fetch` when its declared retention value is `
 
 A Server MUST NOT declare:
 
-* a capability;
-* a sub-feature;
-* a trace level;
-* an execution mode;
-* a retention commitment;
-* or any other supported feature
+- a capability;
+- a sub-feature;
+- a trace level;
+- an execution mode;
+- a retention commitment;
+- or any other supported feature
 
 that it does not actually provide.
 
@@ -447,11 +447,11 @@ The `loop`, `guides`, and `catalog` fields of each Language entry MUST identify 
 
 Specifically:
 
-* the `guides` reference MUST always be present;
-* the `validate` operation address MUST always be present;
-* the `catalog` reference MUST be present if and only if `catalog` is declared;
-* the `execute` operation address MUST be present if and only if `execute` is declared;
-* the `trace` operation address MUST be present if and only if `trace_fetch` is declared.
+- the `guides` reference MUST always be present;
+- the `validate` operation address MUST always be present;
+- the `catalog` reference MUST be present if and only if `catalog` is declared;
+- the `execute` operation address MUST be present if and only if `execute` is declared;
+- the `trace` operation address MUST be present if and only if `trace_fetch` is declared.
 
 A manifest that violates these consistency requirements is invalid.
 
@@ -463,9 +463,9 @@ This section defines the information carried by each Pilotage data structure.
 
 Part III defines:
 
-* the exact serialization of these structures;
-* the MCP messages through which they are exchanged;
-* the concrete form of references and operation addresses.
+- the exact serialization of these structures;
+- the MCP messages through which they are exchanged;
+- the concrete form of references and operation addresses.
 
 ---
 
@@ -475,9 +475,9 @@ The manifest is the Server's Pilotage self-description.
 
 The manifest:
 
-* MUST be retrievable before any other Pilotage interaction;
-* MUST accurately describe the Server's Languages and capabilities;
-* MUST satisfy the capability requirements in Sections 4.2 and 4.3.
+- MUST be retrievable before any other Pilotage interaction;
+- MUST accurately describe the Server's Languages and capabilities;
+- MUST satisfy the capability requirements in Sections 4.2 and 4.3.
 
 #### Manifest fields
 
@@ -543,46 +543,46 @@ closed-sets
 
 That guide:
 
-* MUST have `level: "reference"`;
-* MUST enumerate every closed set required by the Language's declared capabilities.
+- MUST have `level: "reference"`;
+- MUST enumerate every closed set required by the Language's declared capabilities.
 
 The closed-sets guide MUST always enumerate:
 
-* the complete diagnostic-code set;
-* the reserved diagnostic codes defined in Section 5.5.
+- the complete diagnostic-code set;
+- the reserved diagnostic codes defined in Section 5.5.
 
 When `catalog` is declared, it MUST also enumerate:
 
-* every catalog entry `kind`;
-* which entry kinds are callable.
+- every catalog entry `kind`;
+- which entry kinds are callable.
 
 Whenever risk appears because `catalog` or `plan` is declared, it MUST enumerate:
 
-* every engine-defined risk level;
-* the corresponding `risk_hints` for each level.
+- every engine-defined risk level;
+- the corresponding `risk_hints` for each level.
 
 When the Language includes branches or loops, it MUST document:
 
-* the scope rules governing when values produced inside branch arms or loop bodies become addressable.
+- the scope rules governing when values produced inside branch arms or loop bodies become addressable.
 
 Scope rules are the single most common authoring error; omitting them is a conformance violation.
 
 When inline programs accept `input`, it MUST document:
 
-* the Language's parameter-binding convention.
+- the Language's parameter-binding convention.
 
 When the Language has no native program step identifiers, it MUST document:
 
-* the deterministic step-identifier scheme defined in Section 3.4.
+- the deterministic step-identifier scheme defined in Section 3.4.
 
 When `execute` is declared, it MUST enumerate:
 
-* the complete run-level outcome status set;
-* the complete step-level outcome status set;
-* the `ok` value of every engine-defined status;
-* whether side effects may have occurred for every failure status;
-* the truncation format used by `summary` traces;
-* the meaning of the run-level `output` value.
+- the complete run-level outcome status set;
+- the complete step-level outcome status set;
+- the `ok` value of every engine-defined status;
+- whether side effects may have occurred for every failure status;
+- the truncation format used by `summary` traces;
+- the meaning of the run-level `output` value.
 
 Guides other than the closed-sets guide are unrestricted in number and subject matter.
 
@@ -592,9 +592,9 @@ Guides other than the closed-sets guide are unrestricted in number and subject m
 
 Risk appears on:
 
-* catalog entries;
-* plan steps;
-* promoted-program catalog entries.
+- catalog entries;
+- plan steps;
+- promoted-program catalog entries.
 
 Wherever risk appears, both of the following representations are REQUIRED.
 
@@ -670,10 +670,10 @@ A catalog entry describes one environment-bound name.
 
 Every response to:
 
-* catalog `list`;
-* catalog `get`;
-* catalog `changed_since`;
-* `validate` for a catalog-bearing Language
+- catalog `list`;
+- catalog `get`;
+- catalog `changed_since`;
+- `validate` for a catalog-bearing Language
 
 MUST carry a `catalog_version`.
 
@@ -683,15 +683,15 @@ It MUST be computed within the requesting Client's authorization scope. It repre
 
 This requirement ensures that:
 
-* invisible entries do not cause observable token changes;
-* one Client cannot infer changes to another Client's authorized vocabulary;
-* invisible entries do not create unnecessary drift failures.
+- invisible entries do not cause observable token changes;
+- one Client cannot infer changes to another Client's authorized vocabulary;
+- invisible entries do not create unnecessary drift failures.
 
 The token MUST change whenever:
 
-* a visible entry is added;
-* a visible entry is removed;
-* any defined field of a visible entry changes, except `revision`.
+- a visible entry is added;
+- a visible entry is removed;
+- any defined field of a visible entry changes, except `revision`.
 
 The token SHOULD NOT change for any other reason.
 
@@ -711,8 +711,8 @@ A `program_ref` MUST identify an immutable program body.
 
 The Server MUST satisfy this requirement by either:
 
-* making the reference itself version-specific; or
-* minting a new reference whenever the stored program body changes.
+- making the reference itself version-specific; or
+- minting a new reference whenever the stored program body changes.
 
 ##### Honest risk
 
@@ -724,19 +724,19 @@ A promoted program MUST NOT present itself as safer than the program it contains
 
 At promotion time, the Server MUST record the current values of every referenced catalog entry's load-bearing fields:
 
-* `kind`;
-* `input_schema`;
-* `output_schema`;
-* `risk`;
-* `risk_hints`;
-* `languages`.
+- `kind`;
+- `input_schema`;
+- `output_schema`;
+- `risk`;
+- `risk_hints`;
+- `languages`.
 
 The baseline MUST NOT depend on:
 
-* `revision`;
-* `name`;
-* `description`;
-* `tags`.
+- `revision`;
+- `name`;
+- `description`;
+- `tags`.
 
 Changes to those fields alone do not alter the promoted program's behavior.
 
@@ -777,8 +777,8 @@ Example:
 
 When a finding applies to an expression embedded inside a string field:
 
-* `path` identifies the innermost JSON Pointer-addressable value;
-* `range` MAY identify the position inside that string.
+- `path` identifies the innermost JSON Pointer-addressable value;
+- `range` MAY identify the position inside that string.
 
 ##### `text-range`
 
@@ -805,21 +805,21 @@ When `text-range` is used, the separate `range` field is not used.
 
 A whole-document finding uses:
 
-* `""`, the empty JSON Pointer, for `json-pointer`; or
-* the full-document range for `text-range`.
+- `""`, the empty JSON Pointer, for `json-pointer`; or
+- the full-document range for `text-range`.
 
 #### Input and context findings
 
 When a diagnostic applies to the execute request's `input` rather than to the program:
 
-* `path` is a JSON Pointer into `input`;
-* `code` MUST be `input_binding`.
+- `path` is a JSON Pointer into `input`;
+- `code` MUST be `input_binding`.
 
 When a diagnostic applies to `context`:
 
-* `path` is a JSON Pointer into `context`;
-* `path` is `""` when context is missing or was supplied unexpectedly;
-* `code` MUST be `context_binding`.
+- `path` is a JSON Pointer into `context`;
+- `path` is `""` when context is missing or was supplied unexpectedly;
+- `code` MUST be `context_binding`.
 
 #### Reserved diagnostic codes
 
@@ -839,8 +839,8 @@ When the Server cannot assign a more specific code, it MUST use `constraint`.
 
 A Server MAY produce closed diagnostic codes:
 
-* natively, through a validator that already emits them; or
-* through an adapter that classifies existing validator output and falls back to `constraint`.
+- natively, through a validator that already emits them; or
+- through an adapter that classifies existing validator output and falls back to `constraint`.
 
 Both approaches are conformant and are indistinguishable on the wire.
 
@@ -892,14 +892,14 @@ The plan does not merely describe installation, because the body's effects are w
 
 The Engine MUST derive plans according to the following rules:
 
-* branches and loops appear as plan steps of their own;
-* control-flow steps do not carry `calls`;
-* a branch contributes the steps of every possible arm, because the plan cannot know which arm will run;
-* each branch-arm step carries `arm`;
-* a loop contributes its body steps once;
-* each loop-body step carries `loop`;
-* a call to a promoted program contributes one step carrying the promoted entry's declared risk;
-* steps with no externally visible effect, such as pure transformations, MAY be omitted.
+- branches and loops appear as plan steps of their own;
+- control-flow steps do not carry `calls`;
+- a branch contributes the steps of every possible arm, because the plan cannot know which arm will run;
+- each branch-arm step carries `arm`;
+- a loop contributes its body steps once;
+- each loop-body step carries `loop`;
+- a call to a promoted program contributes one step carrying the promoted entry's declared risk;
+- steps with no externally visible effect, such as pure transformations, MAY be omitted.
 
 ---
 
@@ -928,10 +928,10 @@ An outcome is the closed classification of a Run's result.
 
 The Server MUST use:
 
-* `success`;
-* `validation_error`;
-* `catalog_drift`;
-* `promotion_drift`
+- `success`;
+- `validation_error`;
+- `catalog_drift`;
+- `promotion_drift`
 
 exactly for the conditions defined above.
 
@@ -939,14 +939,14 @@ It MUST NOT substitute engine-specific names for those conditions.
 
 For a failed started Run, an Engine MAY use a more specific engine-defined status, such as:
 
-* `timeout`;
-* `not_found`;
-* `denied`.
+- `timeout`;
+- `not_found`;
+- `denied`.
 
 Every engine-defined status MUST be listed in the closed-sets guide with:
 
-* its `ok` value;
-* whether side effects may have occurred.
+- its `ok` value;
+- whether side effects may have occurred.
 
 The run-level status set is closed per Server and Language.
 
@@ -1001,14 +1001,14 @@ Each decision has the following form:
 
 For a branch:
 
-* `at` identifies the branch construct;
-* `took` is the selected arm label;
-* the label MUST correspond to the relevant `arm.label` in the plan.
+- `at` identifies the branch construct;
+- `took` is the selected arm label;
+- the label MUST correspond to the relevant `arm.label` in the plan.
 
 For a loop:
 
-* `took` is `"continue"` or `"exit"`;
-* an Engine MAY use a summarized form documented in the closed-sets guide.
+- `took` is `"continue"` or `"exit"`;
+- an Engine MAY use a summarized form documented in the closed-sets guide.
 
 `because` contains the evaluated reason for the decision.
 
@@ -1016,24 +1016,24 @@ For a loop:
 
 The **trace envelope** consists of the structured facts of a Run:
 
-* the run outcome;
-* `run_id`;
-* trace `level`;
-* step identifiers;
-* `calls`;
-* step inputs;
-* step outputs;
-* step outcomes;
-* `t_ms`;
-* decisions;
-* `stats`.
+- the run outcome;
+- `run_id`;
+- trace `level`;
+- step identifiers;
+- `calls`;
+- step inputs;
+- step outputs;
+- step outcomes;
+- `t_ms`;
+- decisions;
+- `stats`.
 
 The trace envelope excludes Server-authored prose, including:
 
-* diagnostic `message`;
-* diagnostic `hint`;
-* catalog `description`;
-* narration.
+- diagnostic `message`;
+- diagnostic `hint`;
+- catalog `description`;
+- narration.
 
 Client verification requirements refer to the trace envelope rather than to prose interpretation.
 
@@ -1051,20 +1051,20 @@ none < summary < full
 
 A full trace contains every executed step with:
 
-* input;
-* output;
-* outcome;
-* decisions.
+- input;
+- output;
+- outcome;
+- decisions.
 
 ##### `summary`
 
 A summary trace contains every executed step with:
 
-* `id`;
-* `outcome`;
-* optional `t_ms`;
-* optional truncated `output`;
-* decisions where applicable.
+- `id`;
+- `outcome`;
+- optional `t_ms`;
+- optional truncated `output`;
+- decisions where applicable.
 
 It omits step input.
 
@@ -1080,13 +1080,13 @@ A Language declaring `execute` MUST support at least `summary`.
 
 The manifest declares the Language's highest supported level:
 
-* `"summary"`; or
-* `"full"`.
+- `"summary"`; or
+- `"full"`.
 
 The effective trace level is the lower of:
 
-* the requested level;
-* the declared ceiling.
+- the requested level;
+- the declared ceiling.
 
 When `trace_level` is absent, the request is treated as asking for the declared ceiling.
 
@@ -1094,11 +1094,11 @@ The response MUST state the effective level in `trace.level`.
 
 When the effective request level is `none`:
 
-* no trace is returned;
-* `run_id` MUST still be returned;
-* `outcome` MUST still be returned;
-* the partial-trace requirement in Section 6.5.6 does not apply;
-* whether the Run is retrievable through the trace fetch door is governed by `store` and the declared retention value alone, per Sections 6.5 and 6.6; the level does not decide it.
+- no trace is returned;
+- `run_id` MUST still be returned;
+- `outcome` MUST still be returned;
+- the partial-trace requirement in Section 6.5.6 does not apply;
+- whether the Run is retrievable through the trace fetch door is governed by `store` and the declared retention value alone, per Sections 6.5 and 6.6; the level does not decide it.
 
 ---
 
@@ -1108,8 +1108,8 @@ The `steps` array is a flat execution log.
 
 Every executed step:
 
-* MUST appear exactly once as a top-level entry;
-* MUST appear in the order in which execution reached it.
+- MUST appear exactly once as a top-level entry;
+- MUST appear in the order in which execution reached it.
 
 Steps inside branches, loops, and expanded sub-programs are not nested objects.
 
@@ -1117,8 +1117,8 @@ Steps inside branches, loops, and expanded sub-programs are not nested objects.
 
 A trace step identifier begins with the corresponding program step identifier and may be qualified for:
 
-* loop iteration;
-* sub-program expansion.
+- loop iteration;
+- sub-program expansion.
 
 ###### Iteration
 
@@ -1151,8 +1151,8 @@ Iteration qualification applies to every step inside the loop body, including ne
 
 When a promoted sub-program is expanded, each internal trace entry is prefixed with:
 
-* the calling trace entry's complete iteration-qualified identifier;
-* `/`.
+- the calling trace entry's complete iteration-qualified identifier;
+- `/`.
 
 Example:
 
@@ -1177,14 +1177,14 @@ A branch or loop appears as its own trace entry.
 
 A branch entry:
 
-* carries the decision for that branch activation;
-* uses the selected arm label as `took`.
+- carries the decision for that branch activation;
+- uses the selected arm label as `took`.
 
 A loop entry:
 
-* appears once per activation;
-* carries one decision for each continue-or-exit evaluation;
-* MAY instead use an Engine-defined summarized decision representation documented in the closed-sets guide.
+- appears once per activation;
+- carries one decision for each continue-or-exit evaluation;
+- MAY instead use an Engine-defined summarized decision representation documented in the closed-sets guide.
 
 A control-flow construct that is reached is considered activated and MUST be traced even when its body executes zero times.
 
@@ -1230,9 +1230,9 @@ Correspondence is evaluated only over unprefixed trace entries: entries whose id
 
 Expanded sub-program entries do not participate in:
 
-* required-presence matching;
-* prohibited-absence matching;
-* branch-entry enumeration.
+- required-presence matching;
+- prohibited-absence matching;
+- branch-entry enumeration.
 
 The expected set contains:
 
@@ -1244,22 +1244,22 @@ Branch-arm steps are contributed exclusively by the branch rule, including when 
 
 For a Run with outcome `success`:
 
-* every member of the expected set MUST appear in the trace;
-* matching is performed using the base identifier;
-* a loop-body step MUST appear at least once when its loop executed.
+- every member of the expected set MUST appear in the trace;
+- matching is performed using the base identifier;
+- a loop-body step MUST appear at least once when its loop executed.
 
 For a started Run that did not complete:
 
-* expected steps not yet reached MAY be absent;
-* every unprefixed trace entry that does appear MUST map by base identifier to a member of the expected set.
+- expected steps not yet reached MAY be absent;
+- every unprefixed trace entry that does appear MUST map by base identifier to a member of the expected set.
 
 In all cases, plan steps belonging to branch arms that were not selected MUST be absent from the trace.
 
 For a `"deploy"` Run:
 
-* the execution trace describes installation;
-* the body plan is not matched against the installation trace;
-* body-plan correspondence is checked against `test_run` traces where `execute.test_run` is declared.
+- the execution trace describes installation;
+- the body plan is not matched against the installation trace;
+- body-plan correspondence is checked against `test_run` traces where `execute.test_run` is declared.
 
 A Server whose execution may diverge from its plan for internal Engine reasons MUST NOT declare `plan`.
 
@@ -1339,9 +1339,9 @@ The response then contains only the content associated with that topic.
 
 It defines three verbs:
 
-* `list`;
-* `get`;
-* `changed_since`.
+- `list`;
+- `get`;
+- `changed_since`.
 
 Every successful or catalog-related response MUST carry `catalog_version`.
 
@@ -1431,9 +1431,9 @@ Response:
 
 The `change` field has the closed set:
 
-* `added`;
-* `removed`;
-* `modified`.
+- `added`;
+- `removed`;
+- `modified`.
 
 When the Server cannot calculate changes from the supplied token, it MUST return a distinguishable unknown-baseline request error.
 
@@ -1443,10 +1443,10 @@ The Client then falls back to a complete listing.
 
 All catalog-derived information MUST be computed within the requesting Client's authorization scope, including:
 
-* entries;
-* catalog tokens;
-* diagnostic hints;
-* validation findings derived from catalog knowledge.
+- entries;
+- catalog tokens;
+- diagnostic hints;
+- validation findings derived from catalog knowledge.
 
 A catalog name the Client is not authorized to see MUST be indistinguishable from a nonexistent name in every Pilotage operation.
 
@@ -1483,9 +1483,9 @@ The `diagnostics` array is always present; an empty array means no findings.
 
 Validation MUST:
 
-* create no externally observable state change;
-* invoke no catalog entry;
-* be safe to repeat any number of times.
+- create no externally observable state change;
+- invoke no catalog entry;
+- be safe to repeat any number of times.
 
 #### Context
 
@@ -1495,9 +1495,9 @@ A Language that requires context MUST declare `context_schema`.
 
 For such a Language:
 
-* missing context;
-* malformed context;
-* context that does not satisfy the schema
+- missing context;
+- malformed context;
+- context that does not satisfy the schema
 
 MUST produce a diagnostic with code `context_binding`.
 
@@ -1525,9 +1525,9 @@ When `plan` is declared, a valid response MUST include the plan.
 
 When:
 
-* `catalog` is declared;
-* `plan` is not declared;
-* the program is valid,
+- `catalog` is declared;
+- `plan` is not declared;
+- the program is valid,
 
 the validation response SHOULD include `references`, containing the identifier of every catalog entry referenced by the program.
 
@@ -1563,9 +1563,9 @@ Supplying it otherwise is a request error.
 
 `store` is OPTIONAL and controls retention of the run record for later trace fetch.
 
-* When `store` is absent, the Language's declared retention policy governs, as defined in Section 6.6.
-* When `store` is `true`, the Engine MUST retain the run record so that its trace can later be fetched through the trace fetch door. A Server whose declared retention is `"none"` MUST reject the request with a request error of kind `unsupported`. It MUST NOT silently ignore the field.
-* When `store` is `false`, the Engine MUST NOT retain the run record beyond this response.
+- When `store` is absent, the Language's declared retention policy governs, as defined in Section 6.6.
+- When `store` is `true`, the Engine MUST retain the run record so that its trace can later be fetched through the trace fetch door. A Server whose declared retention is `"none"` MUST reject the request with a request error of kind `unsupported`. It MUST NOT silently ignore the field.
+- When `store` is `false`, the Engine MUST NOT retain the run record beyond this response.
 
 `run_id` is always returned; it identifies the Run in-band even when the record is not stored.
 
@@ -1587,8 +1587,8 @@ The inline trace rides the execute response at the effective trace level regardl
 
 `output` MUST appear only when:
 
-* `outcome.ok` is true;
-* the Language produces a result.
+- `outcome.ok` is true;
+- the Language produces a result.
 
 The meaning of `output` MUST be documented in the closed-sets guide.
 
@@ -1598,15 +1598,15 @@ The meaning of `output` MUST be documented in the closed-sets guide.
 
 Exactly one of the following MUST be present:
 
-* `program`, containing an inline program;
-* `program_ref`, identifying a promoted program.
+- `program`, containing an inline program;
+- `program_ref`, identifying a promoted program.
 
 A request containing both or neither is a request error.
 
 A Server declaring `execute`:
 
-* MUST accept inline programs;
-* MUST accept `program_ref` exactly when promoted programs are exposed in the catalog.
+- MUST accept inline programs;
+- MUST accept `program_ref` exactly when promoted programs are exposed in the catalog.
 
 ---
 
@@ -1620,12 +1620,12 @@ The first failing check determines the response.
 
 The Server first checks:
 
-* the runnable selection rule;
-* whether `program_ref` can be resolved;
-* whether `trace_level` is recognized;
-* whether `test_run` is allowed;
-* whether a supplied `store: true` can be honored, which it cannot under declared retention `"none"`;
-* whether an idempotency-key conflict exists.
+- the runnable selection rule;
+- whether `program_ref` can be resolved;
+- whether `trace_level` is recognized;
+- whether `test_run` is allowed;
+- whether a supplied `store: true` can be honored, which it cannot under declared retention `"none"`;
+- whether an idempotency-key conflict exists.
 
 An unauthorized `program_ref` MUST be indistinguishable from a nonexistent reference.
 
@@ -1655,9 +1655,9 @@ For an inline program, the Server MUST validate `{program, context}` exactly as 
 
 When invalid, it MUST:
 
-* return outcome `validation_error`;
-* attach the diagnostics;
-* execute nothing.
+- return outcome `validation_error`;
+- attach the diagnostics;
+- execute nothing.
 
 This guard applies even when the Client did not call `validate` separately.
 
@@ -1673,8 +1673,8 @@ The Server validates `input` and `context` under Section 6.5.5.
 
 Failure produces:
 
-* outcome `validation_error`;
-* an `input_binding` or `context_binding` diagnostic.
+- outcome `validation_error`;
+- an `input_binding` or `context_binding` diagnostic.
 
 No side effects may occur.
 
@@ -1714,24 +1714,24 @@ A Language with no inline parameter convention MUST reject a request that suppli
 
 An input-binding failure produces:
 
-* outcome `validation_error`;
-* diagnostic code `input_binding`.
+- outcome `validation_error`;
+- diagnostic code `input_binding`.
 
 The `context` rules used by execute are identical to those used by validate.
 
 For a Language with `context_schema`:
 
-* context MUST satisfy that schema;
-* valid context is made available to execution.
+- context MUST satisfy that schema;
+- valid context is made available to execution.
 
 For a Language without `context_schema`:
 
-* supplying context MUST produce a validation failure.
+- supplying context MUST produce a validation failure.
 
 A context-binding failure produces:
 
-* outcome `validation_error`;
-* diagnostic code `context_binding`.
+- outcome `validation_error`;
+- diagnostic code `context_binding`.
 
 ---
 
@@ -1743,9 +1743,9 @@ When `execute.idempotency` is declared, idempotency keys are scoped to the Serve
 
 Two requests with the same:
 
-* `idempotency_key`;
-* runnable;
-* input
+- `idempotency_key`;
+- runnable;
+- input
 
 MUST be treated as one execution.
 
@@ -1761,16 +1761,16 @@ The Server's deduplication window MUST be at least as long as the declared reten
 
 When `execute.idempotency` is not declared:
 
-* a Client MUST NOT assume that retrying execute is safe;
-* for a side-effecting program, it SHOULD surface a timeout-retry decision rather than retry silently.
+- a Client MUST NOT assume that retrying execute is safe;
+- for a side-effecting program, it SHOULD surface a timeout-retry decision rather than retry silently.
 
 ##### Partial failure
 
 A started Run that does not complete MUST return:
 
-* an outcome with `ok: false`;
-* either `partial` or a more specific enumerated engine-defined status;
-* the trace of execution completed so far.
+- an outcome with `ok: false`;
+- either `partial` or a more specific enumerated engine-defined status;
+- the trace of execution completed so far.
 
 The trace is returned at the effective trace level.
 
@@ -1796,9 +1796,9 @@ The Server installs the program to execute later in response to future events.
 
 Examples include:
 
-* automation rules;
-* trigger definitions;
-* scheduled workflows.
+- automation rules;
+- trigger definitions;
+- scheduled workflows.
 
 The execute outcome describes installation.
 
@@ -1810,8 +1810,8 @@ Later executions of the deployed body are outside the scope of the installation 
 
 However:
 
-* the validation plan describes the deployed body;
-* the Host risk gate operates on that body plan.
+- the validation plan describes the deployed body;
+- the Host risk gate operates on that body plan.
 
 ##### `both`
 
@@ -1843,8 +1843,8 @@ Body-plan correspondence is checked against this trace.
 
 The trace is one layer with two doors:
 
-* the **inline door** (mandatory wherever `execute` is declared): the trace envelope rides the execute response, as defined in Sections 5.8 and 6.5;
-* the **fetch door** (optional, and requiring storage): the same stored envelope can be retrieved later by `run_id` through the `trace` operation defined in this section.
+- the **inline door** (mandatory wherever `execute` is declared): the trace envelope rides the execute response, as defined in Sections 5.8 and 6.5;
+- the **fetch door** (optional, and requiring storage): the same stored envelope can be retrieved later by `run_id` through the `trace` operation defined in this section.
 
 One trace, two doors: it rides the execute response; if the run was stored, the same trace can be fetched later by `run_id`.
 
@@ -1908,8 +1908,8 @@ A duration is a durability commitment that survives Server restarts.
 
 A Server that cannot make that commitment MUST instead declare:
 
-* `"session"`; or
-* `"none"`.
+- `"session"`; or
+- `"none"`.
 
 Retention applies only to started Runs.
 
@@ -1925,10 +1925,10 @@ A Run executed with `store: true` MUST be retrievable within the scope of the de
 
 The following conditions MUST produce the same request error, of kind `not_found`:
 
-* unknown `run_id`;
-* expired Run;
-* non-retained Run;
-* unauthorized Run.
+- unknown `run_id`;
+- expired Run;
+- non-retained Run;
+- unauthorized Run.
 
 An unauthorized Run MUST be indistinguishable from a nonexistent Run.
 
@@ -1938,8 +1938,8 @@ By default, the fetch door returns deterministic recorded facts and no additiona
 
 When `trace_fetch.narrate` is declared:
 
-* the request MAY include a `question`;
-* the response MAY include Server-generated prose in `narration`.
+- the request MAY include a `question`;
+- the response MAY include Server-generated prose in `narration`.
 
 The facts (the trace envelope) are the contract. Narration is optional interpretation and has the trust status defined in Section 9.
 
@@ -1996,10 +1996,10 @@ Steps 1 through 8 are a per-Run obligation for a conformant Client. Step 9 is OP
 
 A Client MAY skip validation only when:
 
-* it previously validated the same program;
-* the program is unchanged;
-* it supplies the `catalog_version` from that validation as `expected_catalog_version`;
-* the Host uses the plan returned by the prior validation.
+- it previously validated the same program;
+- the program is unchanged;
+- it supplies the `catalog_version` from that validation as `expected_catalog_version`;
+- the Host uses the plan returned by the prior validation.
 
 A conformant Client MUST NOT request `trace_level: "none"` for a program that has not already been verified through this loop.
 
@@ -2027,8 +2027,8 @@ The Model MUST NOT be responsible for enforcing it.
 
 In this section, **approval** means authorization obtained outside the Model, such as:
 
-* explicit human confirmation;
-* a previously established Host policy.
+- explicit human confirmation;
+- a previously established Host policy.
 
 #### Inline program with a plan
 
@@ -2076,9 +2076,9 @@ It MUST NOT be treated as evidence that the program is safe.
 
 Approval context MUST state that:
 
-* plan descriptions;
-* entry descriptions;
-* risk labels
+- plan descriptions;
+- entry descriptions;
+- risk labels
 
 are unverified Server claims.
 
@@ -2092,9 +2092,9 @@ For a promoted-program Run, standard loop steps 2 through 5 are replaced by a ca
 
 The Client retrieves:
 
-* `input_schema`;
-* `risk_hints`;
-* current `catalog_version`.
+- `input_schema`;
+- `risk_hints`;
+- current `catalog_version`.
 
 The Host applies the promoted-program risk gate.
 
@@ -2133,8 +2133,8 @@ The promoted program must be promoted again, producing a new reference and basel
 
 The Client SHOULD:
 
-* surface the condition to its operator; or
-* fall back to inline authoring.
+- surface the condition to its operator; or
+- fall back to inline authoring.
 
 #### Execute-time `validation_error`
 
@@ -2159,8 +2159,8 @@ Invalidity is a result, not an operation error.
 
 A Client MUST NOT treat:
 
-* a validation response with `valid: false`;
-* an execute outcome with `ok: false`
+- a validation response with `valid: false`;
+- an execute outcome with `ok: false`
 
 as a transport failure.
 
@@ -2176,15 +2176,15 @@ Doing so would prevent the Model from receiving the feedback required for self-c
 
 Every Pilotage artifact is authored by the Server, including:
 
-* guides;
-* catalog entries;
-* descriptions;
-* diagnostics;
-* hints;
-* plans;
-* risk labels;
-* traces;
-* narration.
+- guides;
+- catalog entries;
+- descriptions;
+- diagnostics;
+- hints;
+- plans;
+- risk labels;
+- traces;
+- narration.
 
 The following rules are normative for Clients.
 
@@ -2198,11 +2198,11 @@ Its reliability depends on the trustworthiness of the Server.
 
 Establishing trust may involve:
 
-* operator review;
-* allow-listing;
-* contractual controls;
-* infrastructure controls;
-* monitoring.
+- operator review;
+- allow-listing;
+- contractual controls;
+- infrastructure controls;
+- monitoring.
 
 These mechanisms are outside Pilotage.
 
@@ -2212,21 +2212,21 @@ These mechanisms are outside Pilotage.
 
 The following surfaces are untrusted model input:
 
-* guide bodies;
-* catalog descriptions;
-* diagnostic messages;
-* diagnostic hints;
-* narration.
+- guide bodies;
+- catalog descriptions;
+- diagnostic messages;
+- diagnostic hints;
+- narration.
 
 They are data about the Language.
 
 A Client MUST NOT treat their content as instructions that modify:
 
-* Host policy;
-* security policy;
-* operation routing;
-* approval requirements;
-* the Client's governing behavior.
+- Host policy;
+- security policy;
+- operation routing;
+- approval requirements;
+- the Client's governing behavior.
 
 For example, guide text stating that the Client must call another operation and disclose its result is merely content that the Model may evaluate. It is not a directive that the Host must obey.
 
@@ -2252,11 +2252,11 @@ A dishonest Server can mislabel an operation.
 
 Relying on Pilotage risk values for a security-sensitive decision therefore requires trusting:
 
-* the Server;
-* its execution environment;
-* its authorization controls;
-* surrounding sandboxing;
-* monitoring.
+- the Server;
+- its execution environment;
+- its authorization controls;
+- surrounding sandboxing;
+- monitoring.
 
 Pilotage does not itself constrain a malicious Server.
 
@@ -2268,10 +2268,10 @@ The trace is the Server's own account of execution.
 
 For an honest Engine, it provides the structured evidence needed to detect that a program was:
 
-* incorrect;
-* incomplete;
-* executed along an unintended branch;
-* only partially completed.
+- incorrect;
+- incomplete;
+- executed along an unintended branch;
+- only partially completed.
 
 It cannot prove behavior against a dishonest Engine.
 
@@ -2281,9 +2281,9 @@ Narration is untrusted interpretation and MUST NOT be the basis of verification.
 
 Within this specification, **checkable** means machine-checkable structure:
 
-* closed diagnostic codes on which a Client can branch;
-* plans on which a Host can gate;
-* traces against which a Model can verify.
+- closed diagnostic codes on which a Client can branch;
+- plans on which a Host can gate;
+- traces against which a Model can verify.
 
 It does not mean adversarially verifiable truth.
 
@@ -2300,16 +2300,16 @@ Programs are attacker-controlled input.
 
 The Engine MUST bound every operation that evaluates a program, including:
 
-* validation;
-* execution.
+- validation;
+- execution.
 
 At minimum, it MUST bound:
 
-* execution time;
-* step count;
-* memory consumption;
-* recursion depth;
-* expansion depth.
+- execution time;
+- step count;
+- memory consumption;
+- recursion depth;
+- expansion depth.
 
 Validation must also be bounded because it is side-effect-free and repeatable and may otherwise become an unmetered denial-of-service surface.
 
@@ -2317,8 +2317,8 @@ When a resource bound is exceeded during execution, the Server returns an outcom
 
 It MAY use:
 
-* reserved status `partial`; or
-* an engine-defined failure status whose side-effect implications are documented.
+- reserved status `partial`; or
+- an engine-defined failure status whose side-effect implications are documented.
 
 When a resource bound is exceeded during validation, the Server returns a request error.
 
@@ -2330,9 +2330,9 @@ The Engine MUST evaluate a program only within the declared closed Language.
 
 It MUST NOT:
 
-* reflect program content into an unrestricted general-purpose interpreter;
-* use string evaluation for embedded content;
-* invoke a capability not defined by the Language.
+- reflect program content into an unrestricted general-purpose interpreter;
+- use string evaluation for embedded content;
+- invoke a capability not defined by the Language.
 
 ---
 
@@ -2358,10 +2358,10 @@ Validation and discovery feedback MUST NOT leak unauthorized information.
 
 The following MUST be calculated within the caller's authorization scope:
 
-* diagnostics;
-* hints;
-* catalog responses;
-* `catalog_version`.
+- diagnostics;
+- hints;
+- catalog responses;
+- `catalog_version`.
 
 An unauthorized name or Run MUST be indistinguishable from a nonexistent one.
 
@@ -2395,10 +2395,10 @@ This declaration is required because promoter authority creates a confused-deput
 
 Together, the promoted-program requirements ensure that:
 
-* the program body cannot change silently;
-* the promoted entry cannot claim lower risk than its body;
-* referenced catalog changes are detected;
-* the program cannot use authority unavailable to the caller unless the Server explicitly declares promoter authority.
+- the program body cannot change silently;
+- the promoted entry cannot claim lower risk than its body;
+- referenced catalog changes are detected;
+- the program cannot use authority unavailable to the caller unless the Server explicitly declares promoter authority.
 
 ---
 
@@ -2426,9 +2426,9 @@ Minor versions are strictly additive.
 
 They may add:
 
-* OPTIONAL fields;
-* sub-features;
-* reserved values.
+- OPTIONAL fields;
+- sub-features;
+- reserved values.
 
 The unknown-member and unknown-value rules allow an earlier minor Client to interact safely with a later minor Server.
 
@@ -2482,71 +2482,71 @@ For each Language:
 2. **Capabilities**
    The effective capability map satisfies:
 
-   * the minimum floor;
-   * catalog obligation;
-   * dependency rules;
-   * trace obligation;
-   * retention obligation.
+   - the minimum floor;
+   - catalog obligation;
+   - dependency rules;
+   - trace obligation;
+   - retention obligation.
 
 3. **Guides**
    The Language provides:
 
-   * at least one core guide;
-   * exactly one closed-sets guide;
-   * every enumeration required by the declared capabilities.
+   - at least one core guide;
+   - exactly one closed-sets guide;
+   - every enumeration required by the declared capabilities.
 
 4. **Catalog**
    Where `catalog` is declared, catalog behavior satisfies:
 
-   * catalog entry requirements;
-   * authorization-scoped `catalog_version`;
-   * pagination;
-   * lookup semantics;
-   * promotion requirements where promoted programs exist.
+   - catalog entry requirements;
+   - authorization-scoped `catalog_version`;
+   - pagination;
+   - lookup semantics;
+   - promotion requirements where promoted programs exist.
 
 5. **Validation**
    The validator satisfies:
 
-   * side-effect freedom;
-   * closed diagnostic codes;
-   * reserved diagnostic codes;
-   * the declared locator dialect;
-   * the validity rule;
-   * context handling;
-   * Server-provided reference handling where required.
+   - side-effect freedom;
+   - closed diagnostic codes;
+   - reserved diagnostic codes;
+   - the declared locator dialect;
+   - the validity rule;
+   - context handling;
+   - Server-provided reference handling where required.
 
 6. **Planning**
    Where `plan` is declared:
 
-   * plan derivation includes control-flow constructs;
-   * branch-arm and loop-body steps are marked;
-   * risk hints are correctly aggregated;
-   * deploy-mode plans describe the body;
-   * plan–trace correspondence is enforced.
+   - plan derivation includes control-flow constructs;
+   - branch-arm and loop-body steps are marked;
+   - risk hints are correctly aggregated;
+   - deploy-mode plans describe the body;
+   - plan–trace correspondence is enforced.
 
 7. **Execution**
    Where `execute` is declared:
 
-   * reserved statuses are used correctly;
-   * engine-defined statuses are enumerated;
-   * trace levels and identity rules are followed;
-   * execute processing order is followed;
-   * inline programs are revalidated;
-   * promoted-program baselines are checked;
-   * supplied drift tokens are honored;
-   * explicit `store` values are honored, including rejection of `store: true` under retention `"none"`;
-   * execution remains within the validated program;
-   * input and context binding rules are enforced;
-   * execution mode semantics are followed;
-   * idempotency rules are followed where declared;
-   * partial failures return the required trace.
+   - reserved statuses are used correctly;
+   - engine-defined statuses are enumerated;
+   - trace levels and identity rules are followed;
+   - execute processing order is followed;
+   - inline programs are revalidated;
+   - promoted-program baselines are checked;
+   - supplied drift tokens are honored;
+   - explicit `store` values are honored, including rejection of `store: true` under retention `"none"`;
+   - execution remains within the validated program;
+   - input and context binding rules are enforced;
+   - execution mode semantics are followed;
+   - idempotency rules are followed where declared;
+   - partial failures return the required trace.
 
 8. **Trace fetch**
    Where `trace_fetch` is declared:
 
-   * retention matches the manifest;
-   * only eligible Runs are retrievable;
-   * unauthorized and nonexistent Runs are indistinguishable.
+   - retention matches the manifest;
+   - only eligible Runs are retrievable;
+   - unauthorized and nonexistent Runs are indistinguishable.
 
 9. **Security**
    The Server satisfies every requirement in Section 10. These are conformance requirements, not recommendations.
@@ -2566,12 +2566,12 @@ A Client is conformant only when it satisfies all of the following requirements.
 2. **Standard loop**
    It implements the per-Run loop in Section 7, including:
 
-   * the limited revalidation exception;
-   * convergence duties;
-   * the Host-enforced risk gate exactly as specified for all cases in
+   - the limited revalidation exception;
+   - convergence duties;
+   - the Host-enforced risk gate exactly as specified for all cases in
      Section 7.3;
-   * promoted-program handling;
-   * drift recovery.
+   - promoted-program handling;
+   - drift recovery.
 
 3. **Error routing**
    It treats diagnostics and outcomes as values rather than transport failures.
@@ -2582,9 +2582,9 @@ A Client is conformant only when it satisfies all of the following requirements.
 5. **Forward compatibility**
    It:
 
-   * ignores unknown members;
-   * applies conservative unknown-value fallbacks;
-   * follows the versioning rules.
+   - ignores unknown members;
+   - applies conservative unknown-value fallbacks;
+   - follows the versioning rules.
 
 The Client is assessed as a unit consisting of the Host and Model.
 
@@ -2596,14 +2596,15 @@ A Client is not conformant when a required Host responsibility, particularly the
 
 Every requirement in this Part is intended to be testable through observable behavior, including:
 
-* returned structures;
-* diagnostic and outcome values;
-* operation refusals;
-* trace contents;
-* absence of side effects;
-* authorization indistinguishability;
-* drift handling.
+- returned structures;
+- diagnostic and outcome values;
+- operation refusals;
+- trace contents;
+- absence of side effects;
+- authorization indistinguishability;
+- drift handling.
 
-A conformance test suite that enumerates these requirements is planned work.
+A conformance test suite that enumerates these requirements is published
+alongside this specification.
 
 It is not part of this specification.

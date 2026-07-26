@@ -4,10 +4,18 @@ title: "Pilotage: an MCP extension for guided program authoring and verified exe
 authors:
   - family-names: "Alaboosi"
     given-names: "Jaafar Nadher Jaafar"
-version: 1.1.0
-date-released: 2026-07-19
+version: 1.1.1
+date-released: 2026-07-26
 doi: 10.5281/zenodo.21396027
-url: "https://github.com/jafarsa0/pilotage"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21396027
+    description: "Concept DOI; always resolves to the latest version"
+  - type: doi
+    value: 10.5281/zenodo.21591184
+    description: "Version DOI for v1.1.0"
+url: "https://pilotagespec.org"
+repository-code: "https://github.com/jafarsa0/pilotage"
 license: CC-BY-4.0
 keywords:
   - Model Context Protocol
@@ -26,7 +34,7 @@ abstract: >-
   programs before execution (side-effect-free validation with closed
   diagnostic codes and risk-annotated plans), and verify afterwards what
   actually ran (execution traces with branch decisions), through one
-  standard client loop. Version 1.1.0 comprises a four-part specification
+  standard client loop. Version 1.1.1 comprises a four-part specification
   (story and positioning; the normative abstract model; the normative MCP
   binding; implementation notes), JSON Schemas for every data shape, and
   engine-neutral conformance test vectors.

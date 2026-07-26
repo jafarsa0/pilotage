@@ -1,4 +1,6 @@
-# Pilotage
+# Part I: Story and Positioning
+
+**Status: Informative**
 
 **A competence layer for complex MCP tools**
 

@@ -1,6 +1,6 @@
 {
   "name": "pilotage-conformance",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "Runs the Pilotage 1.1 conformance vectors against a live Server over the MCP binding.",
   "type": "module",

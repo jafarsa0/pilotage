@@ -11,13 +11,13 @@
 > run id if the run was stored. The loop: manifest → guides → catalog →
 > validate + plan → execute → trace, with the agent at the center. Governing
 > rule: standardize the loop, not the language. Extension id: io.github.jafarsa0/pilotage.
-> Spec v1.1 · text CC BY 4.0, schemas/vectors Apache-2.0 · DOI 10.5281/zenodo.21396027.
+> Spec v1.1 · text CC BY 4.0, schemas/vectors/tooling Apache-2.0 · DOI 10.5281/zenodo.21396027.
 
 ## Specification
 
 - [Spec index](https://pilotagespec.org/SPEC.md): entry point and part map
 - [Part I: Story and positioning](https://pilotagespec.org/spec/part-i-story-and-positioning.md): the three problems, the missing layer, related work, why this belongs in MCP
-- [Part II: Abstract model](https://pilotagespec.org/spec/part-ii-abstract-model.md): the normative core (actors, capability declarations, the seven shapes, reserved statuses/codes, trace identity, processing order, trust model)
+- [Part II: Abstract model](https://pilotagespec.org/spec/part-ii-abstract-model.md): the normative core (actors, capability declarations, the eight shapes, reserved statuses/codes, trace identity, processing order, trust model)
 - [Part III: MCP binding](https://pilotagespec.org/spec/part-iii-mcp-binding.md): the manifest tool, loop tools, reserved argument names, error routing, session binding
 - [Part IV: Implementation notes](https://pilotagespec.org/spec/part-iv-implementation-notes.md): native vs adapted engines, the both-polarity test method, the completeness gate
 
@@ -35,7 +35,12 @@
 ## Try it live
 
 - Example server endpoint (MCP over HTTP, per-session isolated): POST https://harborview.pilotagespec.org/mcp
-- [Harborview source](https://github.com/jafarsa0/harborview): the reference implementation, a simulated smart building speaking buildingflow/1, Apache-2.0
+- [Harborview source](https://github.com/jafarsa0/harborview): the public example server, a simulated smart building speaking buildingflow/1, Apache-2.0
+
+## Proof (recorded experiment)
+
+- [Proof kit and results](https://github.com/jafarsa0/pilotage/blob/main/proof/README.md): a recorded experiment, run twice: models from three providers complete real work in buildingflow/1, a language in no training data; raw unedited transcripts, a neutral exam, a fact-checking grader
+- [Rendered proof page](https://pilotagespec.org/proof.html): the same experiment presented on the website
 
 ## Governance
 

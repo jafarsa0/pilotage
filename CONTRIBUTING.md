@@ -1,7 +1,8 @@
 # Contributing
 
 Pilotage is an openly published specification with a single maintainer.
-Contributions are welcome and handled in public.
+Contributions are welcome and handled in public. All participation is
+covered by the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## How to propose a change
 
@@ -26,8 +27,11 @@ Contributions are welcome and handled in public.
   Parts II–III, with a citation.
 - New wire-visible values (statuses, codes, kinds, enum members) follow the
   reserved-value rules of Part II §1.3 and §11.
-- Examples must validate against `schemas/`: run the schema suite before
-  submitting.
+- Examples must validate against the shapes in
+  [`schemas/1.1/pilotage.schema.json`](./schemas/1.1/pilotage.schema.json):
+  check each example against its `$defs` entry with any JSON Schema
+  2020-12 validator (for example `ajv`; `conformance/harness/harness.mjs`
+  shows the exact ajv setup it uses for live results).
 
 ## Decision making
 
@@ -40,4 +44,4 @@ extension's evolution.
 
 By contributing you agree that your contributions are licensed under the
 repository's licenses: CC BY 4.0 for specification text, Apache-2.0 for
-schemas and conformance artifacts.
+schemas, conformance artifacts, and repository tooling.

@@ -2,7 +2,7 @@ name: docs-replay
 
 # Docs that execute: replay every documented request and every conformance
 # vector against the LIVE example server, on each push and once a week. A
-# guide that drifts from the server — or a server that drifts from the spec —
+# guide that drifts from the server, or a server that drifts from the spec,
 # fails the build. This is what makes "replayed in CI" a fact, not a promise.
 
 on:
@@ -10,7 +10,7 @@ on:
     branches: [main]
   pull_request:
   schedule:
-    - cron: "0 6 * * 1" # Mondays 06:00 UTC — catch server drift even with no doc change
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC: catch server drift even with no doc change
   workflow_dispatch:
 
 jobs:

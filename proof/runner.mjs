@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * The minimal agent. This file is the ENTIRE agent — published so anyone
+ * The minimal agent. This file is the ENTIRE agent, published so anyone
  * can verify there is nothing else: no hidden prompt, no coaching, no
  * scaffolding. The model receives exactly three things:
  *
  *   1. a one-paragraph system prompt (SYSTEM below, printed verbatim into
  *      the transcript);
  *   2. the server's own self-description and tool list, fetched live over
- *      MCP — the same surfaces any MCP host shows any model;
+ *      MCP (the same surfaces any MCP host shows any model);
  *   3. the work order (exam.md).
  *
  * Everything the model says, every tool call it makes, and every byte the
@@ -16,7 +16,7 @@
  * Usage:
  *   node runner.mjs --provider anthropic --model claude-sonnet-5
  *   node runner.mjs --provider openai    --model gpt-5.4-mini
- *   node runner.mjs --provider gemini    --model gemini-2.5-flash
+ *   node runner.mjs --provider gemini    --model gemini-flash-latest
  *   [--endpoint URL] [--exam exam.md] [--out transcripts] [--max-calls 80]
  *
  * Keys come from ANTHROPIC_API_KEY / OPENAI_API_KEY / GEMINI_API_KEY in

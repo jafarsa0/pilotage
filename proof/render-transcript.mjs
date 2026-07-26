@@ -2,7 +2,7 @@
 /**
  * Render a raw run transcript (JSONL) into a readable markdown page.
  *
- * The rendering is mechanical: nothing is added, removed, or reworded —
+ * The rendering is mechanical: nothing is added, removed, or reworded;
  * the JSONL file remains the authority, and this script is published so
  * the mapping can be audited. Long tool results are truncated for
  * readability with an explicit marker showing how many characters the raw

@@ -4,20 +4,22 @@ Last updated: 2026-07. The items here are intentions, not commitments.
 
 ## Near term
 
-- **Runnable conformance harness** over `conformance/vectors.json`, so a
-  Server implementation can be checked mechanically rather than by reading.
-- **Public example server**: a minimal open-source implementation over a
-  toy closed language, exercising the full loop end to end; the artifact
-  the MCP Extensions Track expects before review.
-- **Illustrated overview page** updated to the 1.1 four-part structure.
+- **MCP Extensions Track (SEP) submission preparation**: assemble and
+  polish the submission materials for the community-extension process.
+- **In-browser playground**: walk the loop against Harborview from the
+  browser, with no client setup required.
+- **Implementers guide**: a build-a-server walkthrough, from an empty
+  repository to passing the conformance harness.
 
 ## Standardization track
 
 - Submit Pilotage to the **MCP SEP Extensions Track** as a community
   extension, positioned as the checkable complement to prose guidance
-  (skills, server instructions). Prerequisites: the example server above
-  and a reference implementation in an official SDK, per the extensions
-  framework's requirements.
+  (skills, server instructions). Prerequisites: a public example server
+  (delivered: Harborview, live at
+  `POST https://harborview.pilotagespec.org/mcp`) and a reference
+  implementation in an official SDK, per the extensions framework's
+  requirements.
 
 ## Specification (1.2 candidates)
 
