@@ -30,9 +30,6 @@ manifest → guides → catalog → validate + plan → execute → trace
 
 The agent sits at the center, deciding what to call and when.
 
-**MCP addressed N×M connectivity. Pilotage addresses the N×M competence
-problem that appears after the connection is established.**
-
 ## Start here
 
 - **[SPEC.md](./SPEC.md)**: the specification index (four parts: story,
