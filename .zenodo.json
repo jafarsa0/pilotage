@@ -1,21 +1,29 @@
 {
   "title": "Pilotage: an MCP extension for guided program authoring and verified execution",
-  "description": "<p>Pilotage is an extension profile over the Model Context Protocol (MCP) that lets AI agents safely author and execute programs — SQL, automation rules, workflow documents — against any live system. It standardizes a small set of pieces expressed with MCP's own primitives: a manifest, navigable guides (the grammar), a versioned catalog (the live world), a mandatory side-effect-free validate verb returning structured diagnostics plus a pre-run plan with per-step risk, execution traces carrying per-step inputs, outputs and branch decisions, and one standard client loop. Governing rule: standardize the loop, not the language.</p>",
+  "version": "1.1.0",
+  "upload_type": "publication",
+  "publication_type": "technicalnote",
   "creators": [
     {
       "name": "Alaboosi, Jaafar Nadher Jaafar"
     }
   ],
-  "upload_type": "software",
-  "license": "CC-BY-4.0",
+  "license": "cc-by-4.0",
   "keywords": [
-    "MCP",
     "Model Context Protocol",
+    "MCP extension",
     "AI agents",
-    "agent guidance",
-    "program synthesis",
+    "program authoring",
     "validation",
-    "execution trace",
-    "MCP extension"
-  ]
+    "execution traces",
+    "agent safety"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/jafarsa0/pilotage",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "description": "Pilotage is an extension of the Model Context Protocol (MCP) for tools whose arguments are programs: queries, workflows, automation rules. It standardizes the checkable competence layer a server publishes so any compatible agent can learn the payload language (navigable guides), discover the live environment (a versioned catalog), check candidate programs before execution (side-effect-free validation with closed diagnostic codes and risk-annotated plans), and verify afterwards what actually ran (execution traces with branch decisions), through one standard client loop. Version 1.1.0 comprises a four-part specification (story and positioning; the normative abstract model; the normative MCP binding; implementation notes), JSON Schemas for every data shape, and engine-neutral conformance test vectors. Note: the schemas/ and conformance/ directories are licensed Apache-2.0; the record license covers the specification text."
 }

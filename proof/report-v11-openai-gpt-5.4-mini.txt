@@ -1,0 +1,7 @@
+PASS  every light is on  : light.lobby, light.floor2_east, light.floor2_west
+PASS  dock door is unlocked
+FAIL  automation installed on sensor.door_dock.opened  : deployed: []
+SKIP  alarm stays silent before 21:00  : no automation to test
+FAIL  after-hours dock opening notifies facilities  : no automation installed
+
+report card: 2 passed, 2 failed, 1 skipped

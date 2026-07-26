@@ -1,0 +1,734 @@
+{
+  "pilotage": "1.1",
+  "title": "Pilotage 1.1 conformance test vectors",
+  "description": "Engine-neutral, machine-readable test vectors keyed to the requirements of Parts II and III. Each vector states a setup (precondition, prose, engine-neutral), an action (an abstract Pilotage operation request), and expected assertions. Vectors are specifications of tests: a harness binds them to a concrete Server (via the MCP binding of Part III) or evaluates them against a Client implementation. Polarity: 'good' = accepted / behaves correctly; 'bad' = rejected correctly, as a value, never a crash. Reachability: a vector applies only when its 'requires' capabilities are declared by the Language under test.",
+  "schema_ref": "../schemas/1.1/pilotage.schema.json",
+  "count": 54,
+  "vectors": [
+    {
+      "id": "PIL-DISCOVER-MANIFEST-G",
+      "requirement": "Part II 6.1; Part III 3.1",
+      "target": "server",
+      "polarity": "good",
+      "requires": [],
+      "setup": "Any conformant Server.",
+      "action": { "operation": "discover" },
+      "expected": {
+        "structuredContent_validates": "Manifest",
+        "assertions": [
+          "manifest.languages is non-empty",
+          "every Language entry's loop names exist in tools/list",
+          "loop membership matches the effective capability map (validate always; execute iff declared; trace iff trace_fetch declared)",
+          "guides field equals 'pilotage_get_guide'; catalog field equals 'pilotage_catalog' iff catalog declared",
+          "no side effects observable"
+        ]
+      }
+    },
+    {
+      "id": "PIL-DISCOVER-INITMETA-G",
+      "requirement": "Part III 3.2, 3.3",
+      "target": "server",
+      "polarity": "good",
+      "requires": [],
+      "setup": "A handshake MCP revision (initialize present). Part III 3.2 makes the accelerator a MAY: a Server that does not attach it is skipped, not failed.",
+      "action": { "operation": "initialize" },
+      "expected": {
+        "assertions": [
+          "when the initialize result carries _meta['io.github.jafarsa0/pilotage'], that object holds manifest and/or manifest_uri",
+          "an inline manifest validates as a Manifest",
+          "the inline manifest is consistent with the pilotage_manifest result; where they differ, the tool's result is authoritative (it is newer)"
+        ]
+      }
+    },
+    {
+      "id": "PIL-COLDSTART-SIGNPOSTS-G",
+      "requirement": "Part III 3.4",
+      "target": "server",
+      "polarity": "good",
+      "requires": [],
+      "setup": "Any conformant Server, approached with no client-side instructions and no prior knowledge: only the connection and the surfaces MCP always shows.",
+      "action": { "operation": "cold_start" },
+      "expected": {
+        "assertions": [
+          "on a revision with initialize, whenever the Pilotage tools are exposed to the Client, the instructions field names Pilotage (identifier or the word) and directs the agent to call pilotage_manifest first",
+          "the pilotage_manifest tool description identifies it as the starting point, sufficient for an agent reading tools/list alone",
+          "the pilotage_get_guide description states the learn stage (guides); the pilotage_catalog description states the lookup stage (catalog) when any Language declares catalog",
+          "each declared loop tool description states its stage (validate, execute, or trace) and names its Language(s)",
+          "the rules constrain communicated content, never wording"
+        ]
+      }
+    },
+    {
+      "id": "PIL-LEARN-INDEX-G",
+      "requirement": "Part II 6.2; Part III 4.1",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["guides"],
+      "setup": "Language with at least one core guide and the closed-sets guide.",
+      "action": { "operation": "learn", "arguments": { "language": "<lang>" } },
+      "expected": {
+        "structuredContent_validates": "GuideIndexResult",
+        "assertions": [
+          "no guide carries a body member",
+          "at least one guide has level 'core'",
+          "exactly one guide's topics contains 'closed-sets', with level 'reference'"
+        ]
+      }
+    },
+    {
+      "id": "PIL-LEARN-FETCH-G",
+      "requirement": "Part II 6.2; Part III 4.1",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["guides"],
+      "setup": "A known guide id from the index.",
+      "action": { "operation": "learn", "arguments": { "language": "<lang>", "id": "<guide-id>" } },
+      "expected": {
+        "structuredContent_validates": "GuideFetchResult",
+        "assertions": ["guide.body is a string in the declared format"]
+      }
+    },
+    {
+      "id": "PIL-LEARN-UNKNOWN-ID-B",
+      "requirement": "Part II 6.2; Part III 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["guides"],
+      "setup": "A guide id that does not exist.",
+      "action": { "operation": "learn", "arguments": { "language": "<lang>", "id": "no-such-guide" } },
+      "expected": { "isError": true, "structuredContent_validates": "RequestError", "error_kind": "not_found" }
+    },
+    {
+      "id": "PIL-LEARN-TOPIC-UNDECLARED-B",
+      "requirement": "Part III 4.1, 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["guides"],
+      "setup": "Language whose guides capability does NOT declare topic_fetch.",
+      "action": { "operation": "learn", "arguments": { "language": "<lang>", "id": "<guide-id>", "topic": "<topic>" } },
+      "expected": { "isError": true, "structuredContent_validates": "RequestError", "error_kind": "invalid_request" }
+    },
+    {
+      "id": "PIL-LOOKUP-LIST-G",
+      "requirement": "Part II 6.3; Part III 4.2",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["catalog"],
+      "setup": "Catalog with at least one entry.",
+      "action": { "operation": "lookup", "arguments": { "language": "<lang>", "verb": "list" } },
+      "expected": {
+        "structuredContent_validates": "CatalogListResult",
+        "assertions": ["catalog_version present", "every entry carries risk and risk_hints"]
+      }
+    },
+    {
+      "id": "PIL-LOOKUP-PAGINATION-G",
+      "requirement": "Part II 6.3",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["catalog"],
+      "setup": "Catalog with more entries than the Server's page size (or a small explicit limit).",
+      "action": { "operation": "lookup", "arguments": { "language": "<lang>", "verb": "list", "limit": 1 } },
+      "expected": {
+        "assertions": [
+          "response carries next_cursor when more results remain",
+          "passing next_cursor back unchanged yields the next page",
+          "absence of next_cursor on the final page",
+          "the union of pages covers every visible entry exactly once"
+        ]
+      }
+    },
+    {
+      "id": "PIL-LOOKUP-GET-UNKNOWN-B",
+      "requirement": "Part II 6.3; Part III 7.2 (sibling rule)",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["catalog"],
+      "setup": "An entry id that does not exist.",
+      "action": { "operation": "lookup", "arguments": { "language": "<lang>", "verb": "get", "id": "no-such-entry" } },
+      "expected": {
+        "isError": true,
+        "structuredContent_validates": "RequestError",
+        "error_kind": "not_found",
+        "assertions": ["catalog_version present as sibling of error"]
+      }
+    },
+    {
+      "id": "PIL-LOOKUP-CHANGED-UNDECLARED-B",
+      "requirement": "Part III 4.2, 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["catalog"],
+      "setup": "Language whose catalog capability does NOT declare changed_since.",
+      "action": { "operation": "lookup", "arguments": { "language": "<lang>", "verb": "changed_since", "catalog_version": "<token>" } },
+      "expected": { "isError": true, "structuredContent_validates": "RequestError", "error_kind": "invalid_request" }
+    },
+    {
+      "id": "PIL-LOOKUP-UNKNOWN-BASELINE-B",
+      "requirement": "Part II 6.3; Part III 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["catalog.changed_since"],
+      "setup": "A baseline token the Server cannot compute a delta from.",
+      "action": { "operation": "lookup", "arguments": { "language": "<lang>", "verb": "changed_since", "catalog_version": "cv_unknown_baseline" } },
+      "expected": { "isError": true, "structuredContent_validates": "RequestError", "error_kind": "unknown_baseline" }
+    },
+    {
+      "id": "PIL-CATALOG-VERSION-STABLE-G",
+      "requirement": "Part II 5.4",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["catalog"],
+      "setup": "No catalog changes between two calls by the same caller.",
+      "action": { "operation": "lookup", "arguments": { "language": "<lang>", "verb": "list" }, "repeat": 2 },
+      "expected": { "assertions": ["both responses carry an identical catalog_version"] }
+    },
+    {
+      "id": "PIL-CATALOG-VERSION-BUMPS-G",
+      "requirement": "Part II 5.4",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["catalog"],
+      "setup": "Between two list calls, one visible entry's defined field (e.g. description) changes.",
+      "action": { "operation": "lookup", "arguments": { "language": "<lang>", "verb": "list" }, "repeat": 2 },
+      "expected": { "assertions": ["the second catalog_version differs from the first"] }
+    },
+    {
+      "id": "PIL-VALIDATE-GOOD-G",
+      "requirement": "Part II 6.4, 5.5",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["validate"],
+      "setup": "A program known to be valid at the current catalog.",
+      "action": { "operation": "validate", "arguments": { "program": "<valid-program>" } },
+      "expected": {
+        "structuredContent_validates": "ValidateResponse",
+        "isError": false,
+        "assertions": [
+          "valid is true",
+          "no error-severity diagnostics",
+          "plan present iff plan declared, validating against Plan",
+          "catalog_version present iff catalog declared"
+        ]
+      }
+    },
+    {
+      "id": "PIL-VALIDATE-UNKNOWN-NAME-B",
+      "requirement": "Part II 6.4, 5.5; Part III Section 6",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["validate", "catalog"],
+      "setup": "A program referencing a name not in the catalog.",
+      "action": { "operation": "validate", "arguments": { "program": "<program-with-unknown-name>" } },
+      "expected": {
+        "isError": false,
+        "structuredContent_validates": "ValidateResponse",
+        "assertions": [
+          "valid is false",
+          "at least one diagnostic whose code is a member of the closed-sets guide's enumeration",
+          "diagnostic path uses the declared locator dialect"
+        ]
+      }
+    },
+    {
+      "id": "PIL-VALIDATE-WARNINGS-ONLY-G",
+      "requirement": "Part II 5.5 (validity rule)",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["validate"],
+      "setup": "A program producing only warning-severity diagnostics.",
+      "action": { "operation": "validate", "arguments": { "program": "<warning-program>" } },
+      "expected": { "assertions": ["valid is true", "diagnostics non-empty, all severity 'warning'", "plan present iff plan declared"] }
+    },
+    {
+      "id": "PIL-VALIDATE-SIDE-EFFECT-FREE-G",
+      "requirement": "Part II 6.4 rule 1",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["validate"],
+      "setup": "Observable engine state captured before and after.",
+      "action": { "operation": "validate", "arguments": { "program": "<any-program>" }, "repeat": 3 },
+      "expected": { "assertions": ["no externally observable state change after any call", "no catalog entry was invoked"] }
+    },
+    {
+      "id": "PIL-VALIDATE-RESERVED-CHARS-B",
+      "requirement": "Part II 3.4",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["validate"],
+      "setup": "A program whose step identifier contains '#' or '/' (structured Languages with author-chosen ids).",
+      "action": { "operation": "validate", "arguments": { "program": "<program-with-reserved-char-id>" } },
+      "expected": { "isError": false, "assertions": ["valid is false", "a diagnostic reports the reserved-character violation"] }
+    },
+    {
+      "id": "PIL-VALIDATE-CONTEXT-UNDECLARED-B",
+      "requirement": "Part II 6.4 rule 2; Part III 4.4 rule 10",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["validate"],
+      "setup": "Language WITHOUT context_schema.",
+      "action": { "operation": "validate", "arguments": { "program": "<valid-program>", "context": { "any": "value" } } },
+      "expected": {
+        "isError": false,
+        "assertions": ["valid is false", "a diagnostic with reserved code 'context_binding'", "not a request error, not a carrier error"]
+      }
+    },
+    {
+      "id": "PIL-VALIDATE-CONTEXT-MISSING-B",
+      "requirement": "Part II 6.4 rule 2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["validate"],
+      "setup": "Language WITH a required context_schema; request omits context.",
+      "action": { "operation": "validate", "arguments": { "program": "<valid-program>" } },
+      "expected": { "isError": false, "assertions": ["valid is false", "a diagnostic with reserved code 'context_binding'"] }
+    },
+    {
+      "id": "PIL-EXECUTE-SUCCESS-G",
+      "requirement": "Part II 6.5; Part III Section 6",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["execute"],
+      "setup": "A valid program with known effects; current catalog_version supplied.",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "input": "<input>", "trace_level": "full", "expected_catalog_version": "<current-token>" } },
+      "expected": {
+        "isError": false,
+        "structuredContent_validates": "ExecuteResponse",
+        "assertions": [
+          "outcome is {ok:true, status:'success', error:null}",
+          "trace.level equals the effective level (min of requested and declared)",
+          "every trace step appears exactly once in execution order",
+          "every invoking trace step names its catalog entry in calls"
+        ]
+      }
+    },
+    {
+      "id": "PIL-EXECUTE-GUARD-B",
+      "requirement": "Part II 6.5.2 step 3",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "An invalid inline program submitted directly to execute, without a prior validate.",
+      "action": { "operation": "execute", "arguments": { "program": "<invalid-program>" } },
+      "expected": {
+        "isError": false,
+        "assertions": [
+          "outcome status is 'validation_error'",
+          "diagnostics present and non-empty",
+          "no side effects occurred",
+          "run_id present (a refused Run)"
+        ]
+      }
+    },
+    {
+      "id": "PIL-EXECUTE-DRIFT-B",
+      "requirement": "Part II 6.5.2 step 2, 6.5.3",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute", "catalog"],
+      "setup": "expected_catalog_version set to a stale token (catalog changed after validation).",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "expected_catalog_version": "<stale-token>" } },
+      "expected": { "isError": false, "assertions": ["outcome status is 'catalog_drift'", "no side effects occurred"] }
+    },
+    {
+      "id": "PIL-EXECUTE-DRIFT-BEFORE-VALIDATION-B",
+      "requirement": "Part II 6.5.2 (processing order)",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute", "catalog"],
+      "setup": "A stale token AND an invalid program in the same request.",
+      "action": { "operation": "execute", "arguments": { "program": "<invalid-program>", "expected_catalog_version": "<stale-token>" } },
+      "expected": { "assertions": ["outcome status is 'catalog_drift' (drift check precedes re-validation)"] }
+    },
+    {
+      "id": "PIL-EXECUTE-PROMOTION-DRIFT-B",
+      "requirement": "Part II 6.5.2 step 3, 5.4 rule 3",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "A promoted program whose referenced entry's load-bearing field changed after promotion.",
+      "action": { "operation": "execute", "arguments": { "program_ref": "<promoted-ref>", "input": "<input>" } },
+      "expected": { "isError": false, "assertions": ["outcome status is 'promotion_drift'", "no side effects occurred"] }
+    },
+    {
+      "id": "PIL-EXECUTE-BOTH-RUNNABLES-B",
+      "requirement": "Part II 6.5.1; Part III 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "Request carrying both an inline program and a program_ref.",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "program_ref": "<promoted-ref>" } },
+      "expected": { "isError": true, "structuredContent_validates": "RequestError", "error_kind": "invalid_request" }
+    },
+    {
+      "id": "PIL-EXECUTE-NO-RUNNABLE-B",
+      "requirement": "Part II 6.5.1; Part III 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "Request carrying neither runnable.",
+      "action": { "operation": "execute", "arguments": { "input": { "x": 1 } } },
+      "expected": { "isError": true, "structuredContent_validates": "RequestError", "error_kind": "invalid_request" }
+    },
+    {
+      "id": "PIL-EXECUTE-INPUT-BINDING-B",
+      "requirement": "Part II 6.5.5, 5.5",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "A promoted program; input violating the promoted entry's input_schema.",
+      "action": { "operation": "execute", "arguments": { "program_ref": "<promoted-ref>", "input": "<schema-violating-input>" } },
+      "expected": {
+        "isError": false,
+        "assertions": [
+          "outcome status is 'validation_error'",
+          "a diagnostic with reserved code 'input_binding' whose path points into the input value"
+        ]
+      }
+    },
+    {
+      "id": "PIL-EXECUTE-UNKNOWN-TRACE-LEVEL-B",
+      "requirement": "Part III 4.6, 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "trace_level set to an unrecognized value.",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "trace_level": "verbose" } },
+      "expected": { "isError": true, "structuredContent_validates": "RequestError", "error_kind": "invalid_request", "assertions": ["not a carrier (-32602) error"] }
+    },
+    {
+      "id": "PIL-EXECUTE-TEST-RUN-UNDECLARED-B",
+      "requirement": "Part III 6.5 request rules, 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "Language whose execute capability does NOT declare test_run.",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "test_run": true } },
+      "expected": { "isError": true, "structuredContent_validates": "RequestError", "error_kind": "invalid_request" }
+    },
+    {
+      "id": "PIL-EXECUTE-MODE-MISSING-B",
+      "requirement": "Part III 4.4 (mode)",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "Language with execution 'both'; request omits mode.",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>" } },
+      "expected": { "isError": true, "structuredContent_validates": "RequestError", "error_kind": "invalid_request" }
+    },
+    {
+      "id": "PIL-EXECUTE-IDEMPOTENT-REPLAY-G",
+      "requirement": "Part II 6.5.6",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["execute.idempotency"],
+      "setup": "Two identical execute requests with the same idempotency_key, same runnable, same input.",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "input": "<input>", "idempotency_key": "key-1" }, "repeat": 2 },
+      "expected": { "assertions": ["exactly one execution occurred", "both responses are identical, including run_id"] }
+    },
+    {
+      "id": "PIL-EXECUTE-IDEMPOTENT-CONFLICT-B",
+      "requirement": "Part II 6.5.6; Part III 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute.idempotency"],
+      "setup": "A second request reusing the same idempotency_key with different input.",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "input": "<different-input>", "idempotency_key": "key-1" } },
+      "expected": { "isError": true, "structuredContent_validates": "RequestError", "error_kind": "idempotency_conflict" }
+    },
+    {
+      "id": "PIL-TRACE-BRANCH-DECISION-G",
+      "requirement": "Part II 5.8.2, 5.8.4",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["execute", "plan"],
+      "setup": "A valid branching program where the taken arm is known.",
+      "action": { "operation": "execute", "arguments": { "program": "<branching-program>", "trace_level": "full" } },
+      "expected": {
+        "assertions": [
+          "the branch appears as its own trace entry with a decision whose took equals the plan's arm.label for the taken arm",
+          "plan steps of the untaken arm are absent from the trace",
+          "every expected-set member appears (matched on base identifier)"
+        ]
+      }
+    },
+    {
+      "id": "PIL-TRACE-ZERO-ITERATION-LOOP-G",
+      "requirement": "Part II 5.8.2 (activation rule), 5.8.4",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["execute"],
+      "setup": "A valid program whose loop condition is false on entry (zero iterations).",
+      "action": { "operation": "execute", "arguments": { "program": "<zero-iteration-loop-program>", "trace_level": "full" } },
+      "expected": {
+        "assertions": [
+          "the loop appears as one trace entry carrying a single 'exit' decision",
+          "no loop-body steps appear in the trace",
+          "outcome is success"
+        ]
+      }
+    },
+    {
+      "id": "PIL-TRACE-PARTIAL-B",
+      "requirement": "Part II 6.5.6 rule 2, 5.7",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "A valid program whose second step deterministically fails mid-run.",
+      "action": { "operation": "execute", "arguments": { "program": "<mid-run-failing-program>", "trace_level": "full" } },
+      "expected": {
+        "isError": false,
+        "assertions": [
+          "outcome ok is false with status 'partial' or a documented engine status",
+          "trace contains the executed prefix",
+          "every unprefixed trace entry maps to the expected set by base identifier"
+        ]
+      }
+    },
+    {
+      "id": "PIL-EXECUTE-TRACE-NONE-G",
+      "requirement": "Part II 5.8.1",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["execute"],
+      "setup": "A previously verified valid program.",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "trace_level": "none" } },
+      "expected": {
+        "assertions": [
+          "run_id and outcome are returned",
+          "no trace member in the response"
+        ]
+      }
+    },
+    {
+      "id": "PIL-EXECUTE-STORE-FALSE-G",
+      "requirement": "Part II 6.5 (store), 6.6",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["trace_fetch"],
+      "setup": "A previously verified valid program; Language declares trace_fetch.",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "store": false } },
+      "expected": {
+        "isError": false,
+        "assertions": [
+          "run_id is returned (it identifies the Run in-band even when the record is not stored)",
+          "a later trace fetch with this run_id yields the not_found request error (store false forbids retention beyond the response)"
+        ]
+      }
+    },
+    {
+      "id": "PIL-EXECUTE-STORE-RETAIN-G",
+      "requirement": "Part II 6.5 (store), 6.6",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["trace_fetch"],
+      "setup": "A previously verified valid program; Language declares trace_fetch.",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "store": true, "trace_level": "none" } },
+      "expected": {
+        "isError": false,
+        "assertions": [
+          "the request is valid: store and trace_level are independent controls over the same record",
+          "run_id and outcome are returned; no trace member in the response (trace_level 'none' suppresses only the inline envelope)",
+          "a later trace fetch with this run_id returns the stored envelope at the level the Engine recorded"
+        ]
+      }
+    },
+    {
+      "id": "PIL-EXECUTE-STORE-UNSUPPORTED-B",
+      "requirement": "Part II 6.5 (store); Part III 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "A Language whose declared retention value is 'none' (such a Language cannot declare trace_fetch).",
+      "action": { "operation": "execute", "arguments": { "program": "<valid-program>", "store": true } },
+      "expected": {
+        "isError": true,
+        "structuredContent_validates": "RequestError",
+        "error_kind": "unsupported",
+        "assertions": ["the field is rejected, never silently ignored"]
+      }
+    },
+    {
+      "id": "PIL-TRACE-FETCH-RETAINED-G",
+      "requirement": "Part II 6.6",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["trace_fetch"],
+      "setup": "A retained started Run executed at level summary or full, within the retention window.",
+      "action": { "operation": "trace_fetch", "arguments": { "run_id": "<retained-run-id>" } },
+      "expected": {
+        "structuredContent_validates": "TraceFetchResponse",
+        "assertions": [
+          "the fetched envelope is the stored record of the Run: the same trace that rode the execute response",
+          "trace.level equals the level at which the Run was recorded"
+        ]
+      }
+    },
+    {
+      "id": "PIL-TRACE-FETCH-LEVEL-G",
+      "requirement": "Part II 6.6 (level rule)",
+      "target": "server",
+      "polarity": "good",
+      "requires": ["trace_fetch"],
+      "setup": "A retained Run recorded at trace level 'full'.",
+      "action": { "operation": "trace_fetch", "arguments": { "run_id": "<retained-run-id>", "trace_level": "summary" } },
+      "expected": {
+        "structuredContent_validates": "TraceFetchResponse",
+        "assertions": [
+          "trace.level is 'summary': the returned level is the lower of the requested and recorded levels",
+          "the fetch door returns no more than was recorded"
+        ]
+      }
+    },
+    {
+      "id": "PIL-TRACE-FETCH-LEVEL-B",
+      "requirement": "Part II 6.6; Part III 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["trace_fetch"],
+      "setup": "Any retained run_id; the fetch request asks for trace_level 'none'.",
+      "action": { "operation": "trace_fetch", "arguments": { "run_id": "<retained-run-id>", "trace_level": "none" } },
+      "expected": {
+        "isError": true,
+        "structuredContent_validates": "RequestError",
+        "error_kind": "invalid_request",
+        "assertions": ["'none' is an execute-time value: it suppresses the inline envelope and has no meaning when asking for a stored record"]
+      }
+    },
+    {
+      "id": "PIL-TRACE-FETCH-INDISTINGUISHABLE-B",
+      "requirement": "Part II 6.6, 10.3; Part III 7.2 (whole-result rule)",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["trace_fetch"],
+      "setup": "Three run_ids: one nonexistent, one unstored (or refused), one belonging to another caller.",
+      "action": { "operation": "trace_fetch", "arguments": { "run_id": "<each-of-three>" }, "repeat": "once per id" },
+      "expected": {
+        "isError": true,
+        "error_kind": "not_found",
+        "assertions": ["all three results are byte-identical apart from transport framing: kind, message, content text, and structure do not distinguish the cases"]
+      }
+    },
+    {
+      "id": "PIL-AUTHZ-INVISIBLE-ENTRY-B",
+      "requirement": "Part II 6.3 (authorization scope), 10.3",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["catalog"],
+      "setup": "An entry that exists but is not visible to the requesting caller.",
+      "action": { "operation": "lookup", "arguments": { "language": "<lang>", "verb": "get", "id": "<invisible-entry-id>" } },
+      "expected": {
+        "isError": true,
+        "error_kind": "not_found",
+        "assertions": ["the result is indistinguishable from the nonexistent-entry result of PIL-LOOKUP-GET-UNKNOWN-B", "no diagnostic hint anywhere ever names this entry for this caller"]
+      }
+    },
+    {
+      "id": "PIL-EXECUTE-ENGINE-ERROR-B",
+      "requirement": "Part II 5.7 (reserved statuses)",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "A valid program whose execution fails for a reason the closed-sets guide covers with no more specific engine-defined status.",
+      "action": { "operation": "execute", "arguments": { "program": "<cleanly-failing-program>", "trace_level": "full" } },
+      "expected": {
+        "isError": false,
+        "assertions": [
+          "outcome ok is false with status 'error' (the reserved fallback)",
+          "outcome.error is a non-null string",
+          "not reported as a request error or carrier error"
+        ]
+      }
+    },
+    {
+      "id": "PIL-EXECUTE-INTERNAL-B",
+      "requirement": "Part III 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["execute"],
+      "setup": "A fault in the Server's own machinery during pre-execution processing (for example, an injected validator crash in a test build).",
+      "action": { "operation": "execute", "arguments": { "program": "<any-program>" } },
+      "expected": {
+        "isError": true,
+        "structuredContent_validates": "RequestError",
+        "error_kind": "internal",
+        "assertions": ["no side effects occurred", "not an unhandled transport fault"]
+      }
+    },
+    {
+      "id": "PIL-VALIDATE-BOUNDS-B",
+      "requirement": "Part II 10.1; Part III 7.2",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["validate"],
+      "setup": "A program engineered to exceed a validation resource bound (for example, pathological nesting or expansion depth).",
+      "action": { "operation": "validate", "arguments": { "program": "<pathological-program>" } },
+      "expected": {
+        "isError": true,
+        "structuredContent_validates": "RequestError",
+        "error_kind": "bounds_exceeded",
+        "assertions": ["the request terminates within the bound rather than hanging"]
+      }
+    },
+    {
+      "id": "PIL-VALIDATE-CONSTRAINT-FALLBACK-B",
+      "requirement": "Part II 5.5 (reserved codes)",
+      "target": "server",
+      "polarity": "bad",
+      "requires": ["validate"],
+      "setup": "Adapted-tier servers only: an invalid program whose validator message matches no classification rule. Native-tier servers assert instead that 'constraint' is enumerated in the closed-sets guide (membership is required even when unreachable).",
+      "action": { "operation": "validate", "arguments": { "program": "<unclassifiable-invalid-program>" } },
+      "expected": {
+        "isError": false,
+        "assertions": ["valid is false", "the diagnostic code is 'constraint', never a value outside the enumerated set"]
+      }
+    },
+    {
+      "id": "PIL-CARRIER-UNKNOWN-TOOL-B",
+      "requirement": "Part III 7.1",
+      "target": "server",
+      "polarity": "bad",
+      "requires": [],
+      "setup": "tools/call naming a tool that does not exist.",
+      "action": { "operation": "raw_tools_call", "arguments": { "name": "no_such_tool" } },
+      "expected": { "jsonrpc_error": -32602 }
+    },
+    {
+      "id": "PIL-CARRIER-MALFORMED-B",
+      "requirement": "Part III 7.1",
+      "target": "server",
+      "polarity": "bad",
+      "requires": [],
+      "setup": "A syntactically invalid JSON request body.",
+      "action": { "operation": "raw_body", "body": "{ not json" },
+      "expected": { "jsonrpc_error": -32700 }
+    },
+    {
+      "id": "PIL-CLIENT-GATE-DESTRUCTIVE-B",
+      "requirement": "Part II 7.3",
+      "target": "client",
+      "polarity": "bad",
+      "requires": [],
+      "setup": "A plan whose max_risk_hints has destructive true; no approval granted.",
+      "action": { "scenario": "Model requests execute for the planned program" },
+      "expected": { "assertions": ["the Host does not transmit the execute request", "approval is requested outside the Model"] }
+    },
+    {
+      "id": "PIL-CLIENT-VALUES-NOT-FAILURES-G",
+      "requirement": "Part II Section 8; Part III 7.1",
+      "target": "client",
+      "polarity": "good",
+      "requires": [],
+      "setup": "Server returns valid:false, then ok:false outcomes.",
+      "action": { "scenario": "Client receives diagnostics and failed outcomes" },
+      "expected": {
+        "assertions": [
+          "no transport-level retry is triggered",
+          "the loop continues (revision or drift recovery), not abandoned",
+          "an unrecognized ok:false status is treated as 'partial'",
+          "an unrecognized request-error kind is treated as 'internal'"
+        ]
+      }
+    }
+  ]
+}

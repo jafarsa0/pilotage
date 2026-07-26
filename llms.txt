@@ -1,0 +1,43 @@
+# Pilotage
+
+> Pilotage is an open extension of the Model Context Protocol (MCP) for guided
+> program authoring and verified execution. Where MCP lets an agent call tools,
+> Pilotage lets it safely author and run whole programs (SQL, automation rules,
+> workflow documents) against any live system: the server publishes a manifest
+> (read at the handshake), guides (the language's grammar), a versioned catalog
+> (the live vocabulary), side-effect-free validation with closed diagnostic codes,
+> a pre-run plan with per-step risk, and an execution trace with every branch
+> decision on the record, riding the execute response, and fetchable later by
+> run id if the run was stored. The loop: manifest → guides → catalog →
+> validate + plan → execute → trace, with the agent at the center. Governing
+> rule: standardize the loop, not the language. Extension id: io.github.jafarsa0/pilotage.
+> Spec v1.1 · text CC BY 4.0, schemas/vectors Apache-2.0 · DOI 10.5281/zenodo.21396027.
+
+## Specification
+
+- [Spec index](https://pilotagespec.org/SPEC.md): entry point and part map
+- [Part I: Story and positioning](https://pilotagespec.org/spec/part-i-story-and-positioning.md): the three problems, the missing layer, related work, why this belongs in MCP
+- [Part II: Abstract model](https://pilotagespec.org/spec/part-ii-abstract-model.md): the normative core (actors, capability declarations, the seven shapes, reserved statuses/codes, trace identity, processing order, trust model)
+- [Part III: MCP binding](https://pilotagespec.org/spec/part-iii-mcp-binding.md): the manifest tool, loop tools, reserved argument names, error routing, session binding
+- [Part IV: Implementation notes](https://pilotagespec.org/spec/part-iv-implementation-notes.md): native vs adapted engines, the both-polarity test method, the completeness gate
+
+## Machine-readable artifacts
+
+- [JSON Schemas (draft 2020-12)](https://pilotagespec.org/schemas/1.1/pilotage.schema.json): every wire shape (manifest, plan, trace, outcome, diagnostics, errors)
+- [Conformance vectors](https://pilotagespec.org/conformance/vectors.json): 54 engine-neutral test vectors, both polarities, keyed to spec requirements
+- [Conformance harness](https://pilotagespec.org/conformance/README.md): runnable Node harness that executes the vectors against any live server
+
+## Guides (docs that execute, replayed against the live server in CI)
+
+- [Your first verified run](https://pilotagespec.org/guides/01-your-first-verified-run.md): the whole loop once: discover, learn, look up, validate (with the classic typo), execute pinned, fetch the run's trace back by id
+- [Drift, risk, and recovery](https://pilotagespec.org/guides/02-drift-risk-and-recovery.md): catalog_drift and re-pinning, the destructive-risk gate, test_run, idempotency, partial outcomes
+
+## Try it live
+
+- Example server endpoint (MCP over HTTP, per-session isolated): POST https://harborview.jafarsa0.workers.dev/mcp
+- [Harborview source](https://github.com/jafarsa0/harborview): the reference implementation, a simulated smart building speaking buildingflow/1, Apache-2.0
+
+## Governance
+
+- [README](https://github.com/jafarsa0/pilotage/blob/main/README.md): overview and how to cite
+- [CHANGELOG](https://github.com/jafarsa0/pilotage/blob/main/CHANGELOG.md) · [VERSIONING](https://github.com/jafarsa0/pilotage/blob/main/VERSIONING.md) · [CONTRIBUTING](https://github.com/jafarsa0/pilotage/blob/main/CONTRIBUTING.md) · [SECURITY](https://github.com/jafarsa0/pilotage/blob/main/SECURITY.md) · [ROADMAP](https://github.com/jafarsa0/pilotage/blob/main/ROADMAP.md)

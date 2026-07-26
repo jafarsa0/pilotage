@@ -3,1024 +3,338 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark">
-<title>Pilotage — an MCP extension · Schemas teach the moves. Pilotage teaches the game.</title>
-<meta name="description" content="Pilotage is an MCP extension for guided program authoring and verified execution — AI agents write and run programs (SQL, automations, workflows) against any live system, safely, and know the result is right.">
+<title>Pilotage: guided program authoring and verified execution for MCP</title>
+<meta name="description" content="Pilotage is an open extension of the Model Context Protocol: agents learn a server's program language, validate before running, see risk in the plan, and get every run's decisions on the record.">
 <style>
-/* ─── tokens ─────────────────────────────────────────────────────────── */
 :root{
-  --ink0:#0A0D14; --ink1:#10141F; --ink2:#161B2A; --ink3:#1C2334;
-  --line:#232B3F; --line2:#2E3852;
+  --ink0:#0A0D14; --ink1:#10141F; --ink2:#161B2A; --ink3:#1C2334; --line:#232B3F;
   --text:#C9D2E4; --dim:#8A94AB; --faint:#5C6680;
   --gold:#F5C15C; --gold-dim:#C79A45; --gold-glow:rgba(245,193,92,.14);
   --cyan:#59D9E4; --cyan-dim:#3FA9B4; --cyan-glow:rgba(89,217,228,.13);
   --green:#7BD88F; --rose:#F27E9D;
   --mono:ui-monospace,"Cascadia Code","SF Mono",Consolas,Menlo,monospace;
   --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;
-  --w:1060px; --wp:720px;
+  --w:1060px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
-body{
-  background:var(--ink0); color:var(--text);
-  font:16px/1.7 var(--sans);
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
-::selection{background:rgba(89,217,228,.25)}
-a{color:var(--cyan); text-decoration:none}
+body{background:var(--ink0);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--cyan);text-decoration:none}
 a:hover{text-decoration:underline}
-a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:2px}
-
-/* ─── shared bits ────────────────────────────────────────────────────── */
+code,pre{font-family:var(--mono)}
 .wrap{max-width:var(--w);margin:0 auto;padding:0 24px}
-.prose{max-width:var(--wp)}
-.prose p{margin:0 0 18px;color:var(--text)}
-.prose p.lede{font-size:19px;line-height:1.65;color:#DFE6F3}
-.prose strong{color:#EDF1FA}
-.eyebrow{
-  font:600 12.5px/1 var(--mono); letter-spacing:.14em; text-transform:lowercase;
-  color:var(--gold); display:flex; align-items:center; gap:10px; margin-bottom:18px;
-}
-.eyebrow::before{content:"§"; color:var(--faint); font-size:14px}
-.eyebrow.cy{color:var(--cyan)}
-h2{
-  font:600 clamp(26px,3.6vw,36px)/1.2 var(--mono);
-  letter-spacing:-.02em; color:#EFF3FB; margin:0 0 22px; text-wrap:balance;
-}
-h3{font:600 19px/1.35 var(--sans); color:#E6EBF6; margin:34px 0 12px}
-section{padding:96px 0; border-top:1px solid var(--line); position:relative}
-.kicker{color:var(--dim); font-size:15px; margin-top:-10px; margin-bottom:34px; max-width:var(--wp)}
 
-/* code + wire */
-pre,code{font-family:var(--mono)}
-.code{
-  background:var(--ink1); border:1px solid var(--line); border-radius:10px;
-  padding:16px 18px; overflow-x:auto; font-size:12.8px; line-height:1.68;
-  color:#B9C3D8; font-variant-numeric:tabular-nums; white-space:pre;
-}
-.code .k{color:var(--gold)}          /* keys */
-.code .s{color:#8FDFE7}              /* strings */
-.code .n{color:#D8B4F0}              /* numbers/bools */
-.code .c{color:var(--faint)}         /* comments */
-.code .err{color:var(--rose)}
-.code .ok{color:var(--green)}
-.wire{margin:14px 0}
-.wire .hd{
-  display:flex; align-items:center; gap:10px; font:600 12px var(--mono);
-  padding:7px 14px; border:1px solid var(--line); border-bottom:none;
-  border-radius:10px 10px 0 0; background:var(--ink2); color:var(--dim);
-}
-.wire .hd .dir{font-size:13px}
-.wire.req .hd .dir{color:var(--gold)} .wire.res .hd .dir{color:var(--cyan)}
-.wire .code{border-radius:0 0 10px 10px}
-.chip{
-  display:inline-flex; align-items:center; gap:7px;
-  font:600 11.5px var(--mono); letter-spacing:.06em;
-  border:1px solid var(--line2); color:var(--dim);
-  padding:5px 12px; border-radius:999px; background:rgba(255,255,255,.02);
-}
-.chip .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan)}
-.chip.gold .dot{background:var(--gold)}
-.chip.green .dot{background:var(--green)}
+header{position:sticky;top:0;z-index:10;background:rgba(10,13,20,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:22px;height:56px}
+.brand{font-family:var(--mono);font-weight:700;letter-spacing:.16em;color:var(--gold);font-size:15px}
+.brand span{color:var(--faint);font-weight:400;letter-spacing:0;margin-left:10px;font-size:12px}
+nav{margin-left:auto;display:flex;gap:20px;flex-wrap:wrap}
+nav a{color:var(--dim);font-size:13.5px}
+nav a:hover{color:var(--text);text-decoration:none}
 
-/* callout */
-.rule-card{
-  border:1px solid var(--line2); border-radius:14px; padding:26px 30px;
-  background:linear-gradient(180deg,var(--ink2),var(--ink1));
-  margin:34px 0; position:relative; overflow:hidden;
-}
-.rule-card::before{
-  content:""; position:absolute; inset:0 auto 0 0; width:3px;
-  background:linear-gradient(180deg,var(--gold),var(--cyan));
-}
-.rule-card .big{font:600 clamp(17px,2.4vw,22px)/1.45 var(--mono); color:#F2F5FC; letter-spacing:-.01em}
-.rule-card .why{color:var(--dim); margin-top:10px; font-size:14.5px}
+.hero{padding:84px 0 56px;background:
+  radial-gradient(1000px 420px at 70% -10%, var(--cyan-glow), transparent 60%),
+  radial-gradient(800px 380px at 10% 0%, var(--gold-glow), transparent 55%)}
+.kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;color:var(--cyan);text-transform:uppercase}
+.hero h1{font-size:clamp(30px,4.6vw,46px);line-height:1.14;margin:14px 0 18px;color:#E8EDF7;font-weight:650;letter-spacing:-.01em}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p.sub{max-width:760px;color:var(--dim);font-size:17.5px}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 4px}
+.chip{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--ink1)}
+.chip b{color:var(--text);font-weight:600}
+.ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-block;padding:11px 20px;border-radius:8px;font-size:14.5px;font-weight:600;border:1px solid var(--line)}
+.btn.primary{background:var(--gold);color:#151107;border-color:var(--gold)}
+.btn.primary:hover{background:#FFD27A;text-decoration:none}
+.btn.ghost{color:var(--text);background:var(--ink1)}
+.btn.ghost:hover{border-color:var(--faint);text-decoration:none}
 
-/* ─── nav ───────────────────────────────────────────────────────────── */
-nav{
-  position:sticky; top:0; z-index:50;
-  background:rgba(10,13,20,.82); backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--line);
-}
-nav .bar{max-width:var(--w);margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;gap:22px}
-.mark{font:700 15px var(--mono); letter-spacing:.06em; color:#F2F5FC; display:flex; align-items:center; gap:9px}
-.mark i{
-  width:20px;height:20px;border-radius:6px;flex:none;
-  background:conic-gradient(from 220deg,var(--gold),var(--cyan),var(--gold));
-  -webkit-mask:radial-gradient(circle at 50% 50%,transparent 34%,#000 36%);
-          mask:radial-gradient(circle at 50% 50%,transparent 34%,#000 36%);
-}
-nav .links{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
-nav .links a{
-  font:600 12px var(--mono); color:var(--dim); padding:7px 11px; border-radius:7px;
-}
-nav .links a:hover{color:#EDF1FA;background:var(--ink2);text-decoration:none}
-.vchip{font:700 10.5px var(--mono);letter-spacing:.1em;color:var(--ink0);background:var(--gold);border-radius:5px;padding:3px 8px}
-@media(max-width:820px){ nav .links{display:none} }
+.loop{padding:34px 0 8px}
+.loop .rail{display:flex;gap:0;align-items:stretch;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--ink2),var(--ink1));overflow:hidden}
+.loop .node{flex:1 1 150px;min-width:150px;padding:18px 16px;border-right:1px solid var(--line)}
+.loop .node:last-child{border-right:0}
+.loop .t{font-family:var(--mono);font-size:13.5px;color:var(--gold);white-space:nowrap}
+.loop .t .arrow{color:var(--faint)}
+.loop .d{font-size:12.8px;color:var(--dim);margin-top:6px;line-height:1.5}
 
-/* ─── hero ──────────────────────────────────────────────────────────── */
-header{position:relative; overflow:hidden}
-.hero-glow{
-  position:absolute; inset:-40% -20% auto; height:130%;
-  background:
-    radial-gradient(46% 60% at 30% 30%, rgba(245,193,92,.09), transparent 70%),
-    radial-gradient(50% 66% at 74% 40%, rgba(89,217,228,.10), transparent 70%);
-  pointer-events:none;
-}
-.hero-grid{
-  position:absolute; inset:0; pointer-events:none; opacity:.5;
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size:56px 56px;
-  -webkit-mask-image:radial-gradient(70% 70% at 50% 32%, #000 0%, transparent 78%);
-          mask-image:radial-gradient(70% 70% at 50% 32%, #000 0%, transparent 78%);
-}
-.hero{position:relative; padding:110px 0 40px; text-align:left}
-.hero .chips{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:34px}
-h1{
-  font:700 clamp(30px,5.4vw,58px)/1.14 var(--mono);
-  letter-spacing:-.035em; text-wrap:balance; max-width:900px;
-}
-h1 .l1{color:#6F7A93; display:block}
-h1 .l2{
-  display:block;
-  background:linear-gradient(92deg,#F8E3AE 0%,var(--gold) 26%,#BFE9ED 62%,var(--cyan) 100%);
-  -webkit-background-clip:text; background-clip:text; color:transparent;
-  filter:drop-shadow(0 0 26px rgba(245,193,92,.16));
-}
-.hero .sub{
-  font-size:clamp(16px,2vw,19px); color:var(--dim); max-width:640px;
-  margin:28px 0 0; line-height:1.7;
-}
-.hero .sub b{color:#E6EBF6; font-weight:600}
+section{padding:56px 0}
+h2{font-size:26px;color:#E8EDF7;margin-bottom:10px;font-weight:650;letter-spacing:-.01em}
+.lead{color:var(--dim);max-width:820px;margin-bottom:30px}
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.card{border:1px solid var(--line);border-radius:12px;padding:22px;background:var(--ink1)}
+.card h3{font-size:16.5px;color:#DCE3F0;margin-bottom:8px;font-weight:600}
+.card p{font-size:14px;color:var(--dim)}
+.card .num{font-family:var(--mono);color:var(--cyan);font-size:12.5px;letter-spacing:.1em;display:block;margin-bottom:8px}
+.card code{font-size:12.5px;color:#AEE9EF;background:var(--ink3);padding:1px 6px;border-radius:5px}
 
-/* hero wire animation */
-.hero-wire{display:block; width:100%; max-width:var(--w); margin:52px auto 0}
-.hero-wire text{font:600 11.5px var(--mono); fill:var(--faint); letter-spacing:.08em}
-.hero-wire .nodebox{fill:var(--ink2); stroke:var(--line2)}
-.hero-wire .nlabel{fill:#D6DDEC; font:600 12.5px var(--mono)}
-.hero-wire .base{stroke:var(--line2); stroke-width:1.6; fill:none}
-.hero-wire .pulse{
-  stroke:url(#pgrad); stroke-width:2.4; fill:none; stroke-linecap:round;
-  stroke-dasharray:70 1400;
-  animation:travel 5.2s linear infinite;
-  filter:drop-shadow(0 0 6px rgba(89,217,228,.6));
-}
-@keyframes travel{ from{stroke-dashoffset:1470} to{stroke-dashoffset:0} }
-@media (prefers-reduced-motion:reduce){ .hero-wire .pulse{animation:none; stroke-dasharray:none; opacity:.5} }
+.demo{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--ink1)}
+.demo .bar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--ink2)}
+.demo .dot{width:9px;height:9px;border-radius:50%;background:var(--faint);opacity:.5}
+.demo .bar .lbl{font-family:var(--mono);font-size:12px;color:var(--faint);margin-left:auto}
+.demo pre{padding:18px 20px;font-size:13px;line-height:1.62;overflow-x:auto;color:#B9C3D8}
+.demo .req{color:var(--faint)}
+.demo .k{color:var(--cyan)}
+.demo .s{color:var(--gold)}
+.demo .g{color:var(--green)}
+.demo .r{color:var(--rose)}
+.demo .cm{color:var(--faint);font-style:italic}
+.split{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}
+@media(max-width:520px){.split{grid-template-columns:1fr}}
 
-/* reveal on scroll */
-.rv{opacity:0; transform:translateY(14px); transition:opacity .6s ease, transform .6s ease}
-.rv.in{opacity:1; transform:none}
-@media (prefers-reduced-motion:reduce){ .rv{opacity:1; transform:none; transition:none} }
+.proof .card .big{font-size:30px;color:var(--gold);font-family:var(--mono);font-weight:700}
+.proof .card .cap{font-size:13px;color:var(--dim);margin-top:2px;margin-bottom:12px}
+.proof pre{background:var(--ink3);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:12.5px;color:#AEE9EF;overflow-x:auto}
 
-/* ─── problem: the two cards ────────────────────────────────────────── */
-.gap2{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:36px 0}
-@media(max-width:760px){ .gap2{grid-template-columns:1fr} }
-.gapcard{
-  border:1px solid var(--line); border-radius:14px; background:var(--ink1);
-  padding:22px 24px; transition:transform .25s ease, border-color .25s ease;
-}
-.gapcard:hover{transform:translateY(-3px); border-color:var(--line2)}
-.gapcard .tag{font:700 11px var(--mono); letter-spacing:.12em; text-transform:uppercase; margin-bottom:14px}
-.gapcard.a .tag{color:var(--dim)} .gapcard.b .tag{color:var(--gold)}
-.gapcard ul{list-style:none; margin-top:12px}
-.gapcard li{padding:7px 0 7px 24px; position:relative; color:var(--dim); font-size:14.5px}
-.gapcard li::before{content:"—"; position:absolute; left:0; color:var(--faint)}
-.gapcard.b li{color:var(--text)}
-.gapcard.b li::before{content:"◆"; color:var(--gold); font-size:10px; top:11px}
+.spec .card{display:block}
+.spec .card:hover{border-color:var(--faint);text-decoration:none}
+.spec .part{font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.12em}
+.spec h3{margin-top:6px}
 
-/* layer stack */
-.stack{display:flex; flex-direction:column; gap:10px; margin:38px 0; max-width:820px}
-.layer{
-  border:1px solid var(--line); border-radius:12px; padding:16px 22px;
-  background:var(--ink1); display:flex; align-items:baseline; gap:16px; flex-wrap:wrap;
-}
-.layer .who{font:700 13px var(--mono); letter-spacing:.1em; color:#E6EBF6; min-width:150px}
-.layer .what{color:var(--dim); font-size:14px}
-.layer.pilotage{
-  border-color:transparent; position:relative; background:linear-gradient(180deg,#171E30,#131928);
-}
-.layer.pilotage::before{
-  content:""; position:absolute; inset:-1px; border-radius:13px; padding:1px;
-  background:linear-gradient(92deg,var(--gold),var(--cyan));
-  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none;
-}
-.layer.pilotage .who{color:var(--gold)}
-.layer.dimmed .who{color:var(--dim)}
-
-/* ─── anatomy cards ─────────────────────────────────────────────────── */
-.pieces{display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:38px}
-@media(max-width:880px){ .pieces{grid-template-columns:1fr} }
-.piece{
-  border:1px solid var(--line); border-radius:14px; background:var(--ink1);
-  padding:24px; display:flex; flex-direction:column; gap:12px;
-  transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
-}
-.piece:hover{transform:translateY(-3px); border-color:var(--line2); box-shadow:0 14px 40px rgba(0,0,0,.35)}
-.piece .ph{display:flex; align-items:center; gap:12px}
-.piece .glyph{
-  width:34px;height:34px;border-radius:9px;flex:none; display:grid; place-items:center;
-  font:700 14px var(--mono);
-}
-.piece.gold .glyph{background:var(--gold-glow); color:var(--gold); border:1px solid rgba(245,193,92,.3)}
-.piece.cyan .glyph{background:var(--cyan-glow); color:var(--cyan); border:1px solid rgba(89,217,228,.3)}
-.piece h4{font:700 15.5px var(--mono); color:#EDF1FA; letter-spacing:-.01em}
-.piece .desc{color:var(--dim); font-size:14.2px; line-height:1.65}
-.piece .code{font-size:11.6px; margin-top:2px}
-.piece .desc b{color:#DCE3F0; font-weight:600}
-
-/* ─── loop diagram ──────────────────────────────────────────────────── */
-.loopwrap{overflow-x:auto; margin:40px -24px 8px; padding:0 24px}
-.loop-svg{display:block; min-width:980px; width:100%}
-.loop-svg .box{fill:var(--ink2); stroke:var(--line2); stroke-width:1.2; rx:10}
-.loop-svg .box.gold{stroke:rgba(245,193,92,.55)}
-.loop-svg .box.cyan{stroke:rgba(89,217,228,.55)}
-.loop-svg .box.green{stroke:rgba(123,216,143,.6)}
-.loop-svg .t{font:600 13px var(--mono); fill:#E4EAF5; text-anchor:middle}
-.loop-svg .st{font:500 10.5px var(--mono); fill:var(--faint); text-anchor:middle; letter-spacing:.04em}
-.loop-svg .phase{font:700 11px var(--mono); letter-spacing:.22em}
-.loop-svg .flow{stroke-width:1.8; fill:none}
-.loop-svg .flow.g{stroke:var(--gold-dim)}
-.loop-svg .flow.c{stroke:var(--cyan-dim)}
-.loop-svg .fb{stroke-dasharray:5 5; stroke-width:1.5; fill:none}
-.loop-svg .fbl{font:600 11px var(--mono); text-anchor:middle}
-.loop-svg .gate{fill:rgba(242,126,157,.12); stroke:var(--rose); stroke-width:1.2}
-.legend{display:flex; gap:22px; flex-wrap:wrap; margin-top:16px; color:var(--faint); font:500 12px var(--mono)}
-.legend span{display:flex; align-items:center; gap:8px}
-.legend i{width:18px; height:0; border-top:2px solid var(--cyan-dim); display:inline-block}
-.legend i.g{border-color:var(--gold-dim)}
-.legend i.d{border-top-style:dashed}
-
-/* steps list */
-.steps{counter-reset:s; margin:30px 0 0; max-width:820px}
-.steps li{
-  list-style:none; counter-increment:s; position:relative;
-  padding:13px 0 13px 58px; border-bottom:1px dashed var(--line);
-  color:var(--dim); font-size:15px;
-}
-.steps li b{color:#E4EAF5; font-weight:600}
-.steps li::before{
-  content:counter(s,decimal-leading-zero); position:absolute; left:0; top:12px;
-  font:700 13px var(--mono); color:var(--cyan); letter-spacing:.05em;
-  font-variant-numeric:tabular-nums;
-}
-.steps li:nth-child(-n+3)::before{color:var(--gold)}
-
-/* ─── examples ──────────────────────────────────────────────────────── */
-.story{
-  border-left:2px solid var(--line2); padding-left:26px; margin:30px 0;
-}
-.story .beat{margin:26px 0}
-.story .beat .who{font:700 11.5px var(--mono); letter-spacing:.14em; text-transform:uppercase; margin-bottom:10px}
-.story .beat .who.agent{color:var(--gold)}
-.story .beat .who.server{color:var(--cyan)}
-.story .note{color:var(--dim); font-size:14.2px; margin-top:10px}
-.story .note b{color:#DFE6F3}
-.badge-risk{
-  display:inline-flex;align-items:center;gap:7px;font:700 11px var(--mono);letter-spacing:.08em;
-  color:var(--rose); border:1px solid rgba(242,126,157,.4); background:rgba(242,126,157,.08);
-  padding:4px 10px; border-radius:999px;
-}
-
-/* ─── build checklist ───────────────────────────────────────────────── */
-.check{margin:30px 0; max-width:840px}
-.check .item{
-  display:grid; grid-template-columns:44px 1fr; gap:0 18px; padding:20px 0;
-  border-bottom:1px solid var(--line);
-}
-.check .n{
-  font:700 15px var(--mono); color:var(--gold); font-variant-numeric:tabular-nums;
-  padding-top:2px;
-}
-.check h4{font:600 16px var(--sans); color:#E9EEF8; margin-bottom:6px}
-.check p{color:var(--dim); font-size:14.4px}
-.check code{
-  background:var(--ink2); border:1px solid var(--line); padding:1px 7px;
-  border-radius:6px; font-size:12px; color:#AEE9EF;
-}
-table{border-collapse:collapse; width:100%; margin:26px 0; font-size:14px}
-th{
-  text-align:left; font:700 11px var(--mono); letter-spacing:.12em; text-transform:uppercase;
-  color:var(--faint); padding:10px 14px; border-bottom:1px solid var(--line2);
-}
-td{padding:11px 14px; border-bottom:1px solid var(--line); color:var(--dim); vertical-align:top}
-td:first-child{color:#DCE3F0; font-family:var(--mono); font-size:13px; white-space:nowrap}
-td .m{color:var(--gold); font:700 11px var(--mono)}
-td .o{color:var(--faint); font:700 11px var(--mono)}
-.tblwrap{overflow-x:auto}
-
-/* precedent strip */
-.prec{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:34px}
-@media(max-width:880px){ .prec{grid-template-columns:1fr 1fr} }
-@media(max-width:560px){ .prec{grid-template-columns:1fr} }
-.prec .p{
-  border:1px solid var(--line); border-radius:12px; padding:16px 18px; background:var(--ink1);
-}
-.prec .p .nm{font:700 12.5px var(--mono); color:var(--gold); margin-bottom:6px}
-.prec .p .ds{color:var(--dim); font-size:13px; line-height:1.6}
-
-/* FAQ */
-details{
-  border:1px solid var(--line); border-radius:12px; background:var(--ink1);
-  margin:12px 0; overflow:hidden;
-}
-summary{
-  cursor:pointer; padding:17px 22px; font:600 15px var(--sans); color:#E6EBF6;
-  list-style:none; display:flex; align-items:center; gap:14px;
-}
-summary::before{content:"+"; font:600 18px var(--mono); color:var(--cyan); width:16px}
-details[open] summary::before{content:"–"}
-summary::-webkit-details-marker{display:none}
-details .body{padding:0 22px 20px 52px; color:var(--dim); font-size:14.6px}
-details .body b{color:#DCE3F0}
-
-/* footer */
-footer{border-top:1px solid var(--line); padding:60px 0 80px; color:var(--faint); font-size:13.5px}
-footer .frow{display:flex; justify-content:space-between; gap:24px; flex-wrap:wrap; align-items:center}
-footer .mono{font-family:var(--mono); font-size:12px}
+.cite{border-top:1px solid var(--line);background:var(--ink1)}
+.cite pre{background:var(--ink3);border:1px solid var(--line);border-radius:8px;padding:14px 18px;font-size:12.5px;color:#B9C3D8;overflow-x:auto;margin-top:14px}
+footer{border-top:1px solid var(--line);padding:30px 0 44px;color:var(--faint);font-size:13px}
+footer .wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+footer .mono{font-family:var(--mono);font-size:12px}
+footer a{color:var(--dim)}
 </style>
 </head>
 <body>
 
-<nav aria-label="Page">
-  <div class="bar">
-    <span class="mark"><i></i>Pilotage</span>
-    <span class="vchip">v1.0.1</span>
-    <div class="links">
-      <a href="#problem">Problem</a><a href="#idea">Idea</a><a href="#soc">Scale</a><a href="#anatomy">Anatomy</a>
-      <a href="#loop">The loop</a><a href="#examples">Examples</a><a href="#build">Build</a><a href="#faq">FAQ</a>
-    </div>
-  </div>
-</nav>
-
 <header>
-  <div class="hero-glow"></div>
-  <div class="hero-grid"></div>
-  <div class="wrap hero">
-    <div class="chips">
-      <span class="chip gold"><span class="dot"></span>AN MCP EXTENSION — NO NEW TRANSPORT</span>
-      <span class="chip"><span class="dot"></span>ENGINE-NEUTRAL</span>
-      <span class="chip green"><span class="dot"></span>ONE LOOP, ANY LANGUAGE</span>
-    </div>
-    <h1>
-      <span class="l1">Schemas teach the moves.</span>
-      <span class="l2">Pilotage teaches the game.</span>
-    </h1>
-    <p class="sub">
-      <b>Pilotage</b> is a small extension of MCP that lets AI agents
-      <b>write and run programs</b> — SQL, automations, workflows — against any live system,
-      check them <b>before</b> anything runs, and prove <b>after</b> that the result is really right.
-    </p>
-
-    <!-- the signal wire -->
-    <svg class="hero-wire" viewBox="0 0 1060 150" role="img" aria-label="A signal travels from the agent through learn, author, verify and run stages back to the agent">
-      <defs>
-        <linearGradient id="pgrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#F5C15C"/><stop offset="1" stop-color="#59D9E4"/>
-        </linearGradient>
-        <marker id="mArr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M0 0 L8 4 L0 8 z" fill="#2E3852"></path>
-        </marker>
-      </defs>
-      <path class="base" d="M20 84 H180 M300 84 H360 M480 84 H540 M660 84 H720 M840 84 H1040" marker-end="url(#mArr)"></path>
-      <path class="base" d="M180 84 H300 M360 84 H480 M540 84 H660 M720 84 H840" opacity="0"></path>
-      <path class="pulse" d="M20 84 H1040"></path>
-      <rect class="nodebox" x="180" y="62" width="120" height="44" rx="10"></rect>
-      <text class="nlabel" x="240" y="89" text-anchor="middle">learn</text>
-      <rect class="nodebox" x="360" y="62" width="120" height="44" rx="10"></rect>
-      <text class="nlabel" x="420" y="89" text-anchor="middle">author</text>
-      <rect class="nodebox" x="540" y="62" width="120" height="44" rx="10"></rect>
-      <text class="nlabel" x="600" y="89" text-anchor="middle">verify</text>
-      <rect class="nodebox" x="720" y="62" width="120" height="44" rx="10"></rect>
-      <text class="nlabel" x="780" y="89" text-anchor="middle">run + prove</text>
-      <text x="20" y="45">AGENT</text>
-      <text x="1002" y="45" >DONE</text>
-      <text x="240" y="132" text-anchor="middle">guides</text>
-      <text x="420" y="132" text-anchor="middle">catalog + draft</text>
-      <text x="600" y="132" text-anchor="middle">validate + plan</text>
-      <text x="780" y="132" text-anchor="middle">execute + trace</text>
-    </svg>
+  <div class="wrap">
+    <div class="brand">PILOTAGE<span>an MCP extension</span></div>
+    <nav>
+      <a href="https://github.com/jafarsa0/pilotage/blob/main/SPEC.md">Specification</a>
+      <a href="https://github.com/jafarsa0/pilotage/blob/main/guides/01-your-first-verified-run.md">Guides</a>
+      <a href="https://github.com/jafarsa0/pilotage/blob/main/conformance/README.md">Conformance</a>
+      <a href="https://github.com/jafarsa0/harborview">Example server</a>
+      <a href="https://github.com/jafarsa0/pilotage">GitHub</a>
+    </nav>
   </div>
 </header>
 
-<!-- ═══ PROBLEM ═══════════════════════════════════════════════════════ -->
-<section id="problem">
+<div class="hero">
   <div class="wrap">
-    <div class="eyebrow">the problem</div>
-    <h2>Agents can call. They can't compose.</h2>
-    <div class="prose rv">
-      <p class="lede">
-        MCP solved discovery and calling: an agent connects, lists the tools, reads each
-        tool's JSON&nbsp;Schema, and calls them. That works perfectly — as long as every
-        argument is a simple <strong>record</strong>: an id, an email, a number.
-      </p>
-      <p>
-        But the most powerful tools don't take records. They take <strong>programs</strong>:
-        a SQL query. A home-automation rule. A multi-step workflow with data flowing between
-        steps. The tool's schema can only say <em>“this argument is a string”</em> or
-        <em>“this is an object”</em> — it cannot teach the language the program is written in.
-      </p>
+    <div class="kicker">An open extension of the Model Context Protocol</div>
+    <h1>Schemas teach the moves.<br><em>Pilotage teaches the game.</em></h1>
+    <p class="sub">Pilotage lets an MCP server publish the checkable competence required to
+    use its complex tools, so any compatible agent can <b>learn, validate, plan, execute,
+    and trace</b> them through a common interface: whole programs, against live systems,
+    with the result on the record.</p>
+    <div class="chips">
+      <div class="chip">spec <b>v1.1</b></div>
+      <div class="chip">id <b>io.github.jafarsa0/pilotage</b></div>
+      <div class="chip">text <b>CC&nbsp;BY&nbsp;4.0</b> · schemas &amp; vectors <b>Apache-2.0</b></div>
+      <div class="chip">DOI <b>10.5281/zenodo.21396027</b></div>
     </div>
-
-    <div class="gap2 rv">
-      <div class="gapcard a">
-        <div class="tag">What the schema says</div>
-        <div class="code"><span class="c">// the ENTIRE knowledge MCP can carry:</span>
-{ <span class="k">"name"</span>: <span class="s">"run_query"</span>,
-  <span class="k">"inputSchema"</span>: {
-    <span class="k">"type"</span>: <span class="s">"object"</span>,
-    <span class="k">"properties"</span>: {
-      <span class="k">"sql"</span>: { <span class="k">"type"</span>: <span class="s">"string"</span> }   <span class="c">← “a string”. that's it.</span>
-    } } }</div>
-      </div>
-      <div class="gapcard b">
-        <div class="tag">What the author actually needs</div>
-        <ul>
-          <li><b>The grammar</b> — syntax, functions, rules of the language</li>
-          <li><b>The live world</b> — which tables / devices / capabilities exist <em>right now</em></li>
-          <li><b>A checker</b> — catch mistakes <em>before</em> anything runs</li>
-          <li><b>Proof</b> — evidence afterwards that it did the right thing</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="prose rv">
-      <h3>And the second, quieter problem: plausible ≠ correct</h3>
-      <p>
-        Even a perfectly valid program can be <strong>logically wrong</strong> — and the output
-        can hide it. A filter that matched <em>zero</em> rows plus a default fallthrough produces
-        a result that <em>looks</em> completely fine. Human developers catch this with compilers,
-        debuggers and traces. Agents today get only the return value. If we want agents that
-        finish a mission <strong>fully and correctly</strong>, they need the same instruments
-        we have — machine-readable, on the same connection.
-      </p>
+    <div class="ctas">
+      <a class="btn primary" href="https://github.com/jafarsa0/pilotage/blob/main/SPEC.md">Read the specification</a>
+      <a class="btn ghost" href="https://github.com/jafarsa0/pilotage/blob/main/guides/01-your-first-verified-run.md">Run it live in five minutes</a>
+      <a class="btn ghost" href="https://github.com/jafarsa0/pilotage/blob/main/conformance/README.md">Test a server</a>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ═══ IDEA ══════════════════════════════════════════════════════════ -->
-<section id="idea">
+<div class="loop">
   <div class="wrap">
-    <div class="eyebrow">the idea</div>
-    <h2>A competence layer on top of the interface layer.</h2>
-    <div class="prose rv">
-      <p class="lede">
-        MCP standardized the <strong>interface</strong>: what exists and how to call it.
-        Pilotage standardizes <strong>competence</strong>: what an agent must know to use it
-        <em>well</em> — and how it converges on a correct result.
-      </p>
-    </div>
-
-    <div class="stack rv" role="img" aria-label="Layer diagram: agent on top, Pilotage competence layer, MCP interface layer, your system at the bottom">
-      <div class="layer"><span class="who">ANY AGENT</span><span class="what">any model, any framework — anything that runs the standard loop</span></div>
-      <div class="layer pilotage"><span class="who">PILOTAGE · COMPETENCE</span><span class="what">guides · catalog · validate + plan · trace + explain · risk — <em>how to do it well</em></span></div>
-      <div class="layer dimmed"><span class="who">MCP · INTERFACE</span><span class="what">tools/list · tools/call · resources — <em>what exists, how to call</em></span></div>
-      <div class="layer dimmed"><span class="who">YOUR SYSTEM</span><span class="what">a database, a smart home, a workflow engine, a cluster…</span></div>
-    </div>
-
-    <div class="prose rv">
-      <p>
-        No new transport. No WebSockets. Pilotage is an <strong>extension</strong> —
-        a set of conventions expressed entirely with MCP's own primitives (tools, resources,
-        one manifest), declared under the extension id
-        <code style="font-family:var(--mono);font-size:13px;color:#AEE9EF">io.github.jafarsa0.pilotage</code>
-        in MCP's <code style="font-family:var(--mono);font-size:13px;color:#AEE9EF">extensions</code>
-        capability negotiation at initialize. If your system speaks MCP today, the Pilotage
-        extension is additive.
-      </p>
-    </div>
-
-    <div class="rule-card rv">
-      <div class="big">Standardize the loop, not the language.</div>
-      <div class="why">
-        Pilotage mandates the <b>verbs</b> and the <b>report shapes</b> — never the languages
-        themselves. Your SQL stays SQL, your workflow language stays yours. The test for every
-        field in the spec: <em>“does a generic agent need it to work against ANY conformant
-        server?”</em> If not, it isn't mandated. This is exactly how LSP scaled to hundreds
-        of programming languages without standardizing a single one.
-      </div>
+    <div class="rail">
+      <div class="node"><div class="t">manifest <span class="arrow">→</span></div><div class="d">the welcome card a zero-knowledge agent reads at the handshake</div></div>
+      <div class="node"><div class="t">guides <span class="arrow">→</span></div><div class="d">the navigable grammar of the server's program language</div></div>
+      <div class="node"><div class="t">catalog <span class="arrow">→</span></div><div class="d">the live, versioned vocabulary: the names that are real right now</div></div>
+      <div class="node"><div class="t">validate + plan <span class="arrow">→</span></div><div class="d">side-effect-free checking with closed codes, and per-step risk before anything runs</div></div>
+      <div class="node"><div class="t">execute <span class="arrow">→</span></div><div class="d">the run, with the trace riding the response, nothing off the record</div></div>
+      <div class="node"><div class="t">trace</div><div class="d">every step and branch decision on the record, and, if the run was stored, fetchable later by its id</div></div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ═══ SEPARATION OF CONCERNS ════════════════════════════════════════ -->
-<section id="soc">
-  <div class="wrap">
-    <div class="eyebrow">separation of concerns</div>
-    <h2>Guidance leaves the agent. The source becomes the teacher.</h2>
-    <div class="prose rv">
-      <p class="lede">
-        Today, the knowledge of <em>how to use a tool well</em> lives inside the
-        <strong>agent</strong> — hardcoded prompts, tuned integrations, folklore.
-        Pilotage moves that knowledge into the <strong>surface itself</strong>. The provider
-        of the tool becomes the teacher — and that one move changes the scaling law.
-      </p>
-    </div>
-
-    <div class="gap2 rv">
-      <div class="gapcard a">
-        <div class="tag">Today — every pairing hand-built · N × M</div>
-        <svg viewBox="0 0 340 200" style="width:100%;display:block" role="img" aria-label="Three agents and three surfaces connected by nine tangled bespoke integrations">
-          <g font-family="ui-monospace,Consolas,monospace" font-size="11">
-            <rect x="8"  y="22"  width="92" height="30" rx="8" fill="#161B2A" stroke="#2E3852"></rect>
-            <text x="54" y="41" fill="#C9D2E4" text-anchor="middle">agent A</text>
-            <rect x="8"  y="85"  width="92" height="30" rx="8" fill="#161B2A" stroke="#2E3852"></rect>
-            <text x="54" y="104" fill="#C9D2E4" text-anchor="middle">agent B</text>
-            <rect x="8"  y="148" width="92" height="30" rx="8" fill="#161B2A" stroke="#2E3852"></rect>
-            <text x="54" y="167" fill="#C9D2E4" text-anchor="middle">agent C</text>
-            <rect x="240" y="22"  width="92" height="30" rx="8" fill="#161B2A" stroke="#2E3852"></rect>
-            <text x="286" y="41" fill="#C9D2E4" text-anchor="middle">browser</text>
-            <rect x="240" y="85"  width="92" height="30" rx="8" fill="#161B2A" stroke="#2E3852"></rect>
-            <text x="286" y="104" fill="#C9D2E4" text-anchor="middle">database</text>
-            <rect x="240" y="148" width="92" height="30" rx="8" fill="#161B2A" stroke="#2E3852"></rect>
-            <text x="286" y="167" fill="#C9D2E4" text-anchor="middle">workflows</text>
-          </g>
-          <g stroke="#5A4550" stroke-width="1.1" opacity=".85">
-            <path d="M100 37 L240 37"></path><path d="M100 37 L240 100"></path><path d="M100 37 L240 163"></path>
-            <path d="M100 100 L240 37"></path><path d="M100 100 L240 100"></path><path d="M100 100 L240 163"></path>
-            <path d="M100 163 L240 37"></path><path d="M100 163 L240 100"></path><path d="M100 163 L240 163"></path>
-          </g>
-        </svg>
-        <p style="color:var(--dim);font-size:13.5px;margin-top:12px">
-          Nine bespoke integrations — prompts tuned per pairing, folklore in
-          descriptions, nothing transfers. <b style="color:#E6EBF6">Every new agent or
-          tool multiplies the work.</b>
-        </p>
-      </div>
-      <div class="gapcard b">
-        <div class="tag">With Pilotage — each side integrates once · N + M</div>
-        <svg viewBox="0 0 340 200" style="width:100%;display:block" role="img" aria-label="Agents implement the loop once; surfaces publish their guidance once; every pairing works">
-          <g font-family="ui-monospace,Consolas,monospace" font-size="11">
-            <rect x="8"  y="22"  width="86" height="30" rx="8" fill="#161B2A" stroke="#2E3852"></rect>
-            <text x="51" y="41" fill="#C9D2E4" text-anchor="middle">agent A</text>
-            <rect x="8"  y="85"  width="86" height="30" rx="8" fill="#161B2A" stroke="#2E3852"></rect>
-            <text x="51" y="104" fill="#C9D2E4" text-anchor="middle">agent B</text>
-            <rect x="8"  y="148" width="86" height="30" rx="8" fill="#161B2A" stroke="#2E3852"></rect>
-            <text x="51" y="167" fill="#C9D2E4" text-anchor="middle">agent C</text>
-            <rect x="134" y="22" width="72" height="156" rx="10" fill="#131928" stroke="#3FA9B4"></rect>
-            <text x="170" y="92" fill="#59D9E4" text-anchor="middle">THE</text>
-            <text x="170" y="108" fill="#59D9E4" text-anchor="middle">LOOP</text>
-            <rect x="246" y="22"  width="86" height="30" rx="8" fill="#161B2A" stroke="#C79A45"></rect>
-            <text x="289" y="41" fill="#F5C15C" text-anchor="middle">browser ✎</text>
-            <rect x="246" y="85"  width="86" height="30" rx="8" fill="#161B2A" stroke="#C79A45"></rect>
-            <text x="289" y="104" fill="#F5C15C" text-anchor="middle">database ✎</text>
-            <rect x="246" y="148" width="86" height="30" rx="8" fill="#161B2A" stroke="#C79A45"></rect>
-            <text x="289" y="167" fill="#F5C15C" text-anchor="middle">workflows ✎</text>
-          </g>
-          <g stroke="#3FA9B4" stroke-width="1.4">
-            <path d="M94 37 L134 37"></path><path d="M94 100 L134 100"></path><path d="M94 163 L134 163"></path>
-          </g>
-          <g stroke="#C79A45" stroke-width="1.4">
-            <path d="M206 37 L246 37"></path><path d="M206 100 L246 100"></path><path d="M206 163 L246 163"></path>
-          </g>
-        </svg>
-        <p style="color:var(--dim);font-size:13.5px;margin-top:12px">
-          Agents implement <b style="color:#AEE9EF">the standard loop once</b>. Surfaces
-          publish <b style="color:#F5C15C">their own guidance once</b> (✎ = guides, catalog,
-          diagnostics, trace). <b style="color:#E6EBF6">Every pairing just works — including
-          the ones that don't exist yet.</b>
-        </p>
-      </div>
-    </div>
-
-    <div class="rule-card rv">
-      <div class="big">A live specimen: a leading coding agent + its browser MCP.</div>
-      <div class="why" style="margin-top:14px">
-        One of the best agent–browser integrations in production works because the competence
-        layer was built <b style="color:#E6EBF6">by hand, inside the client, for that one
-        pairing</b>: a browser-specific guide hardcoded into the agent's system prompt
-        (“always fetch the tab context first”, “never reuse tab ids”), usage folklore packed into tool
-        descriptions, and errors that teach at runtime. Look closely — it independently
-        grew <b style="color:#E6EBF6">every Pilotage organ, ad hoc</b>:
-        <span style="font-family:var(--mono);font-size:12.5px;color:#AEE9EF">the tab-context call</span> is a live
-        <b style="color:#F5C15C">catalog</b>, screenshots are the <b style="color:#59D9E4">trace</b>,
-        instructive errors are <b style="color:#59D9E4">diagnostics</b>, the prompt section is the
-        <b style="color:#F5C15C">core guide</b>.
-        <br><br>
-        Now swap in a different browser: <b style="color:#E6EBF6">none of it carries
-        over.</b> To be fair, MCP is already moving prose guidance to the surface — server
-        <b style="color:#E6EBF6">instructions</b> at initialize (“a user manual for your
-        server”), and the Skills-over-MCP draft serving skills on-connection. The Pilotage
-        extension takes the step prose can't: <b style="color:#E6EBF6">prose can teach —
-        only Pilotage can check.</b> A validate that runs before anything real, a plan you
-        can gate, a trace you can audit — and <b style="color:#E6EBF6">the learning becomes
-        the surface's responsibility.</b>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ ANATOMY ═══════════════════════════════════════════════════════ -->
-<section id="anatomy">
-  <div class="wrap">
-    <div class="eyebrow">anatomy</div>
-    <h2>Five pieces, one cross-cutting signal.</h2>
-    <p class="kicker">Everything below rides ordinary MCP: resources you can read, tools you can call, plus one manifest that ties it together.</p>
-
-    <div class="pieces">
-      <div class="piece gold rv">
-        <div class="ph"><span class="glyph">M</span><h4>manifest</h4></div>
-        <p class="desc">The front door. One small document that says: <b>which languages</b> this server accepts programs in, <b>where the guides and catalog live</b>, and <b>which loop services exist</b>.</p>
-        <div class="code">{ <span class="k">"pilotage"</span>: <span class="s">"1.0"</span>,
-  <span class="k">"extension"</span>: <span class="s">"io.github.jafarsa0.pilotage"</span>,
-  <span class="k">"languages"</span>: [{ <span class="k">"name"</span>: <span class="s">"sql/postgres-15"</span>,
-     <span class="k">"guides"</span>: <span class="s">"pilotage://guides"</span>, <span class="k">"catalog"</span>: <span class="s">"pilotage://catalog"</span>,
-     <span class="k">"loop"</span>: { <span class="k">"validate"</span>: <span class="s">"validate_sql"</span>,
-               <span class="k">"execute"</span>: <span class="s">"run_sql"</span> } }] }</div>
-      </div>
-
-      <div class="piece gold rv">
-        <div class="ph"><span class="glyph">G</span><h4>guides</h4></div>
-        <p class="desc">The <b>grammar</b>, made navigable. Not one giant manual — a list of guides with <b>topics, levels and token sizes</b>, so a small agent fetches the right 2&nbsp;KB instead of 120&nbsp;KB. Rule: at least one <b>core</b> guide, kept small.</p>
-        <div class="code">{ <span class="k">"id"</span>: <span class="s">"quickstart"</span>, <span class="k">"level"</span>: <span class="s">"core"</span>,
-  <span class="k">"topics"</span>: [<span class="s">"select"</span>,<span class="s">"joins"</span>,<span class="s">"naming"</span>],
-  <span class="k">"tokens_estimate"</span>: <span class="n">900</span> }</div>
-      </div>
-
-      <div class="piece gold rv">
-        <div class="ph"><span class="glyph">C</span><h4>catalog</h4></div>
-        <p class="desc">The <b>live world</b> the program refers to — tables, devices, capabilities — <b>queryable and versioned</b>, never a dump. Guides teach the grammar; the catalog names the nouns. A language needs one exactly when its programs reference live names.</p>
-        <div class="code">{ <span class="k">"id"</span>: <span class="s">"public.orders"</span>, <span class="k">"kind"</span>: <span class="s">"table"</span>,
-  <span class="k">"risk"</span>: <span class="s">"safe"</span>, <span class="k">"output_schema"</span>: { … } }
-<span class="c">// list · get · catalog_version on every response</span></div>
-      </div>
-
-      <div class="piece cyan rv">
-        <div class="ph"><span class="glyph">V</span><h4>validate + plan</h4></div>
-        <p class="desc">The <b>compiler that teaches</b>. Zero side effects. Mistakes come back as structured diagnostics with hints — the agent fixes and retries. When the program is valid, the response includes a <b>plan</b>: what would run, and each step's <b>risk</b> — the go / no-go moment <em>before</em> anything touches the world.</p>
-        <div class="code">{ <span class="k">"severity"</span>: <span class="err">"error"</span>, <span class="k">"code"</span>: <span class="s">"unknown_column"</span>,
-  <span class="k">"path"</span>: <span class="s">"select[1]"</span>, <span class="k">"hint"</span>: <span class="s">"close match: amount"</span> }</div>
-      </div>
-
-      <div class="piece cyan rv">
-        <div class="ph"><span class="glyph">T</span><h4>execute + trace</h4></div>
-        <p class="desc">Results come back <b>with evidence</b>: an ordered trace of every step — what it called, what went in, what came out, and <b>which way every branch went and why</b>. The trace is how an agent tells <em>correct</em> from <em>plausible</em>.</p>
-        <div class="code">{ <span class="k">"steps"</span>: [ … ], <span class="k">"decisions"</span>: [{
-  <span class="k">"at"</span>: <span class="s">"condition after 22:00"</span>,
-  <span class="k">"took"</span>: <span class="s">"skip"</span>, <span class="k">"because"</span>: <span class="s">"time = 14:03"</span> }] }</div>
-      </div>
-
-      <div class="piece cyan rv">
-        <div class="ph"><span class="glyph">R</span><h4>risk — cross-cutting</h4></div>
-        <p class="desc">Every catalog entry and plan step carries a <b>comparable danger class</b>, aligned with MCP's own tool annotations (<code style="font-size:12px">readOnlyHint</code>, <code style="font-size:12px">destructiveHint</code>). Purpose: a <b>generic gate</b> — human approval, a policy engine — can say no <em>without understanding your domain</em>. Compulsory pilotage, in effect: in dangerous waters, nobody proceeds without a pilot.</p>
-        <div class="code">{ <span class="k">"risk"</span>: <span class="err">"destructive"</span>,
-  <span class="k">"risk_hints"</span>: { <span class="k">"destructive"</span>: <span class="n">true</span>, <span class="k">"readOnly"</span>: <span class="n">false</span> } }</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ THE LOOP ══════════════════════════════════════════════════════ -->
-<section id="loop">
-  <div class="wrap">
-    <div class="eyebrow cy">the loop</div>
-    <h2>One loop. Any language. Any system.</h2>
-    <p class="kicker">This is Pilotage's real product: a single algorithm an agent implements <em>once</em> — and it works against every conformant server, whether the programs are SQL, automations or workflows. In pilotage terms: the catalog is the <em>chart</em>, validate&nbsp;+&nbsp;plan is the <em>harbor pilot's pre-departure check</em>, and the trace is the <em>voyage log</em>.</p>
-
-    <div class="loopwrap rv">
-      <svg class="loop-svg" viewBox="0 0 1180 430" role="img" aria-label="The Pilotage loop: guides and catalog feed a draft; the draft is validated, planned, executed and traced; diagnostics and trace evidence feed back into the draft until the mission is done">
-        <defs>
-          <marker id="ag" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7.5" markerHeight="7.5" orient="auto">
-            <path d="M0 0 L8 4 L0 8 z" fill="#C79A45"></path>
-          </marker>
-          <marker id="ac" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7.5" markerHeight="7.5" orient="auto">
-            <path d="M0 0 L8 4 L0 8 z" fill="#3FA9B4"></path>
-          </marker>
-          <marker id="agr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7.5" markerHeight="7.5" orient="auto">
-            <path d="M0 0 L8 4 L0 8 z" fill="#7BD88F"></path>
-          </marker>
-        </defs>
-
-        <!-- phase brackets -->
-        <text class="phase" x="105" y="26" fill="#C79A45" text-anchor="middle">LEARN</text>
-        <path d="M30 36 H180" stroke="#C79A45" stroke-width="1" opacity=".45"></path>
-        <text class="phase" x="315" y="26" fill="#8A94AB" text-anchor="middle">AUTHOR</text>
-        <path d="M240 36 H390" stroke="#8A94AB" stroke-width="1" opacity=".4"></path>
-        <text class="phase" x="787" y="26" fill="#3FA9B4" text-anchor="middle">CONVERGE</text>
-        <path d="M425 36 H1150" stroke="#3FA9B4" stroke-width="1" opacity=".4"></path>
-
-        <!-- learn column -->
-        <rect class="box gold" x="30" y="58" width="150" height="52" rx="10"></rect>
-        <text class="t" x="105" y="81">guides</text>
-        <text class="st" x="105" y="98">read the grammar</text>
-        <rect class="box gold" x="30" y="158" width="150" height="52" rx="10"></rect>
-        <text class="t" x="105" y="181">catalog</text>
-        <text class="st" x="105" y="198">query live names</text>
-
-        <!-- author -->
-        <rect class="box" x="240" y="106" width="150" height="56" rx="10"></rect>
-        <text class="t" x="315" y="130">draft</text>
-        <text class="st" x="315" y="148">write the program</text>
-
-        <!-- converge row -->
-        <rect class="box cyan" x="425" y="106" width="150" height="56" rx="10"></rect>
-        <text class="t" x="500" y="130">validate</text>
-        <text class="st" x="500" y="148">no side effects</text>
-
-        <rect class="box cyan" x="610" y="106" width="150" height="56" rx="10"></rect>
-        <text class="t" x="685" y="130">plan</text>
-        <text class="st" x="685" y="148">risk gate ▲</text>
-
-        <rect class="box cyan" x="795" y="106" width="150" height="56" rx="10"></rect>
-        <text class="t" x="870" y="130">execute</text>
-        <text class="st" x="870" y="148">run for real</text>
-
-        <rect class="box cyan" x="980" y="106" width="150" height="56" rx="10"></rect>
-        <text class="t" x="1055" y="130">trace</text>
-        <text class="st" x="1055" y="148">evidence returned</text>
-
-        <!-- done -->
-        <rect class="box green" x="980" y="330" width="150" height="52" rx="10"></rect>
-        <text class="t" x="1055" y="353" fill="#7BD88F">done · promote</text>
-        <text class="st" x="1055" y="370">mission met, keep the program</text>
-
-        <!-- learn arrows -->
-        <path class="flow g" d="M180 84 C215 84 210 118 238 126" marker-end="url(#ag)"></path>
-        <path class="flow g" d="M180 184 C215 184 210 150 238 142" marker-end="url(#ag)"></path>
-        <!-- main flow -->
-        <path class="flow c" d="M390 134 H423" marker-end="url(#ac)"></path>
-        <path class="flow c" d="M575 134 H608" marker-end="url(#ac)"></path>
-        <path class="flow c" d="M760 134 H793" marker-end="url(#ac)"></path>
-        <path class="flow c" d="M945 134 H978" marker-end="url(#ac)"></path>
-        <!-- to done -->
-        <path class="flow" stroke="#7BD88F" d="M1055 162 V328" marker-end="url(#agr)"></path>
-        <text class="st" x="1085" y="250" fill="#7BD88F" text-anchor="start">mission verified</text>
-
-        <!-- feedback: diagnostics -->
-        <path class="fb" stroke="#F27E9D" d="M500 162 C500 240 340 240 318 164" marker-end="url(#ac)" ></path>
-        <text class="fbl" x="410" y="234" fill="#F27E9D">✕ diagnostics — fix &amp; retry</text>
-
-        <!-- feedback: evidence -->
-        <path class="fb" stroke="#3FA9B4" d="M1010 162 C930 305 430 305 315 166" marker-end="url(#ac)"></path>
-        <text class="fbl" x="660" y="318" fill="#3FA9B4">trace says “not quite the mission” — revise</text>
-
-        <!-- risk gate mark -->
-        <path class="gate" d="M685 88 l9 14 h-18 z"></path>
-      </svg>
-    </div>
-    <div class="legend">
-      <span><i class="g"></i>learn (knowledge)</span>
-      <span><i></i>converge (verification)</span>
-      <span><i class="d"></i>feedback edges</span>
-      <span>▲ risk gate — destructive plans need a yes</span>
-    </div>
-
-    <ol class="steps rv">
-      <li><b>Read the manifest</b> — which languages, which services, what's supported.</li>
-      <li><b>Read the core guide</b> — small by rule; drill into topics only when needed.</li>
-      <li><b>Query the catalog</b> — the live names this mission needs. Note the <b>catalog_version</b>.</li>
-      <li><b>Draft the program.</b></li>
-      <li><b>Validate</b> — structured diagnostics with hints. Loop here until clean. Nothing has run.</li>
-      <li><b>Review the plan</b> — every step's risk. Destructive? Ask the human. This is the gate.</li>
-      <li><b>Execute with trace on</b> — one round trip; the engine does the flow, not the model.</li>
-      <li><b>Check the trace against the mission</b> — branches, matches, per-step outcomes. Wrong? Back to 4.</li>
-      <li><b>Done — and optionally promote</b> the program so it becomes a plain tool for every future agent.</li>
-    </ol>
-  </div>
-</section>
-
-<!-- ═══ EXAMPLE 1 — SQL ══════════════════════════════════════════════ -->
-<section id="examples">
-  <div class="wrap">
-    <div class="eyebrow cy">worked example · 01</div>
-    <h2>SQL analytics — the typo the schema could never catch.</h2>
-    <p class="kicker">Mission: “monthly revenue per customer.” The server exposes one language, <code style="font:600 13px var(--mono);color:#AEE9EF">sql/postgres-15</code>. Its catalog is fed by the database's own <span style="font-family:var(--mono);font-size:13px">information_schema</span>.</p>
-
-    <div class="story rv">
-      <div class="beat">
-        <div class="who agent">agent → catalog</div>
-        <div class="wire req"><div class="hd"><span class="dir">→</span>pilotage_catalog · list kind=table q="orders"</div>
-        <div class="code">{ <span class="k">"items"</span>: [{ <span class="k">"id"</span>: <span class="s">"public.orders"</span>, <span class="k">"kind"</span>: <span class="s">"table"</span>, <span class="k">"risk"</span>: <span class="ok">"safe"</span>,
-   <span class="k">"columns"</span>: [<span class="s">"id"</span>, <span class="s">"customer_email"</span>, <span class="s">"amount"</span>, <span class="s">"created_at"</span>] }],
-  <span class="k">"catalog_version"</span>: <span class="s">"cv_18422"</span> }</div></div>
-        <p class="note">The agent now knows the real table and columns — <b>today's</b>, not what some doc said last year.</p>
-      </div>
-
-      <div class="beat">
-        <div class="who agent">agent → validate (first draft)</div>
-        <div class="wire req"><div class="hd"><span class="dir">→</span>tools/call · validate_sql</div>
-        <div class="code">{ <span class="k">"program"</span>: <span class="s">"SELECT customer_email, SUM(<span class="err">amout</span>)
-              FROM orders GROUP BY 1"</span> }</div></div>
-        <div class="wire res"><div class="hd"><span class="dir">←</span>diagnostics — nothing has executed</div>
-        <div class="code">{ <span class="k">"valid"</span>: <span class="err">false</span>, <span class="k">"diagnostics"</span>: [{
-    <span class="k">"severity"</span>: <span class="err">"error"</span>, <span class="k">"code"</span>: <span class="s">"unknown_column"</span>,
-    <span class="k">"path"</span>: <span class="s">"select[1]"</span>,
-    <span class="k">"message"</span>: <span class="s">"column 'amout' does not exist"</span>,
-    <span class="k">"hint"</span>: <span class="ok">"close match: amount"</span> }] }</div></div>
-        <p class="note">The <b>hint</b> is the cheapest convergence accelerator a server can offer. One fix, revalidate…</p>
-      </div>
-
-      <div class="beat">
-        <div class="who server">server ← validate (fixed) — now with a plan</div>
-        <div class="wire res"><div class="hd"><span class="dir">←</span>valid + plan</div>
-        <div class="code">{ <span class="k">"valid"</span>: <span class="ok">true</span>, <span class="k">"diagnostics"</span>: [],
-  <span class="k">"catalog_version"</span>: <span class="s">"cv_18422"</span>,
-  <span class="k">"plan"</span>: { <span class="k">"steps"</span>: [{ <span class="k">"calls"</span>: <span class="s">"public.orders"</span>, <span class="k">"risk"</span>: <span class="ok">"safe"</span> }],
-            <span class="k">"max_risk"</span>: <span class="ok">"safe"</span> } }</div></div>
-        <p class="note"><b>max_risk: safe</b> → the gate stays open, no human needed. Run it.</p>
-      </div>
-
-      <div class="beat">
-        <div class="who server">server ← execute — result <em>with evidence</em></div>
-        <div class="wire res"><div class="hd"><span class="dir">←</span>run_sql · trace_level=summary</div>
-        <div class="code">{ <span class="k">"outcome"</span>: { <span class="k">"ok"</span>: <span class="ok">true</span> },
-  <span class="k">"output"</span>: { <span class="k">"rows"</span>: [ … <span class="n">2,184</span> rows … ] },
-  <span class="k">"trace"</span>: { <span class="k">"run_id"</span>: <span class="s">"run_9d21"</span>,
-    <span class="k">"steps"</span>: [{ <span class="k">"calls"</span>: <span class="s">"public.orders"</span>,
-      <span class="k">"rows_scanned"</span>: <span class="n">120540</span>, <span class="k">"rows_matched"</span>: <span class="n">118201</span>, <span class="k">"t_ms"</span>: <span class="n">412</span> }] } }</div></div>
-        <p class="note">Why the trace matters: if <b>rows_matched</b> had said <b>0</b>, the output would still “look fine” —
-        an empty-but-valid result. The trace is what lets the agent tell <b>correct</b> from <b>plausible</b>.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ EXAMPLE 2 — SMART HOME ═══════════════════════════════════════ -->
 <section>
   <div class="wrap">
-    <div class="eyebrow cy">worked example · 02</div>
-    <h2>Smart home — the risk gate earns its keep.</h2>
-    <p class="kicker">Mission: “when the front door opens after 22:00, light the porch.” Language: <code style="font:600 13px var(--mono);color:#AEE9EF">automation/1</code>. Catalog: the live device registry.</p>
-
-    <div class="story rv">
-      <div class="beat">
-        <div class="who agent">agent → draft an automation (it got creative)</div>
-        <div class="wire req"><div class="hd"><span class="dir">→</span>tools/call · validate_automation</div>
-        <div class="code">{ <span class="k">"program"</span>: {
-    <span class="k">"trigger"</span>:   { <span class="k">"entity"</span>: <span class="s">"sensor.front_door"</span>, <span class="k">"event"</span>: <span class="s">"opened"</span> },
-    <span class="k">"condition"</span>: { <span class="k">"after"</span>: <span class="s">"22:00"</span> },
-    <span class="k">"action"</span>: [
-      { <span class="k">"entity"</span>: <span class="s">"light.porch"</span>,      <span class="k">"do"</span>: <span class="s">"turn_on"</span> },
-      { <span class="k">"entity"</span>: <span class="s">"lock.front_door"</span>,  <span class="k">"do"</span>: <span class="err">"unlock"</span> } ] } }</div></div>
-        <p class="note">Syntactically perfect. Semantically… it decided to also <b>unlock the door</b>. Nobody asked for that.</p>
+    <h2>Why it exists</h2>
+    <p class="lead">Wherever agents meet sophisticated systems (a SQL engine, an automation
+    platform, a workflow processor), the same three problems repeat.</p>
+    <div class="grid g3">
+      <div class="card">
+        <span class="num">PROBLEM 1</span>
+        <h3>Schemas describe structure, not languages</h3>
+        <p>A JSON Schema can say a field is a string. It cannot teach the grammar the string
+        must be written in, the names it may reference, or the rules that make it meaningful.
+        The hard part of the input is exactly the part the schema cannot see.</p>
       </div>
-
-      <div class="beat">
-        <div class="who server">server ← valid — but look at the plan</div>
-        <div class="wire res"><div class="hd"><span class="dir">←</span>valid + plan</div>
-        <div class="code">{ <span class="k">"valid"</span>: <span class="ok">true</span>, <span class="k">"diagnostics"</span>: [],
-  <span class="k">"plan"</span>: { <span class="k">"steps"</span>: [
-      { <span class="k">"calls"</span>: <span class="s">"light.porch"</span>,     <span class="k">"risk"</span>: <span class="s">"write"</span> },
-      { <span class="k">"calls"</span>: <span class="s">"lock.front_door"</span>, <span class="k">"risk"</span>: <span class="err">"destructive"</span>,
-        <span class="k">"risk_hints"</span>: { <span class="k">"destructive"</span>: <span class="n">true</span> } }],
-    <span class="k">"max_risk"</span>: <span class="err">"destructive"</span> } }</div></div>
-        <p class="note">
-          <span class="badge-risk">▲ max_risk: destructive</span>&nbsp;&nbsp;The agent's loop —
-          which knows <b>nothing about smart homes</b> — hits its generic gate:
-          <em>destructive plans need a yes.</em> It asks the human, the human says
-          “absolutely not”, the unlock step is dropped. <b>The mistake died before it ran.</b>
-        </p>
+      <div class="card">
+        <span class="num">PROBLEM 2</span>
+        <h3>Complex work rarely succeeds in one call</h3>
+        <p>Real programs are drafted, checked, repaired, and only then run. A bare tool call
+        gives an agent one confident shot and an opaque failure. There is no standard way to
+        validate first, see the blast radius, or prove what actually happened.</p>
       </div>
-
-      <div class="beat">
-        <div class="who server">server ← a test run's trace — “nothing happened, and here's why”</div>
-        <div class="wire res"><div class="hd"><span class="dir">←</span>trace</div>
-        <div class="code">{ <span class="k">"outcome"</span>: { <span class="k">"ok"</span>: <span class="ok">true</span> },
-  <span class="k">"trace"</span>: { <span class="k">"steps"</span>: [], <span class="k">"decisions"</span>: [{
-      <span class="k">"at"</span>: <span class="s">"condition after 22:00"</span>,
-      <span class="k">"took"</span>: <span class="s">"skip"</span>,
-      <span class="k">"because"</span>: <span class="s">"time = 14:03"</span> }] } }</div></div>
-        <p class="note">Without <b>decisions</b>, a daytime test looks like a silent success and the agent ships a broken
-        automation. With it, the agent reads: <em>“it skipped because it's 14:03 — the logic is right, test again after ten.”</em></p>
+      <div class="card">
+        <span class="num">PROBLEM 3</span>
+        <h3>Competence does not scale when hardcoded</h3>
+        <p>Today each agent bakes in private knowledge of each system it drives. That
+        knowledge dies with the integration. Publishing competence on the server (checkable,
+        versioned, discoverable) makes it work once, for every agent.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ BUILD ═════════════════════════════════════════════════════════ -->
-<section id="build">
+<section style="padding-top:0">
   <div class="wrap">
-    <div class="eyebrow">for builders</div>
-    <h2>Ship a Pilotage server in five steps.</h2>
-    <p class="kicker">If you already run an MCP server, everything here is additive — same transport, same auth, same session model.</p>
-
-    <div class="check rv">
-      <div class="item"><div class="n">01</div><div>
-        <h4>Publish the manifest</h4>
-        <p>One document: your languages, where guides and the catalog live, and the names of your loop tools. Declare the extension in the <code>extensions</code> capability at <code>initialize</code>, point to the manifest from <code>_meta.pilotage.manifest</code>, and tag every program-valued tool with <code>_meta.pilotage.language</code>. Examples use the short <code>pilotage</code> key; the registered form is the reverse-DNS extension id <code>io.github.jafarsa0.pilotage</code>.</p>
-      </div></div>
-      <div class="item"><div class="n">02</div><div>
-        <h4>Write one small core guide</h4>
-        <p>≤ ~2k tokens, honest topics list, versioned. Add a reference guide that <b>enumerates your diagnostic codes</b> — the errors themselves must be learnable. Expose guides as resources <em>and</em> a <code>pilotage_get_guide</code> tool (some clients never show resources to the model).</p>
-      </div></div>
-      <div class="item"><div class="n">03</div><div>
-        <h4>Mount the catalog</h4>
-        <p>List (paged, filterable) + get, over whatever inventory you already have — <code>information_schema</code>, a device registry, a capability store. Stamp every response with a <code>catalog_version</code> so drift is detectable at execute time.</p>
-      </div></div>
-      <div class="item"><div class="n">04</div><div>
-        <h4>Expose your validator — and derive the plan</h4>
-        <p>You almost certainly have one (a parser, a linter, a schema checker). Wrap it: structured diagnostics with <code>code</code> · <code>path</code> · <code>message</code> · <code>hint</code>, strictly side-effect free. When valid, also return the plan: ordered steps + per-step risk + <code>max_risk</code>.</p>
-      </div></div>
-      <div class="item"><div class="n">05</div><div>
-        <h4>Return the trace with every execution</h4>
-        <p>The envelope is standard — <code>run_id</code>, ordered steps with input/output/outcome, and <code>decisions</code> for every branch. The <em>contents</em> of each step's payload stay yours: any JSON. That's the whole deal — standard loop, your language.</p>
-      </div></div>
-    </div>
-
-    <h3>What's mandated vs optional</h3>
-    <div class="tblwrap rv">
-      <table>
-        <thead><tr><th>Piece</th><th>Status</th><th>Note</th></tr></thead>
-        <tbody>
-          <tr><td>manifest + language tags</td><td><span class="m">MANDATED</span></td><td>the front door — without it, agents can't even find the rest</td></tr>
-          <tr><td>guides (1 small core + codes reference)</td><td><span class="m">MANDATED</span></td><td>topics, levels, token estimates, versions</td></tr>
-          <tr><td>catalog + catalog_version</td><td><span class="m">MANDATED*</span></td><td>*when programs reference live names; empty otherwise</td></tr>
-          <tr><td>validate (side-effect free, structured diagnostics)</td><td><span class="m">MANDATED</span></td><td>the one service every server must have</td></tr>
-          <tr><td>trace envelope (if you execute)</td><td><span class="m">MANDATED</span></td><td>envelope standard; step payloads engine-opaque</td></tr>
-          <tr><td>plan on valid</td><td><span class="o">OPTIONAL</span></td><td>declared in conformance; strongly recommended</td></tr>
-          <tr><td>explain / narration</td><td><span class="o">OPTIONAL</span></td><td>facts are the contract; prose is a bonus</td></tr>
-          <tr><td>catalog search / changed-since</td><td><span class="o">OPTIONAL</span></td><td>conformance flags</td></tr>
-          <tr><td>assertions (agent-declared postconditions)</td><td><span class="o">v2</span></td><td>the formal answer to “fully”</td></tr>
-        </tbody>
-      </table>
+    <h2>The contract</h2>
+    <p class="lead">Pilotage standardizes <b>the loop, not the language</b>. Any program
+    language a server speaks (SQL dialects, rule DSLs, workflow JSON) gets the same
+    verifiable envelope, expressed entirely with MCP's own primitives.</p>
+    <div class="grid g3">
+      <div class="card"><h3>Closed diagnostic codes</h3><p>Validation failures come from an enumerated set the server publishes, each with a machine-readable path into your program, repairable in one step, not guessable from prose.</p></div>
+      <div class="card"><h3>Risk in the plan, gated by the Host</h3><p>Before execution, the plan aggregates per-step risk up to <code>max_risk</code>. Destructive plans are approved by a human outside the model; the record decides what needs a signature.</p></div>
+      <div class="card"><h3>Drift refusals</h3><p>Pin a run to the <code>catalog_version</code> you validated against. If the world moved in between, the server refuses before anything executes: staleness is a value, not a surprise.</p></div>
+      <div class="card"><h3>Decisions on the record</h3><p>Traces record which branch ran and why, per iteration. “It succeeded but did nothing” stops being a mystery: the untaken arm is checkably absent.</p></div>
+      <div class="card"><h3>Failure is a value</h3><p>Invalid programs, drifted catalogs, and half-completed runs return as statuses with evidence: never crashes, never transport errors, never retry-bait.</p></div>
+      <div class="card"><h3>Exactly-once, on request</h3><p>Idempotency keys make retries safe: identical requests replay the recorded response, and reusing a key with a different payload is a loud, typed conflict.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ═══ WHY IT HOLDS ═════════════════════════════════════════════════ -->
-<section id="faq">
+<section style="padding-top:0">
   <div class="wrap">
-    <div class="eyebrow">why it holds</div>
-    <h2>Every piece of Pilotage already won somewhere else.</h2>
-    <p class="kicker">Pilotage invents almost nothing. It names a layer the world keeps rebuilding ad-hoc, and gives it one standard shape.</p>
-
-    <div class="prec rv">
-      <div class="p"><div class="nm">information_schema</div><div class="ds">databases have shipped a queryable catalog of their own live world for decades — it's where the word “catalog” comes from.</div></div>
-      <div class="p"><div class="nm">LSP</div><div class="ds">standardized diagnostics + language help for <em>hundreds</em> of languages by standardizing verbs and report shapes — never the languages. Pilotage's blueprint.</div></div>
-      <div class="p"><div class="nm">terraform plan</div><div class="ds">preview what would change, gate on it, detect drift before apply — Pilotage's plan + catalog_version, proven at scale.</div></div>
-      <div class="p"><div class="nm">EXPLAIN ANALYZE</div><div class="ds">execution evidence beside the result, because output alone can't prove the query was right. Pilotage's trace.</div></div>
-      <div class="p"><div class="nm">GraphQL introspection</div><div class="ds">one endpoint + a language + a machine-readable self-description — the vocabulary/language split, solved once already.</div></div>
-      <div class="p"><div class="nm">MCP destructiveHint · SEP-1303 · SEP-1862</div><div class="ds">the interface layer keeps conceding schemas aren't enough: destructive/read-only hints; validation errors fed back to the model (SEP-1303 — post-hoc, free-text); preflight per-op metadata (SEP-1862 — single call, no plan). Pilotage aligns with all three and adds the pre-run validate, the multi-step plan, the trace.</div></div>
+    <h2>See it catch the classic mistake</h2>
+    <p class="lead">Live output from <a href="https://github.com/jafarsa0/harborview">Harborview</a>,
+    the public example server, a simulated smart building speaking <code style="color:#AEE9EF">buildingflow/1</code>,
+    a language invented for it, which no model has ever seen in training. These exact
+    request/response pairs are replayed against the server in CI.</p>
+    <div class="split">
+      <div class="demo">
+        <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span class="lbl">request → validate_flow</span></div>
+        <pre>{
+  <span class="k">"flow"</span>: { <span class="k">"steps"</span>: [ {
+    <span class="k">"id"</span>: <span class="s">"on"</span>,
+    <span class="k">"do"</span>: <span class="s">"call"</span>,
+    <span class="k">"device"</span>: <span class="r">"light.loby"</span>,   <span class="cm">← typo</span>
+    <span class="k">"action"</span>: <span class="s">"turn_on"</span>
+  } ] }
+}</pre>
+      </div>
+      <div class="demo">
+        <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span class="lbl">response · live, replayed in CI</span></div>
+        <pre>{
+  <span class="k">"valid"</span>: <span class="r">false</span>,
+  <span class="k">"diagnostics"</span>: [ {
+    <span class="k">"severity"</span>: <span class="s">"error"</span>,
+    <span class="k">"code"</span>: <span class="s">"unknown_device"</span>,   <span class="cm">← closed set</span>
+    <span class="k">"path"</span>: <span class="s">"/steps/0/device"</span>,  <span class="cm">← exact member</span>
+    <span class="k">"message"</span>: <span class="s">"unknown device 'light.loby'"</span>,
+    <span class="k">"hint"</span>: <span class="g">"close match: light.lobby"</span>
+  } ],
+  <span class="k">"catalog_version"</span>: <span class="s">"cv_590fefad56a7a504"</span>
+}</pre>
+      </div>
     </div>
+    <p style="margin-top:16px;font-size:14px;color:var(--dim)">Not a stack trace, not a guess:
+    a closed code, a path, a hint. An agent repairs this deterministically and re-validates,
+    then runs with the catalog token pinned. Walk the whole loop in
+    <a href="https://github.com/jafarsa0/pilotage/blob/main/guides/01-your-first-verified-run.md">the first guide</a>, and the failure modes in
+    <a href="https://github.com/jafarsa0/pilotage/blob/main/guides/02-drift-risk-and-recovery.md">the second</a>.</p>
+  </div>
+</section>
 
-    <h3 style="margin-top:48px">Fair questions</h3>
-    <div class="rv">
-      <details>
-        <summary>How is this different from Agent Skills?</summary>
-        <div class="body">Different territory. Agent Skills teach agents how to do <b>tasks</b> — procedural know-how shipped as prose and files. Pilotage lives where an argument <b>is a program</b>: an agent authoring SQL, automations or workflows in a server's own language and proving the run was right. Skills are the <b>textbook</b>; Pilotage is the <b>chart, the pre-flight check and the voyage log</b>. And they compose rather than compete: Pilotage guides can travel as Skills-format guides over the Skills-over-MCP draft (SEP-2640) — Pilotage adopts that channel for distribution. The durable difference isn't where guidance lives but what kind it is: <b>prose can teach; only validate + plan + trace can be checked.</b></div>
-      </details>
-      <details>
-        <summary>Why isn't plain MCP enough?</summary>
-        <div class="body">MCP's schemas describe <b>records</b>. A program is a <b>sentence in a language</b> — its grammar, semantic rules and live references can't fit in JSON&nbsp;Schema. MCP's own answer is <code style="font-family:var(--mono)">InitializeResult.instructions</code> — officially pitched as <i>“a user manual for your server”</i> — but a manual is free text: nothing checks that it was read, followed, or still matches the live system. <b>Pilotage turns the user manual into a checkable contract</b> — versioned catalog, side-effect-free validate with closed diagnostic codes, a plan you can gate, a trace you can audit — using MCP's own primitives.</div>
-      </details>
-      <details>
-        <summary>Why an extension instead of a brand-new protocol?</summary>
-        <div class="body">Adoption economics. MCP already won the interface layer: transports, auth, clients all exist. Everything Pilotage needs is expressible as MCP tools + resources + one manifest. A standalone protocol would pay a huge cold-start cost for zero expressive gain. If the Pilotage extension earns gravity, it can graduate later — the GraphQL path. The adoption route is MCP's own Extensions Track of the SEP process.</div>
-      </details>
-      <details>
-        <summary>Does it need WebSockets or a new connection model?</summary>
-        <div class="body">No. The “live loop” is <b>logical</b>, not physical: validate → fix → validate → run → trace are ordinary request/response calls. MCP's Streamable HTTP (sessions via a header, SSE only for streaming) carries all of it unchanged.</div>
-      </details>
-      <details>
-        <summary>My engine's outputs don't look like anyone else's. How can this be standard?</summary>
-        <div class="body">That's the core rule: <b>standardize the loop, not the language.</b> Pilotage mandates envelopes — diagnostic shape, plan shape, trace shape — and leaves every payload inside them as engine-opaque JSON. The generic agent needs the envelope to run its loop; the domain reasoning happens on your payloads.</div>
-      </details>
-      <details>
-        <summary>What stops an agent from running something dangerous?</summary>
-        <div class="body">Three fences, in order: <b>validate</b> can reject it; the <b>plan</b> exposes per-step risk <i>before</i> execution and conformant agents must gate on <code style="font-family:var(--mono)">max_risk</code> (destructive ⇒ ask a human); and engines keep their own authz — Pilotage's risk signal is for generic gates, it never replaces your permissions.</div>
-      </details>
-      <details>
-        <summary>What does “fully and correctly” actually mean here?</summary>
-        <div class="body"><b>Correctly</b>: diagnostics kill syntax/semantic errors before running; the trace's <code style="font-family:var(--mono)">decisions</code> expose logic errors after. <b>Fully</b>: only the agent knows its mission, so it verifies the trace against it — and v2 adds <b>assertions</b>: agent-declared postconditions the engine checks mechanically against the trace.</div>
-      </details>
+<section style="padding-top:0" class="proof">
+  <div class="wrap">
+    <h2>Proof, not promises</h2>
+    <p class="lead">Every claim this site makes is executable.</p>
+    <div class="grid g3">
+      <div class="card">
+        <div class="big">54</div>
+        <div class="cap">conformance vectors: every reserved code, status, and error kind, both polarities</div>
+        <pre>cd conformance/harness
+npm install
+node harness.mjs</pre>
+        <p style="margin-top:10px">The runnable harness executes them against any live server.
+        <a href="https://github.com/jafarsa0/harborview">Harborview</a> passes 44, with all 10
+        non-reachable vectors skipped for stated reasons, on the record.</p>
+      </div>
+      <div class="card">
+        <div class="big">21</div>
+        <div class="cap">documented requests in the guides, replayed against the live server in CI</div>
+        <pre>cd guides
+node check-guides.mjs</pre>
+        <p style="margin-top:10px">The guides are not screenshots of a happy day. If the server
+        and the docs disagree, the build fails: the docs execute.</p>
+      </div>
+      <div class="card">
+        <div class="big">1</div>
+        <div class="cap">public reference server, free to try, isolated per session</div>
+        <pre>POST https://harborview
+     .jafarsa0.workers.dev/mcp</pre>
+        <p style="margin-top:10px">Apache-2.0, zero runtime dependencies, deterministic world.
+        Point any MCP client at it and drive a building.</p>
+      </div>
     </div>
+  </div>
+</section>
+
+<section style="padding-top:0" class="spec">
+  <div class="wrap">
+    <h2>The specification</h2>
+    <p class="lead">Four parts, one contract. Start with the story; the model is where the
+    guarantees live.</p>
+    <div class="grid g2">
+      <a class="card" href="https://github.com/jafarsa0/pilotage/blob/main/spec/part-i-story-and-positioning.md">
+        <span class="part">PART I</span><h3>Story &amp; positioning</h3>
+        <p>The three problems, the missing layer, related work, and why this belongs in MCP.</p>
+      </a>
+      <a class="card" href="https://github.com/jafarsa0/pilotage/blob/main/spec/part-ii-abstract-model.md">
+        <span class="part">PART II</span><h3>The abstract model</h3>
+        <p>Actors, capability declarations, the seven shapes, reserved statuses and codes,
+        trace identity, the processing order, and the trust model: the normative core.</p>
+      </a>
+      <a class="card" href="https://github.com/jafarsa0/pilotage/blob/main/spec/part-iii-mcp-binding.md">
+        <span class="part">PART III</span><h3>The MCP binding</h3>
+        <p>How the model rides on MCP: the manifest tool, the loop tools, reserved argument
+        names, error routing, and session binding.</p>
+      </a>
+      <a class="card" href="https://github.com/jafarsa0/pilotage/blob/main/spec/part-iv-implementation-notes.md">
+        <span class="part">PART IV</span><h3>Implementation notes</h3>
+        <p>Building servers on native and adapted engines, the both-polarity test method, and
+        the completeness gate.</p>
+      </a>
+      <a class="card" href="schemas/1.1/pilotage.schema.json">
+        <span class="part">SCHEMAS</span><h3>Machine-readable shapes</h3>
+        <p>JSON Schema (draft 2020-12) for every wire shape: manifests, plans, traces,
+        outcomes, errors.</p>
+      </a>
+      <a class="card" href="https://github.com/jafarsa0/pilotage/blob/main/conformance/README.md">
+        <span class="part">CONFORMANCE</span><h3>Vectors &amp; harness</h3>
+        <p>54 engine-neutral test vectors and the runnable harness that binds them to your
+        server.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="cite" style="padding:44px 0">
+  <div class="wrap">
+    <h2 style="font-size:20px">Cite it</h2>
+    <p class="lead" style="margin-bottom:0">Pilotage is archived on Zenodo; the concept DOI
+    always resolves to the latest version.</p>
+    <pre>Alaboosi, J. N. J. (2026). Pilotage: an MCP extension for guided program authoring
+and verified execution (v1.1). Zenodo. https://doi.org/10.5281/zenodo.21396027</pre>
   </div>
 </section>
 
 <footer>
-  <div class="wrap frow">
-    <div>
-      <span class="mark" style="font-size:13px"><i style="width:16px;height:16px"></i>Pilotage — an MCP extension</span>
-      <div class="mono" style="margin-top:8px">an MCP extension for guided program authoring and verified execution<br>v1.0.1 · extension id: io.github.jafarsa0.pilotage · spec: SPEC.md</div>
-    </div>
-    <div class="mono" style="text-align:right">
-      authored by Jaafar Nadher Jaafar Alaboosi<br>
-      engine-neutral by design<br>
-      schemas teach the moves — pilotage teaches the game
+  <div class="wrap">
+    <div>© 2026 Jaafar Nadher Jaafar Alaboosi</div>
+    <div class="mono">io.github.jafarsa0/pilotage</div>
+    <div style="margin-left:auto;display:flex;gap:16px">
+      <a href="https://github.com/jafarsa0/pilotage">GitHub</a>
+      <a href="https://doi.org/10.5281/zenodo.21396027">DOI</a>
+      <a href="llms.txt">llms.txt</a>
     </div>
   </div>
 </footer>
 
-<script>
-(function(){
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var els = document.querySelectorAll('.rv');
-  if(reduce || !('IntersectionObserver' in window)){
-    els.forEach(function(e){ e.classList.add('in'); });
-    return;
-  }
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(en){
-      if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
-    });
-  }, {threshold:.12});
-  els.forEach(function(e){ io.observe(e); });
-})();
-</script>
 </body>
 </html>

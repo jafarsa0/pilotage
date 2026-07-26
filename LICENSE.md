@@ -1,34 +1,43 @@
 # License
 
-**Pilotage — an MCP extension for guided program authoring and verified
-execution** (the specification text, the illustrated overview, and all
-accompanying documentation in this repository)
+This repository contains two classes of material under two licenses.
 
-Copyright © 2026 Jaafar Nadher Jaafar Alaboosi
+## Specification text: CC BY 4.0
 
-This work is licensed under the **Creative Commons Attribution 4.0
-International License (CC BY 4.0)**.
+The specification documents (`SPEC.md`, everything under `spec/`, and the
+repository's prose documentation) are
 
-You are free to:
+© 2026 Jaafar Nadher Jaafar Alaboosi
 
-- **Share** — copy and redistribute the material in any medium or format, for
-  any purpose, even commercially.
-- **Adapt** — remix, transform, and build upon the material, for any purpose,
-  even commercially.
+and are licensed under the Creative Commons Attribution 4.0 International
+License (CC BY 4.0). You are free to share and adapt this material for any
+purpose, including commercially, provided you give appropriate credit.
 
-Under the following terms:
+Full license text: <https://creativecommons.org/licenses/by/4.0/legalcode>
 
-- **Attribution** — You must give appropriate credit to
-  **Jaafar Nadher Jaafar Alaboosi**, provide a link to this license, and
-  indicate if changes were made. You may do so in any reasonable manner, but
-  not in any way that suggests the licensor endorses you or your use.
-- **No additional restrictions** — You may not apply legal terms or
-  technological measures that legally restrict others from doing anything the
-  license permits.
+## Machine-readable artifacts: Apache-2.0
 
-The full legal text of the license is available at:
-https://creativecommons.org/licenses/by/4.0/legalcode
+The contents of `schemas/` and `conformance/` are
 
-JSON examples and schema fragments contained in the specification may be used
-in implementations without restriction; attribution for the specification text
-itself remains required as above.
+Copyright 2026 Jaafar Nadher Jaafar Alaboosi
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use these files except in compliance with the License. You may obtain a
+copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.
+
+The full Apache-2.0 license text is included in this repository as
+[LICENSE-APACHE](./LICENSE-APACHE).
+
+This split exists so that implementers can embed the schemas and test
+vectors directly in their software under a standard code license, while the
+specification text carries the attribution norm appropriate to a published
+standard. It also matches the MCP extensions ecosystem's convention of
+Apache-2.0 for extension artifacts.

@@ -1,0 +1,7 @@
+PASS  every light is on  — light.lobby, light.floor2_east, light.floor2_west
+PASS  dock door is unlocked
+PASS  automation installed on sensor.door_dock.opened  — auto_001
+SKIP  alarm stays silent before 21:00  — session clock already at 21:05
+PASS  after-hours dock opening notifies facilities  — run run_0005
+
+report card: 4 passed, 0 failed, 1 skipped

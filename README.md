@@ -2,115 +2,83 @@
 
 [![DOI](https://zenodo.org/badge/1302736087.svg)](https://doi.org/10.5281/zenodo.21396027)
 
-**An MCP extension for guided program authoring and verified execution.**
+**A competence layer for complex MCP tools.**
 
 > Schemas teach the moves. **Pilotage teaches the game.**
 
-MCP taught agents *what to call*: tools with JSON-Schema inputs. But a schema can
-only describe a record — it cannot teach a **language**. The moment a tool's
-argument is a *program* (a SQL query, an automation rule, a workflow document),
-the agent needs four things no schema can carry: the **grammar** of the language,
-the **live world** the program refers to, a **checker** that catches mistakes
-before anything runs, and a **trace** that proves afterwards the program did the
-right thing.
+MCP standardizes how agents connect to tools. But many real tools do not
+accept simple arguments; they accept queries, workflows, automation rules,
+and other **programs**. To use them correctly, an agent must learn the
+payload's language, discover the live environment it refers to, check its
+work before anything runs, and verify afterwards what actually happened.
 
-Pilotage is a small, standard shape for exactly those four things — expressed
-entirely with MCP's own primitives, so that **one generic agent loop works
-against any system that adopts it**.
-
-> MCP gave servers a user manual. **Pilotage turns the user manual into a
-> checkable contract.**
-
-- **Read the specification:** [SPEC.md](./SPEC.md)
-- **Read the illustrated overview:** [index.html](./index.html) (open locally, or
-  via GitHub Pages once enabled)
-- **Status:** v1.0.1 · extension id `io.github.jafarsa0.pilotage`
-- **Author:** Jaafar Nadher Jaafar Alaboosi
-
----
-
-## Why
-
-Two problems, one loop:
-
-1. **Program-valued arguments.** `run_workflow {workflow: object}` or
-   `query {sql: string}` is legal MCP, but the schema says nothing an author
-   needs — not the syntax, not the semantic rules, not which names exist right
-   now. Today every provider papers over this gap with prose: tool descriptions
-   carrying folklore, README files, cookbooks, skills files. All prose. None
-   machine-checkable. No standard place to look.
-2. **Converging on "fully and correctly."** A syntactically perfect program can
-   be logically wrong, and a plausible-looking result can hide the bug — a
-   filter that matched zero rows plus a default fallthrough *looks* fine. Human
-   developers catch this with compilers, dry runs, and traces. Agents today get
-   only the return value.
+Today that competence is rebuilt inside every agent: prompts, custom
+orchestration, hand-built integrations: an N×M cost. Pilotage moves it to
+the one party that already owns the knowledge: the MCP server. The server
+teaches once, through a **checkable** interface (a manifest read at the
+handshake, navigable guides, a versioned live catalog, side-effect-free
+validation with closed diagnostic codes, a pre-run plan with comparable
+risk, and an execution trace with branch decisions on the record), and any
+compatible agent learns through one standard loop:
 
 ```
-LEARN the language  →  AUTHOR a program   →  CONVERGE on correct
-    (guides)           (catalog + draft)     (validate → plan → execute → trace)
+manifest → guides → catalog → validate + plan → execute → trace
 ```
 
-## The five pieces
+Seven layers, five tools, one handshake, and the agent at the center,
+deciding what to call and when.
 
-| Piece | What it is |
-|---|---|
-| **manifest** | The front door: which languages this server accepts programs in, where the guides and catalog live, which loop services exist. |
-| **guides** | The grammar, made navigable — topics, levels, token estimates, versions. At least one small *core* guide, by rule. |
-| **catalog** | The live world the programs refer to (tables, devices, capabilities) — queryable, paged, and **versioned** (`catalog_version` makes drift detectable). |
-| **validate + plan** | A mandatory, side-effect-free check returning structured diagnostics (`code · path · message · hint`, with `code` from a closed enumerated set) — and, when valid, a **plan**: the steps that would run, each with a risk level, for a generic go/no-go gate. |
-| **execute + trace** | Results carry evidence: an ordered trace of every step — inputs, outputs, outcomes, and `decisions[]` recording which way every branch went and why. |
+**MCP addressed N×M connectivity. Pilotage addresses the N×M competence
+problem that appears after the connection is established.**
 
-A sixth element — **risk** — is cross-cutting rather than a piece of its own: every catalog entry and every plan step carries a comparable danger class, aligned with MCP's tool annotations, so a generic gate can say no without understanding your domain.
+## Start here
 
-The governing rule for all of it: **standardize the loop, not the language.**
-Pilotage mandates the verbs and the report envelopes — never the languages
-themselves. Your SQL stays SQL; your workflow language stays yours.
+- **[SPEC.md](./SPEC.md)**: the specification index (four parts: story,
+  abstract model, MCP binding, implementation notes)
+- **[guides/](./guides/01-your-first-verified-run.md)**: walk the loop
+  against the live example server in five minutes. The guides are *docs
+  that execute*: every request/response shown is replayed against the
+  server in CI (`guides/check-guides.mjs`)
+- **[schemas/](./schemas/1.1/pilotage.schema.json)**: machine-readable
+  JSON Schemas for every data shape
+- **[conformance/](./conformance/README.md)**: 54 engine-neutral test
+  vectors, plus a runnable harness that executes them against any live
+  server
+- **[Harborview](https://github.com/jafarsa0/harborview)**: the public
+  example server: a simulated smart building at
+  `POST https://harborview.jafarsa0.workers.dev/mcp`, isolated per session
 
-## The standard agent loop
+## What Pilotage is (and is not)
 
-```
-manifest → core guide → catalog query → draft
-→ validate (fix until clean) → review plan (risk gate)
-→ execute with trace → check trace against the mission → done · promote
-```
+Pilotage is an **MCP extension**: identifier
+`io.github.jafarsa0/pilotage`, negotiated through MCP's extensions
+capability map, built entirely from MCP's own primitives. No new transport,
+no new session model: if your system speaks MCP, Pilotage is additive.
 
-A conformant agent implements this loop once and works against every conformant
-server — whether the programs are SQL, home-automation rules, or workflows. The
-spec walks all three examples end to end.
+It standardizes **the loop, not the language**: your SQL stays SQL, your
+workflow format stays yours. And it is honest about trust: Pilotage makes a
+cooperative server more understandable and more checkable; it does not
+make a malicious server safe. The trust boundary is stated normatively in
+the specification.
 
-## Prior art, honestly
+## Status
 
-Pilotage sits in a busy, healthy neighborhood and cites it precisely: Anthropic
-Agent Skills (task-level prose teaching), MCP's `InitializeResult.instructions`
-(the per-server prose manual), SEP-2640 (skills served over MCP), SEP-1303
-(post-hoc validation errors), SEP-1862 (`tools/resolve` pre-flight metadata),
-and A2A's traceability sample. What none of them provide — and what Pilotage
-adds — is the **checkable** part: the versioned catalog, the pre-run structured
-validate, the multi-step risk plan, the decision-bearing trace, the
-program-in-grammar declaration, and the standard loop that binds them. See
-[SPEC.md §2](./SPEC.md#2-prior-art--positioning) for the full positioning table.
+- **1.1.0**, the current release: the four-part specification, JSON
+  Schemas, conformance vectors with a runnable harness, and executable
+  guides backed by a public example server. Supports MCP `2025-06-18` and later,
+  including the stateless `2026-07-28` revision (a release candidate at the time of writing; final scheduled 2026-07-28).
+- Earlier: 1.0.1 (2026-07-18), the first published specification, refined
+  from the first reference implementation. See
+  [CHANGELOG.md](./CHANGELOG.md).
 
-## Adoption path
+## Contributing, security, citing
 
-Pilotage is designed as an **MCP extension**: declared under the reverse-DNS id
-`io.github.jafarsa0.pilotage` in MCP's `extensions` capability negotiation, following
-the Extensions Track of the MCP SEP process. No new transport, no new session
-model — if your system speaks MCP today, Pilotage is additive.
+- Propose changes via issues and pull requests:
+  [CONTRIBUTING.md](./CONTRIBUTING.md)
+- Report security-relevant spec issues: [SECURITY.md](./SECURITY.md)
+- Cite this work: [CITATION.cff](./CITATION.cff) (GitHub's "Cite this
+  repository" button) · archived on Zenodo under concept DOI
+  [10.5281/zenodo.21396027](https://doi.org/10.5281/zenodo.21396027)
 
-## Status & roadmap
-
-- **v1.0.1 (this repository)** — the full specification, with the trace
-  control-flow rule, program-or-reference execute, and native/adapted
-  diagnostic tiers firmed up from the first reference implementation.
-- **v1.1** — long-running executions (progress notifications), firmed-up
-  catalog `changed_since`.
-- **v2** — assertions (agent-declared postconditions checked against the
-  trace), contextual policy, multi-language composition.
-
-## License & citation
-
-Text and specification © 2026 Jaafar Nadher Jaafar Alaboosi, released under
-[CC BY 4.0](./LICENSE.md) — use it freely, with attribution. To cite this work,
-see [CITATION.cff](./CITATION.cff) or use GitHub's "Cite this repository"
-button. Permanently archived on Zenodo: DOI
-[10.5281/zenodo.21396027](https://doi.org/10.5281/zenodo.21396027).
+Text © 2026 Jaafar Nadher Jaafar Alaboosi, CC BY 4.0. Schemas and
+conformance vectors: Apache-2.0.

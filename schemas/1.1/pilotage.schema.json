@@ -1,0 +1,537 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pilotagespec.org/schemas/1.1/pilotage.schema.json",
+  "title": "Pilotage 1.1: data shapes",
+  "description": "JSON Schema (2020-12) for every data shape of the Pilotage MCP extension (io.github.jafarsa0/pilotage), Part II of the specification, in the MCP binding of Part III. These schemas validate SHAPE only: conditional-presence rules that depend on the effective capability map (for example, 'M when execute is declared') and cross-object rules (for example, plan-trace correspondence) are normative in the specification text and are not expressible here. Receivers ignore unknown members (Part II Section 1.2); schemas therefore never set additionalProperties: false. Every enum in this file is closed for version 1.1 only: later minor versions may add reserved values, which Clients handle via the conservative fallbacks of Part II Section 1.3; validators pinned to this file will reject such values by design.",
+  "$comment": "Text of the specification: CC BY 4.0. This schema file: Apache-2.0.",
+  "$defs": {
+    "VersionString": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "description": "Extension version, major.minor (Part II 11.1)."
+    },
+    "LanguageIdentifier": {
+      "type": "string",
+      "pattern": "^[^/]+/[^/]+$",
+      "description": "Language identifier, family/version (Part II 3.3)."
+    },
+    "CapabilitySettings": {
+      "type": "object",
+      "description": "Sub-feature booleans for one capability (Part II 4.2). Unknown members are ignored.",
+      "properties": {
+        "search": { "type": "boolean" },
+        "changed_since": { "type": "boolean" },
+        "topic_fetch": { "type": "boolean" },
+        "test_run": { "type": "boolean" },
+        "idempotency": { "type": "boolean" },
+        "narrate": { "type": "boolean" }
+      }
+    },
+    "CapabilityValue": {
+      "anyOf": [
+        { "type": "boolean" },
+        { "$ref": "#/$defs/CapabilitySettings" }
+      ]
+    },
+    "CapabilityDeclaration": {
+      "type": "object",
+      "description": "Map from capability identifier to true or a sub-feature object (Part II 4.2).",
+      "properties": {
+        "guides": { "$ref": "#/$defs/CapabilityValue" },
+        "catalog": { "$ref": "#/$defs/CapabilityValue" },
+        "validate": { "$ref": "#/$defs/CapabilityValue" },
+        "plan": { "$ref": "#/$defs/CapabilityValue" },
+        "execute": { "$ref": "#/$defs/CapabilityValue" },
+        "trace_fetch": { "$ref": "#/$defs/CapabilityValue" }
+      }
+    },
+    "LoopObject": {
+      "type": "object",
+      "description": "Server-selected loop tool names (Part III 4.3). Names present must match the effective capability map (Part II 4.3 rule 7).",
+      "properties": {
+        "validate": { "type": "string" },
+        "execute": { "type": "string" },
+        "trace": { "type": "string" }
+      },
+      "required": ["validate"]
+    },
+    "Retention": {
+      "description": "Run retention (Part II 6.6): none, session, or an ISO 8601 duration.",
+      "anyOf": [
+        { "type": "string", "enum": ["none", "session"] },
+        {
+          "type": "string",
+          "pattern": "^P(?!$)([0-9]+Y)?([0-9]+M)?([0-9]+W)?([0-9]+D)?(T(?=[0-9])([0-9]+H)?([0-9]+M)?([0-9]+(\\.[0-9]+)?S)?)?$"
+        }
+      ]
+    },
+    "LanguageEntry": {
+      "type": "object",
+      "description": "One exposed Language (Part II 5.1; reference fields bound per Part III Section 4).",
+      "properties": {
+        "name": { "$ref": "#/$defs/LanguageIdentifier" },
+        "title": { "type": "string" },
+        "guides": {
+          "const": "pilotage_get_guide",
+          "description": "Bound to the fixed access-tool name in the MCP binding (Part III Section 4)."
+        },
+        "catalog": {
+          "const": "pilotage_catalog",
+          "description": "Bound to the fixed access-tool name in the MCP binding (Part III Section 4). Present iff catalog is declared."
+        },
+        "guides_resource": { "type": "string", "description": "Optional resource URI of the guide index (Part III Section 4)." },
+        "catalog_resource": { "type": "string", "description": "Optional resource URI of the catalog (Part III Section 4)." },
+        "loop": { "$ref": "#/$defs/LoopObject" },
+        "capabilities": { "$ref": "#/$defs/CapabilityDeclaration" },
+        "locator": { "type": "string", "enum": ["json-pointer", "text-range"] },
+        "context_schema": {
+          "type": "object",
+          "description": "JSON Schema of the context value. Present iff the Language requires validation context (Part II 5.1).",
+          "$comment": "Boolean-form JSON Schemas are deliberately excluded in this binding, following MCP's object-schema convention (applies equally to input_schema and output_schema)."
+        },
+        "execution": { "type": "string", "enum": ["immediate", "deploy", "both"] },
+        "trace": { "type": "string", "enum": ["summary", "full"] },
+        "trace_subprogram": { "type": "string", "enum": ["opaque", "expanded"], "default": "opaque" },
+        "retention": { "$ref": "#/$defs/Retention" },
+        "promotion_authority": { "type": "string", "enum": ["caller", "promoter"], "default": "caller" }
+      },
+      "required": ["name", "title", "guides", "loop", "locator"],
+      "$comment": "locator is unconditionally required: the Part II 4.3 capability floor makes validate mandatory for every Language, and locator is required whenever validate is declared."
+    },
+    "Manifest": {
+      "type": "object",
+      "description": "The Server's self-description (Part II 5.1).",
+      "properties": {
+        "pilotage": { "$ref": "#/$defs/VersionString" },
+        "languages": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/LanguageEntry" },
+          "minItems": 1
+        },
+        "capabilities": { "$ref": "#/$defs/CapabilityDeclaration" }
+      },
+      "required": ["pilotage", "languages"],
+      "anyOf": [
+        { "required": ["capabilities"] },
+        {
+          "properties": {
+            "languages": { "items": { "required": ["capabilities"] } }
+          }
+        }
+      ],
+      "$comment": "The anyOf enforces Part II 4.2: every Language needs a Server-level or Language-level capability declaration."
+    },
+    "Guide": {
+      "type": "object",
+      "description": "One guide's metadata (Part II 5.2). The body member exists only in the fetch form (Part III 4.1).",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "level": { "type": "string", "enum": ["core", "reference", "examples"] },
+        "topics": { "type": "array", "items": { "type": "string" } },
+        "language": { "$ref": "#/$defs/LanguageIdentifier" },
+        "version": { "type": "string" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "tokens_estimate": { "type": "integer", "minimum": 0 },
+        "format": { "type": "string", "default": "text/markdown" },
+        "body": { "type": "string" }
+      },
+      "required": ["id", "title", "level", "topics", "language", "version", "size_bytes"]
+    },
+    "GuideIndexResult": {
+      "type": "object",
+      "description": "pilotage_get_guide index form (Part III 4.1). Index entries never carry a body.",
+      "properties": {
+        "guides": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/Guide" },
+              { "not": { "required": ["body"] } }
+            ]
+          }
+        }
+      },
+      "required": ["guides"]
+    },
+    "GuideFetchResult": {
+      "type": "object",
+      "description": "pilotage_get_guide fetch/topic form (Part III 4.1).",
+      "properties": {
+        "guide": {
+          "allOf": [ { "$ref": "#/$defs/Guide" } ],
+          "required": ["body"]
+        }
+      },
+      "required": ["guide"]
+    },
+    "RiskHints": {
+      "type": "object",
+      "description": "Generic comparable risk booleans (Part II 5.3).",
+      "properties": {
+        "readOnly": { "type": "boolean" },
+        "destructive": { "type": "boolean" },
+        "openWorld": { "type": "boolean" }
+      },
+      "required": ["readOnly", "destructive", "openWorld"]
+    },
+    "CatalogEntry": {
+      "type": "object",
+      "description": "One environment-bound name (Part II 5.4). input_schema is required for callable kinds (normative in text; kind-dependence not expressible here).",
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "input_schema": { "type": "object" },
+        "output_schema": { "type": ["object", "null"] },
+        "risk": { "type": "string" },
+        "risk_hints": { "$ref": "#/$defs/RiskHints" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "languages": { "type": "array", "items": { "$ref": "#/$defs/LanguageIdentifier" } },
+        "revision": { "type": "string" }
+      },
+      "required": ["id", "kind", "name", "risk", "risk_hints"]
+    },
+    "CatalogListResult": {
+      "type": "object",
+      "description": "lookup list response (Part II 6.3).",
+      "properties": {
+        "items": { "type": "array", "items": { "$ref": "#/$defs/CatalogEntry" } },
+        "next_cursor": { "type": "string" },
+        "catalog_version": { "type": "string" }
+      },
+      "required": ["items", "catalog_version"]
+    },
+    "CatalogGetResult": {
+      "type": "object",
+      "description": "lookup get response (Part II 6.3).",
+      "properties": {
+        "entry": { "$ref": "#/$defs/CatalogEntry" },
+        "catalog_version": { "type": "string" }
+      },
+      "required": ["entry", "catalog_version"]
+    },
+    "CatalogChangedResult": {
+      "type": "object",
+      "description": "lookup changed_since response (Part II 6.3).",
+      "properties": {
+        "catalog_version": { "type": "string" },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "change": { "type": "string", "enum": ["added", "removed", "modified"] }
+            },
+            "required": ["id", "change"]
+          }
+        }
+      },
+      "required": ["catalog_version", "changes"]
+    },
+    "TextPosition": {
+      "type": "object",
+      "properties": {
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 }
+      },
+      "required": ["line", "column"]
+    },
+    "TextRange": {
+      "type": "object",
+      "description": "1-based text range (Part II 5.5).",
+      "properties": {
+        "start": { "$ref": "#/$defs/TextPosition" },
+        "end": { "$ref": "#/$defs/TextPosition" }
+      },
+      "required": ["start", "end"]
+    },
+    "Diagnostic": {
+      "type": "object",
+      "description": "One validation finding (Part II 5.5). path is a JSON Pointer string (json-pointer dialect, or input/context findings) or a TextRange (text-range dialect).",
+      "properties": {
+        "severity": { "type": "string", "enum": ["error", "warning"] },
+        "code": { "type": "string" },
+        "path": {
+          "anyOf": [
+            { "type": "string" },
+            { "$ref": "#/$defs/TextRange" }
+          ]
+        },
+        "range": { "$ref": "#/$defs/TextRange" },
+        "message": { "type": "string" },
+        "hint": { "type": "string" }
+      },
+      "required": ["severity", "code", "path", "message"]
+    },
+    "PlanStep": {
+      "type": "object",
+      "description": "One plan step (Part II 5.6). calls present iff the step invokes a reference; arm present iff inside a branch arm; loop present iff inside a loop body.",
+      "properties": {
+        "id": { "type": "string" },
+        "calls": { "type": "string" },
+        "arm": {
+          "type": "object",
+          "properties": {
+            "branch": { "type": "string" },
+            "label": { "type": "string" }
+          },
+          "required": ["branch", "label"]
+        },
+        "loop": { "type": "string" },
+        "risk": { "type": "string" },
+        "risk_hints": { "$ref": "#/$defs/RiskHints" }
+      },
+      "required": ["id", "risk", "risk_hints"]
+    },
+    "Plan": {
+      "type": "object",
+      "description": "Statically derived execution preview (Part II 5.6).",
+      "properties": {
+        "steps": { "type": "array", "items": { "$ref": "#/$defs/PlanStep" } },
+        "max_risk": { "type": "string" },
+        "max_risk_hints": { "$ref": "#/$defs/RiskHints" }
+      },
+      "required": ["steps", "max_risk", "max_risk_hints"]
+    },
+    "Outcome": {
+      "type": "object",
+      "description": "Closed Run classification (Part II 5.7). error is null iff ok is true.",
+      "properties": {
+        "ok": { "type": "boolean" },
+        "status": { "type": "string" },
+        "error": { "type": ["string", "null"] }
+      },
+      "required": ["ok", "status", "error"],
+      "allOf": [
+        {
+          "if": { "properties": { "ok": { "const": true } }, "required": ["ok"] },
+          "then": { "properties": { "error": { "type": "null" } } },
+          "else": { "properties": { "error": { "type": "string" } } }
+        }
+      ]
+    },
+    "Decision": {
+      "type": "object",
+      "description": "One control-flow decision (Part II 5.8).",
+      "properties": {
+        "at": { "type": "string" },
+        "took": { "type": "string" },
+        "because": { "type": "string" }
+      },
+      "required": ["at", "took", "because"]
+    },
+    "TraceStep": {
+      "type": "object",
+      "description": "One executed step (Part II 5.8). input/output presence depends on the effective level and step class (normative in text). decisions is required for control-flow steps.",
+      "properties": {
+        "id": { "type": "string" },
+        "calls": { "type": "string" },
+        "input": {},
+        "output": {},
+        "outcome": { "$ref": "#/$defs/Outcome" },
+        "t_ms": { "type": "integer", "minimum": 0 },
+        "decisions": { "type": "array", "items": { "$ref": "#/$defs/Decision" } }
+      },
+      "required": ["id", "outcome"]
+    },
+    "Trace": {
+      "type": "object",
+      "description": "The recorded account of a Run (Part II 5.8).",
+      "properties": {
+        "run_id": { "type": "string" },
+        "level": { "type": "string", "enum": ["summary", "full"] },
+        "steps": { "type": "array", "items": { "$ref": "#/$defs/TraceStep" } },
+        "stats": { "type": "object" }
+      },
+      "required": ["run_id", "level", "steps"]
+    },
+    "ValidateResponse": {
+      "type": "object",
+      "description": "validate response (Part II 6.4). diagnostics is always present: an empty array means no findings. catalog_version present for catalog-bearing Languages; plan present when plan is declared and valid is true; references per Part II 6.4 rule 5.",
+      "properties": {
+        "valid": { "type": "boolean" },
+        "diagnostics": { "type": "array", "items": { "$ref": "#/$defs/Diagnostic" } },
+        "catalog_version": { "type": "string" },
+        "plan": { "$ref": "#/$defs/Plan" },
+        "references": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["valid", "diagnostics"]
+    },
+    "ExecuteRequest": {
+      "type": "object",
+      "description": "execute request (Part II 6.5). Exactly one of program or program_ref (Part II 6.5.1). test_run is accepted only when execute.test_run is declared (normative in text). This def is a conformance validator for wire values; it is not a template for a loop tool's declared inputSchema, where Part III 4.6 forbids value enums and cross-member constraints on reserved members.",
+      "properties": {
+        "program": { "description": "Inline program; shape is Language-defined." },
+        "program_ref": { "type": "string", "description": "Reference to a promoted program." },
+        "input": { "description": "Input value bound per Part II 6.5.5." },
+        "context": { "description": "Validation context value bound per Part II 6.5.5." },
+        "trace_level": { "type": "string", "enum": ["none", "summary", "full"] },
+        "expected_catalog_version": { "type": "string" },
+        "idempotency_key": { "type": "string" },
+        "test_run": { "type": "boolean" },
+        "store": {
+          "type": "boolean",
+          "description": "Optional retention override (Part II 6.5). Omitted: the Language's declared retention policy governs. true: the Server MUST retain the run record for later trace fetch; a Language declaring retention 'none' MUST reject the request with a request error of kind 'unsupported', never silently ignore. false: the Server MUST NOT retain the record beyond this response. run_id is returned in every case. store and trace_level are independent: store true with trace_level 'none' is valid: no inline trace, record still retained at the declared trace capability level. store applies only to started Runs; a refused Run is never retained."
+        }
+      },
+      "oneOf": [
+        { "required": ["program"] },
+        { "required": ["program_ref"] }
+      ],
+      "$comment": "The oneOf enforces Part II 6.5.1: a request containing both program and program_ref, or neither, is a request error."
+    },
+    "ExecuteResponse": {
+      "type": "object",
+      "description": "execute response (Part II 6.5). diagnostics required when status is validation_error; trace required for started Runs at effective level summary/full; output only when ok is true.",
+      "properties": {
+        "run_id": { "type": "string" },
+        "outcome": { "$ref": "#/$defs/Outcome" },
+        "output": {},
+        "diagnostics": { "type": "array", "items": { "$ref": "#/$defs/Diagnostic" } },
+        "trace": { "$ref": "#/$defs/Trace" }
+      },
+      "required": ["run_id", "outcome"],
+      "allOf": [
+        {
+          "if": {
+            "properties": { "outcome": { "properties": { "status": { "const": "validation_error" } }, "required": ["status"] } },
+            "required": ["outcome"]
+          },
+          "then": { "required": ["diagnostics"] }
+        }
+      ]
+    },
+    "TraceFetchRequest": {
+      "type": "object",
+      "description": "trace fetch request (Part II 6.6): retrieve the stored trace of a started Run by run_id. Returned detail is min(requested, recorded); question only where trace_fetch.narrate is declared. This def is a conformance validator for wire values; it is not a template for a loop tool's declared inputSchema, where Part III 4.6 forbids value enums and cross-member constraints on reserved members.",
+      "properties": {
+        "run_id": { "type": "string" },
+        "trace_level": { "type": "string", "enum": ["summary", "full"] },
+        "question": { "type": "string" }
+      },
+      "required": ["run_id"]
+    },
+    "TraceFetchResponse": {
+      "type": "object",
+      "description": "trace fetch response (Part II 6.6). output present where retained; narration only where trace_fetch.narrate is declared.",
+      "properties": {
+        "run_id": { "type": "string" },
+        "outcome": { "$ref": "#/$defs/Outcome" },
+        "output": {},
+        "trace": { "$ref": "#/$defs/Trace" },
+        "narration": { "type": "string" }
+      },
+      "required": ["run_id", "outcome", "trace"]
+    },
+    "RequestError": {
+      "type": "object",
+      "description": "Request-error structuredContent (Part III 7.2). Operation-mandated siblings (for example catalog_version on catalog get errors) appear beside error.",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["not_found", "invalid_request", "unknown_baseline", "idempotency_conflict", "bounds_exceeded", "unsupported", "internal"],
+              "$comment": "Closed set for this minor version; later minors may add kinds. Clients treat unrecognized kinds as internal (Part III 7.2)."
+            },
+            "message": { "type": "string" }
+          },
+          "required": ["kind", "message"]
+        },
+        "catalog_version": { "type": "string" }
+      },
+      "required": ["error"]
+    },
+    "ManifestToolOutput": {
+      "description": "outputSchema union for pilotage_manifest (Part III Section 6).",
+      "anyOf": [
+        { "$ref": "#/$defs/Manifest" },
+        { "$ref": "#/$defs/RequestError" }
+      ]
+    },
+    "GetGuideToolOutput": {
+      "description": "outputSchema union for pilotage_get_guide (Part III Section 6).",
+      "anyOf": [
+        { "$ref": "#/$defs/GuideIndexResult" },
+        { "$ref": "#/$defs/GuideFetchResult" },
+        { "$ref": "#/$defs/RequestError" }
+      ]
+    },
+    "CatalogToolOutput": {
+      "description": "outputSchema union for pilotage_catalog (Part III Section 6).",
+      "anyOf": [
+        { "$ref": "#/$defs/CatalogListResult" },
+        { "$ref": "#/$defs/CatalogGetResult" },
+        { "$ref": "#/$defs/CatalogChangedResult" },
+        { "$ref": "#/$defs/RequestError" }
+      ]
+    },
+    "ValidateToolOutput": {
+      "description": "outputSchema union for a validate loop tool (Part III Section 6).",
+      "anyOf": [
+        { "$ref": "#/$defs/ValidateResponse" },
+        { "$ref": "#/$defs/RequestError" }
+      ]
+    },
+    "ExecuteToolOutput": {
+      "description": "outputSchema union for an execute loop tool (Part III Section 6).",
+      "anyOf": [
+        { "$ref": "#/$defs/ExecuteResponse" },
+        { "$ref": "#/$defs/RequestError" }
+      ]
+    },
+    "TraceToolOutput": {
+      "description": "outputSchema union for a trace fetch loop tool (Part III Section 6).",
+      "anyOf": [
+        { "$ref": "#/$defs/TraceFetchResponse" },
+        { "$ref": "#/$defs/RequestError" }
+      ]
+    },
+    "ProgramDeclaration": {
+      "type": "object",
+      "description": "The _meta['io.github.jafarsa0/pilotage'] value on a program-valued tool (Part III Section 5): either argument+language, or languages[] for multi-Language tools. The rule that every argument value in languages[] is distinct (Part III Section 5) is not expressible here.",
+      "anyOf": [
+        {
+          "properties": {
+            "argument": { "type": "string" },
+            "language": { "$ref": "#/$defs/LanguageIdentifier" }
+          },
+          "required": ["argument", "language"]
+        },
+        {
+          "properties": {
+            "languages": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "argument": { "type": "string" },
+                  "language": { "$ref": "#/$defs/LanguageIdentifier" }
+                },
+                "required": ["argument", "language"]
+              }
+            }
+          },
+          "required": ["languages"]
+        }
+      ]
+    },
+    "InitializeMetaValue": {
+      "type": "object",
+      "description": "The _meta['io.github.jafarsa0/pilotage'] value on an initialize (or server/discover) result (Part III 3.2): manifest inline and/or manifest_uri.",
+      "properties": {
+        "manifest": { "$ref": "#/$defs/Manifest" },
+        "manifest_uri": { "type": "string" }
+      },
+      "anyOf": [
+        { "required": ["manifest"] },
+        { "required": ["manifest_uri"] }
+      ]
+    }
+  }
+}
