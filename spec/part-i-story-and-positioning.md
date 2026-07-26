@@ -275,15 +275,7 @@ important parts from informal guidance into structured evidence.
 ## What Pilotage provides
 
 Pilotage defines a common interaction model for MCP tools whose inputs behave
-like programs: seven layers, five tools, one handshake, with the agent at the
-center orchestrating.
-
-The counts reconcile as follows. The manifest is the handshake: it arrives in
-the initialize response, with `pilotage_manifest` re-serving it on demand.
-The plan arrives with validate's response, and the trace rides execute's
-response, with an optional fetch tool for stored runs. The five working tools
-are the guide tool, the catalog tool, and up to three loop tools (validate,
-execute, trace fetch).
+like programs, with the agent at the center orchestrating.
 
 Its core capabilities are:
 

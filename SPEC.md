@@ -16,15 +16,8 @@ Pilotage lets an MCP server publish the checkable competence required to use
 its complex, program-valued tools, so any compatible agent can learn,
 validate, plan, execute, and trace them through one common interface:
 
-**manifest → guides → catalog → validate + plan → execute → trace**: seven
-layers, five tools, one handshake, with the agent at the center deciding
-what to call and when.
-
-The arithmetic is deliberate. The manifest arrives inside the MCP handshake
-itself, and `pilotage_manifest` re-serves it on demand. The plan arrives with
-validate's response. The trace rides execute's response, with an optional
-fetch tool for stored runs. That leaves five working tools: the guide tool,
-the catalog tool, and up to three loop tools (validate, execute, trace fetch).
+**manifest → guides → catalog → validate + plan → execute → trace**, with the
+agent at the center deciding what to call and when.
 
 > Schemas teach the moves. **Pilotage teaches the game.**
 

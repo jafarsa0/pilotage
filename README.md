@@ -28,12 +28,7 @@ compatible agent learns through one standard loop:
 manifest → guides → catalog → validate + plan → execute → trace
 ```
 
-Seven layers, five tools, one handshake, and the agent at the center,
-deciding what to call and when. The arithmetic is deliberate: the manifest
-rides the MCP handshake, the plan rides validate's response, and the trace
-rides execute's response, which leaves five working tools: the guide tool,
-the catalog tool, and up to three loop tools (validate, execute, trace
-fetch).
+The agent sits at the center, deciding what to call and when.
 
 **MCP addressed N×M connectivity. Pilotage addresses the N×M competence
 problem that appears after the connection is established.**
