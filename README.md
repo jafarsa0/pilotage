@@ -25,7 +25,7 @@ risk, and an execution trace with branch decisions on the record), and any
 compatible agent learns through one standard loop:
 
 ```
-manifest → guides → catalog → validate + plan → execute → trace
+manifest → guides → catalog → validate → plan → execute → trace
 ```
 
 The agent sits at the center, deciding what to call and when.

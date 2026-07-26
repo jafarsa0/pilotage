@@ -800,7 +800,7 @@ learn
 → fetch the stored trace
 ```
 
-The agent sits at the center of that loop (manifest → guides → catalog → validate + plan → execute → trace), deciding what to call and when; the order above is one common path, not a required sequence.
+The agent sits at the center of that loop (manifest → guides → catalog → validate → plan → execute → trace), deciding what to call and when; the order above is one common path, not a required sequence.
 
 The areas requiring the most genuine design work were:
 

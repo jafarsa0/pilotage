@@ -1276,7 +1276,7 @@ Pilotage defines six abstract operations:
 5. `execute`;
 6. `trace`.
 
-Together these operations realize the layer order **manifest → guides → catalog → validate + plan → execute → trace**, with the agent at the center deciding what and when to call.
+Together these operations realize the layer order **manifest → guides → catalog → validate → plan → execute → trace**, with the agent at the center deciding what and when to call.
 
 This section defines their semantics and information content.
 
@@ -1951,7 +1951,7 @@ The facts (the trace envelope) are the contract. Narration is optional interpret
 
 ### 7.1 Sequence
 
-The layer order is **manifest → guides → catalog → validate + plan → execute → trace**, with the agent at the center deciding what and when to call; the sequence below is the standard path through those layers for one Run.
+The layer order is **manifest → guides → catalog → validate → plan → execute → trace**, with the agent at the center deciding what and when to call; the sequence below is the standard path through those layers for one Run.
 
 A conformant Client follows this sequence for each Run:
 

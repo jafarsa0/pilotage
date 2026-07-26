@@ -20,7 +20,7 @@ multi-round adversarial review. Wire version: `1.1`.
 
 - **Manifest presented as first-class layer #1**: the welcome card a
   zero-knowledge agent reads at the MCP handshake. The loop reads
-  `manifest → guides → catalog → validate + plan → execute → trace`,
+  `manifest → guides → catalog → validate → plan → execute → trace`,
   with the agent at the center deciding what to call and when.
 - **Plan and trace promoted to first-class layers** (wire coupling
   unchanged: the plan rides the validate response, the trace rides the

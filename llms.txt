@@ -9,7 +9,7 @@
 > a pre-run plan with per-step risk, and an execution trace with every branch
 > decision on the record, riding the execute response, and fetchable later by
 > run id if the run was stored. The loop: manifest → guides → catalog →
-> validate + plan → execute → trace, with the agent at the center. Governing
+> validate → plan → execute → trace, with the agent at the center. Governing
 > rule: standardize the loop, not the language. Extension id: io.github.jafarsa0/pilotage.
 > Spec v1.1 · text CC BY 4.0, schemas/vectors/tooling Apache-2.0 · DOI 10.5281/zenodo.21396027.
 

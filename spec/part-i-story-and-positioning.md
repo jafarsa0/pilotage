@@ -342,7 +342,7 @@ and, when the run was stored, the same trace can be fetched later by run_id.
 These capabilities form a common loop:
 
 ```
-manifest → guides → catalog → validate + plan → execute → trace
+manifest → guides → catalog → validate → plan → execute → trace
 ```
 
 The arrows describe dependencies, not a fixed order. The agent sits at the
