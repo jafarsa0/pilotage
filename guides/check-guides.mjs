@@ -35,7 +35,7 @@ function argOf(flag, dflt) {
   const i = argv.indexOf(flag);
   return i >= 0 && argv[i + 1] !== undefined ? argv[i + 1] : dflt;
 }
-const endpoint = argOf("--endpoint", "https://harborview.jafarsa0.workers.dev/mcp");
+const endpoint = argOf("--endpoint", "https://harborview.pilotagespec.org/mcp");
 const files = argv.filter((a) => a.endsWith(".md"));
 
 // ---------- transport ----------

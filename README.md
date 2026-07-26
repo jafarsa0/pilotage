@@ -46,7 +46,7 @@ problem that appears after the connection is established.**
   server
 - **[Harborview](https://github.com/jafarsa0/harborview)**: the public
   example server: a simulated smart building at
-  `POST https://harborview.jafarsa0.workers.dev/mcp`, isolated per session
+  `POST https://harborview.pilotagespec.org/mcp`, isolated per session
 
 ## What Pilotage is (and is not)
 

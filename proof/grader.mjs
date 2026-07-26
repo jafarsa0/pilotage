@@ -24,7 +24,7 @@ function argOf(flag, dflt) {
   const i = argv.indexOf(flag);
   return i >= 0 && argv[i + 1] !== undefined ? argv[i + 1] : dflt;
 }
-const endpoint = argOf("--endpoint", "https://harborview.jafarsa0.workers.dev/mcp");
+const endpoint = argOf("--endpoint", "https://harborview.pilotagespec.org/mcp");
 const session = argOf("--session", null);
 if (!session) {
   console.error("usage: node grader.mjs --session sess_xxxxxxxx [--endpoint URL]");

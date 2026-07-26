@@ -34,7 +34,7 @@ function argOf(flag, dflt) {
 }
 const provider = argOf("--provider", null);
 const model = argOf("--model", null);
-const endpoint = argOf("--endpoint", "https://harborview.jafarsa0.workers.dev/mcp");
+const endpoint = argOf("--endpoint", "https://harborview.pilotagespec.org/mcp");
 const examPath = argOf("--exam", new URL("./exam.md", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
 const outDir = argOf("--out", new URL("./transcripts", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
 const maxCalls = Number(argOf("--max-calls", "80"));

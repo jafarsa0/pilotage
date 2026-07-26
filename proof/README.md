@@ -48,7 +48,7 @@ your run and ours start from the same world. Or skip the API entirely and
 point your own agent at the live server:
 
 ```bash
-claude mcp add --transport http harborview https://harborview.jafarsa0.workers.dev/mcp
+claude mcp add --transport http harborview https://harborview.pilotagespec.org/mcp
 ```
 
 …then paste `exam.md` as your prompt, and grade the session when it's done.

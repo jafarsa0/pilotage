@@ -10,7 +10,7 @@ The server is **Harborview**, a simulated smart building operable through
 one MCP endpoint:
 
 ```
-POST https://harborview.jafarsa0.workers.dev/mcp
+POST https://harborview.pilotagespec.org/mcp
 ```
 
 Harborview's program language is `buildingflow/1`, a small JSON automation
@@ -26,7 +26,7 @@ returns: Harborview scopes your building, your runs, and your promotions
 to it:
 
 ```bash
-curl -s -D - -X POST https://harborview.jafarsa0.workers.dev/mcp \
+curl -s -D - -X POST https://harborview.pilotagespec.org/mcp \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{
         "protocolVersion":"2025-11-25","capabilities":{},

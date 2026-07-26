@@ -34,7 +34,7 @@
 
 ## Try it live
 
-- Example server endpoint (MCP over HTTP, per-session isolated): POST https://harborview.jafarsa0.workers.dev/mcp
+- Example server endpoint (MCP over HTTP, per-session isolated): POST https://harborview.pilotagespec.org/mcp
 - [Harborview source](https://github.com/jafarsa0/harborview): the reference implementation, a simulated smart building speaking buildingflow/1, Apache-2.0
 
 ## Governance

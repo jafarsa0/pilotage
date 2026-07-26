@@ -24,7 +24,7 @@ const GOOD_FLOW = {
 
 export default {
   name: "Harborview (buildingflow/1)",
-  endpoint: "https://harborview.jafarsa0.workers.dev/mcp",
+  endpoint: "https://harborview.pilotagespec.org/mcp",
   language: "buildingflow/1",
 
   /** The language-chosen name of the inline-program argument (Part III 4.3). */
