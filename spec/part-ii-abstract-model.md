@@ -298,20 +298,23 @@ The retention value `"session"` defined in Section 6.6 refers to this Session de
 
 Pilotage is composable.
 
-A Server declares, for each Language, only the capabilities that are meaningful and genuinely supported for that Language.
+Every Language is reached through its manifest (Section 5.1), which every conformant Server always provides. Beyond the manifest, a Server declares, for each Language, only the capabilities that are meaningful and genuinely supported for that Language.
 
-A Language is not required to expose the complete Pilotage capability set. However, every declaration is subject to the minimum capability floor, dependency rules, and consistency requirements defined below.
+A Language is not required to expose the complete capability set. However, every declaration is subject to the minimum capability floor, the capability requirements, and the consistency requirements defined below.
 
 ### 4.1 Capability set
 
-| Capability | Meaning | Dependency |
-|---|---|---|
-| `guides` | Teaching material for the Language is available. | None |
-| `catalog` | A queryable and versioned inventory of environment-bound names is available. | None |
-| `validate` | The Server provides a side-effect-free checker that returns structured diagnostics. | `guides` |
-| `plan` | Successful validation of a valid program also returns an execution plan with risk information. | `validate` |
-| `execute` | Programs can be executed and produce an outcome and, when requested, a trace. | `validate` |
-| `trace_fetch` | The stored traces of previously started Runs can be fetched by `run_id`. | `execute` |
+| Capability | Meaning |
+|---|---|
+| `manifest` | The always-present welcome card that declares the Language and which of the capabilities below it supports (Section 5.1). Every conformant Server provides it; it is not an optional declaration. |
+| `guides` | Teaching material for the Language is available. |
+| `catalog` | A queryable and versioned inventory of environment-bound names is available. |
+| `validate` | The Server provides a side-effect-free checker that returns structured diagnostics. |
+| `plan` | Successful validation of a valid program also returns an execution plan with risk information. |
+| `execute` | Programs can be executed and produce an outcome and, when requested, a trace. |
+| `trace_fetch` | The stored traces of previously started Runs can be fetched by `run_id`. |
+
+The manifest is always present; the remaining capabilities are declared per Language as described in Section 4.2. Which capabilities may be declared together is governed by the capability requirements in Section 4.3.
 
 The following sub-features refine these capabilities:
 
@@ -400,9 +403,9 @@ A Language with environment-bound names MUST declare `catalog`.
 
 A Server MUST NOT omit the catalog when program validity depends on live Server state.
 
-#### 3. Capability dependencies
+#### 3. Capability requirements
 
-When a capability is declared, every capability on which it depends MUST also be declared.
+When a capability is declared, every capability it requires MUST also be declared. These are declaration-time composition rules, not a required call order.
 
 In particular:
 
@@ -2484,7 +2487,7 @@ For each Language:
 
    - the minimum floor;
    - catalog obligation;
-   - dependency rules;
+   - capability requirements;
    - trace obligation;
    - retention obligation.
 
