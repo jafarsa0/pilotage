@@ -37,9 +37,14 @@ to competent execution.
 ## The problem
 
 The same three problems appear repeatedly wherever agents interact with
-sophisticated tools.
+sophisticated tools: the problem of learning, the problem of iteration, and
+the problem of scalability.
 
-### 1. Schemas describe structure, not languages
+### 1. The problem of learning: schemas describe structure, not languages
+
+Some systems expose tools whose inputs are programs rather than ordinary
+records. The problem of learning is that exposing those tools and their schemas
+does not, by itself, teach an agent how to operate the system.
 
 A JSON Schema can describe the shape of an argument:
 
@@ -58,7 +63,8 @@ permissions, and other objects that exist in a changing environment. An
 automation rule may be syntactically valid while referring to an event, action,
 or property that is unavailable on the current server.
 
-In these cases, the agent needs two different kinds of knowledge.
+In these cases, the agent may need either or both of two kinds of knowledge,
+depending on what it already knows and what the task requires.
 
 The first is stable knowledge: the grammar, concepts, constraints, examples,
 and recommended construction patterns of the language.
@@ -84,12 +90,15 @@ Pilotage standardizes those conventions.
 
 ---
 
-### 2. Complex work rarely succeeds in one tool call
+### 2. The problem of iteration: complex work rarely succeeds in one tool call
 
 For simple operations, an agent can construct an input, call a tool, and
 consume the result.
 
-For complex programs, that interaction is often insufficient.
+For complex programs, that interaction is often insufficient. The problem of
+iteration begins with accepting that an agent may not meet its goal in one
+shot. It needs feedback from the system so it can identify what is wrong,
+revise its work, and move toward the intended result.
 
 An authored workflow may be structurally valid but logically incomplete. A
 query may compile but reference the wrong field. An automation may be
@@ -97,19 +106,15 @@ executable but contain a destructive step the user did not intend. A
 configuration may pass basic validation while producing an unexpected
 execution path.
 
-The agent therefore needs an iterative convergence loop:
+The agent therefore needs server-provided capabilities that support an
+iterative feedback loop. It reads the manifest first to discover what the
+server offers. After that, there is no mandatory pipeline. Depending on the
+task, the agent may retrieve guidance or live symbols, validate a candidate,
+revise it from diagnostics, inspect a plan, execute it, or examine a trace.
+It can skip a capability that is unnecessary or unavailable.
 
-1. read the server's manifest to learn which capabilities exist;
-2. understand the available language and environment;
-3. construct a candidate program;
-4. validate it without causing side effects;
-5. receive structured diagnostics;
-6. revise the program;
-7. inspect the proposed execution plan and associated risks;
-8. execute when appropriate;
-9. examine a trace of the actual behavior.
-
-Pilotage standardizes the server-side capabilities required for this loop.
+Pilotage standardizes the server-side capabilities that make this feedback
+possible, not a fixed sequence of calls.
 
 #### Validate
 
@@ -159,9 +164,6 @@ It may include:
 A distributed trace can show where requests travelled. A Pilotage trace
 explains how the authored program was interpreted and executed.
 
-One trace, two doors: it rides the execute response; if the run was stored,
-the same trace can be fetched later by run_id.
-
 Together, validation, planning, and tracing turn a one-shot tool invocation
 into a checkable feedback loop.
 
@@ -171,7 +173,7 @@ its work.
 
 ---
 
-### 3. Competence does not scale when it is hardcoded into every agent
+### 3. The problem of scalability: competence does not scale when it is hardcoded into every agent
 
 MCP reduces the cost of connectivity.
 
@@ -179,7 +181,12 @@ Without a common protocol, every agent must integrate separately with every
 external system. With MCP, agents and servers can connect through a shared
 interface.
 
-However, the same scaling problem reappears one level above the connection.
+However, the same scalability problem reappears one level above the connection.
+
+The problem of scalability is a separation-of-concerns problem. When the
+knowledge required to operate a server lives inside each agent's prompts,
+client code, or training, every agentâ€“server pairing must maintain its own
+version of that knowledge. Adding more agents or servers multiplies the work.
 
 An agent may be able to discover and invoke an MCP tool while still lacking
 the knowledge required to use it correctly. That knowledge is commonly
@@ -200,13 +207,14 @@ support the behavior of many different agent clients.
 The protocol connection is standardized, but the competence layer remains
 pair-specific.
 
-This recreates an N × M problem:
+This recreates an N x M problem:
 
 - N agent implementations;
 - M complex MCP surfaces;
 - a separate body of integration knowledge for every pairing.
 
-Pilotage separates this concern.
+Pilotage separates this concern by letting the server publish its operational
+knowledge through common capability layers.
 
 The server publishes the guides, catalogs, validation behavior, execution
 planning, and trace semantics associated with its own surface. Any compatible
@@ -220,7 +228,7 @@ This changes the scaling model from pair-specific competence toward N + M:
 - server developers publish Pilotage support once;
 - new compatible pairings inherit the same checkable competence layer.
 
-MCP addressed N × M connectivity. Pilotage addresses the N × M competence
+MCP addressed N x M connectivity. Pilotage addresses the N x M competence
 problem that appears after the connection is established.
 
 ---
@@ -274,8 +282,10 @@ important parts from informal guidance into structured evidence.
 
 ## What Pilotage provides
 
-Pilotage defines a common interaction model for MCP tools whose inputs behave
-like programs, with the agent at the center orchestrating.
+Pilotage defines a common set of composable capability layers for MCP tools
+whose inputs behave like programs. The manifest is the entry point, and the
+agent decides which of the server's advertised layers to use for a particular
+task.
 
 Its core capabilities are:
 
@@ -283,7 +293,7 @@ Its core capabilities are:
 
 The first thing an agent meets. At the MCP handshake, the server hands over a
 single machine-readable card describing which Pilotage capabilities it offers,
-which tools implement the loop, and what guarantees apply, so a
+which tools implement those capabilities, and what guarantees apply, so a
 zero-knowledge agent can orient itself before making any other call.
 
 #### Guides
@@ -333,30 +343,40 @@ structured diagnostics.
 A pre-execution representation of the expected behavior, effects,
 dependencies, and risks of a proposed program.
 
+#### Execution
+
+A standard operation for running an authored program and returning its
+structured outcome. The agent or host decides whether execution is appropriate
+after considering the task, available validation, the proposed plan, and any
+required approval.
+
 #### Trace
 
 A structured account of how the program was interpreted and what occurred
-during execution. One trace, two doors: the trace rides the execute response,
-and, when the run was stored, the same trace can be fetched later by run_id.
+during execution.
 
-These capabilities form a common loop:
+These capabilities are layers, not dependencies. Only the manifest is the
+universal starting point. After reading it, the agent may use any advertised
+capability that fits the task. For example, an agent that already knows SQL may
+validate a query directly without first reading a guide or catalog. Another
+task may require both before a candidate can be written.
 
-```
-manifest → guides → catalog → validate → plan → execute → trace
-```
+A server may implement some or all of the layers, depending on its use case.
+The agent remains at the center, selecting and combining them as needed.
 
-The arrows describe dependencies, not a fixed order. The agent sits at the
-center of the loop (a hub, not a pipeline), deciding what to call and when.
-
-Pilotage standardizes this loop without standardizing the underlying language.
+Pilotage standardizes these interactions without standardizing the underlying
+language or prescribing a fixed call order.
 
 ---
 
-## The layer Pilotage moves, and the layers it does not touch
+## The knowledge Pilotage publishes, and the layers it does not touch
 
-Pilotage moves one specific kind of knowledge from the agent to the server:
-how to operate a system. The grammar of its language, the names that exist
-right now, the rules that make a program valid, the risk of running it.
+Pilotage lets the server provide one specific kind of knowledge to the agent:
+how to operate that server's system. This includes the grammar of its language,
+the names that exist right now, the rules that make a program valid, and the
+risk of running it. Instead of being duplicated across agent prompts and
+client-specific integrations, that knowledge is published by the system that
+owns it.
 
 That knowledge is not a durable differentiator between agents. An agent
 that lacks it does not behave differently; it fails.
@@ -452,14 +472,14 @@ programs against live environments.
 | **SEP-1862: "tools/resolve"** | Proposed pre-flight refinement of tool metadata, including more precise read-only or destructive-operation hints for a particular call. | It does not validate arguments and does not describe a multi-step program or its execution plan. | Complementary. "tools/resolve" refines call metadata; Pilotage evaluates the authored program and its expected multi-step effects. |
 | **A2A Traceability Extension** | Adds identifiers, timing, cost, and other traceability metadata to agent-to-agent runs. | It does not define program-level step inputs and outputs, branch decisions, or reasons for execution choices. | Neighboring work. Pilotage traces focus on how a server interpreted and executed an authored program. |
 | **FINOS OpenEAGO** | A compliance-oriented control plane for multi-agent and tool orchestration, including planning gates, approval controls, risk assessment, and audit trails. | Its primary object is orchestration governance and regulatory compliance, not the semantics of agent-authored programs. It does not define Pilotage-style closed diagnostics, live language catalogs, or branch-decision traces. | A close neighbor in pre-execution control and auditability, but aimed at a different layer. |
-| **OpenAPI Arazzo** | Provider-published descriptions of multi-step API workflows, including dependencies and success criteria. | It is centered on OpenAPI and AsyncAPI operations, does not define an MCP-native step model, and does not provide a server-side validate–revise–execute loop. | Strong evidence that provider-published sequencing is valuable. Pilotage applies a related principle to MCP and adds interactive checking. |
+| **OpenAPI Arazzo** | Provider-published descriptions of multi-step API workflows, including dependencies and success criteria. | It is centered on OpenAPI and AsyncAPI operations, does not define an MCP-native step model, and does not provide a server-side validateâ€“reviseâ€“execute loop. | Strong evidence that provider-published sequencing is valuable. Pilotage applies a related principle to MCP and adds interactive checking. |
 | **SEP-2106: full JSON Schema support** | Brings full JSON Schema 2020-12 capabilities to MCP tool input and output schemas. | It validates the structural shape of a single tool call. It does not describe program grammar, live references, session rules, operation ordering, or validity against changing server state. | Foundational. JSON Schema defines the call boundary; Pilotage addresses the semantic layer above that boundary. |
 
 The important distinction is not whether neighboring systems provide guidance,
 risk metadata, validation, or traces in some form. Many do.
 
-The distinction is whether they provide the complete, server-published loop
-required for program-valued MCP interactions:
+The distinction is whether they provide the composable, server-published
+capabilities required for program-valued MCP interactions:
 
 - a discoverable manifest announcing the server's capabilities at the handshake;
 - a versioned live catalog;
@@ -467,7 +487,7 @@ required for program-valued MCP interactions:
 - side-effect-free validation with stable diagnostic codes;
 - a multi-step execution plan with per-step risk;
 - a trace containing execution facts and branch decisions;
-- a standardized client loop connecting these capabilities.
+- a standard way for a client to select and combine these capabilities.
 
 Pilotage occupies that combined space.
 
@@ -499,7 +519,7 @@ This changed the scaling model.
 
 An editor could implement LSP once and gain access to many languages. A
 language implementation could expose one server and become usable from many
-editors. The ecosystem moved from separate editor–language pairings toward a
+editors. The ecosystem moved from separate editorâ€“language pairings toward a
 shared N + M model.
 
 Pilotage follows the same architectural principle.
@@ -619,13 +639,14 @@ the declaring party.
 
 Pilotage follows one governing rule:
 
-> **Standardize the loop, not the language.**
+> **Standardize the operating layers, not the language.**
 
 Pilotage does not define SQL, workflow syntax, automation semantics, policy
 languages, or deployment formats. Those remain the responsibility of their
 respective systems.
 
-It standardizes the reusable interaction around them:
+It does not require every layer to be present or prescribe a fixed call order.
+It standardizes the reusable interactions around them:
 
 - how a server announces its capabilities;
 - how an agent learns the language;
@@ -658,17 +679,17 @@ alternatives that were intentionally rejected.
 | Decision | Rejected alternative | Rationale |
 |---|---|---|
 | Build Pilotage as an MCP extension. | Create a standalone protocol. | The required capabilities can be expressed through MCP's existing identity, transport, discovery, authorization, and extension mechanisms. Reusing MCP lowers adoption cost and keeps the competence layer attached to the surface it describes. |
-| Standardize the interaction loop, not the underlying language. | Standardize the schemas or semantics of every supported program type. | Query engines, workflow systems, policy languages, and automation platforms differ substantially. A shared envelope can scale across them without forcing semantic uniformity. |
-| In the trace fetch door, keep execution facts separate from optional narration. | Return one combined narrative blob. | Step inputs, outputs, timings, and decisions can be structured and checked; the facts (the trace) are the contract. Narrative interpretation is more subjective, more expensive, and not always required; it stays optional. |
+| Standardize the operating layers, not the underlying language. | Standardize the schemas or semantics of every supported program type. | Query engines, workflow systems, policy languages, and automation platforms differ substantially. Shared capability interfaces can scale across them without forcing semantic uniformity or a fixed call order. |
+| Keep execution facts separate from optional narration when a stored trace is retrieved. | Return one combined narrative blob. | Step inputs, outputs, timings, and decisions can be structured and checked; the facts (the trace) are the contract. Narrative interpretation is more subjective, more expensive, and not always required; it stays optional. |
 | Return the proposed plan during validation. | Reveal the plan only after execution or through a separate dry run. | A plan is most valuable before effects occur. When the server can derive it during validation, returning it there enables risk review and approval without an additional execution-like operation. |
 | Return the trace with the execution result. | Require a second round trip after execution to fetch the trace. | The executing system already possesses the relevant facts. Returning them immediately avoids reconstructing state and allows stateless implementations. |
-| v1.1: fold explain into trace (one record, one layer, two access paths). | Keep a separate explain layer beside the trace. | The stored record and the inline record are the same envelope. One layer with two doors means fewer concepts with the same guarantees. |
+| v1.1: fold explain into trace. | Keep a separate explain layer beside the trace. | The stored record and the inline record use the same envelope, reducing the number of concepts while preserving the same guarantees. |
 | Make catalogs queryable, paginated, and versioned. | Place the full environment inventory into model context. | Live environments may contain thousands of symbols. Querying preserves context budgets, while a version token allows clients to detect drift between authoring, validation, and execution. |
 | Align risk concepts with MCP tool annotations where possible. | Invent a completely independent risk vocabulary. | Reusing concepts already present in MCP reduces translation cost and makes Pilotage easier to integrate with existing client policies. |
 | Support guides and catalogs through both resources and callable mirrors. | Publish them only as resources. | Resources are commonly controlled by the host application and may not always be surfaced to the model. Callable access ensures the agent can retrieve required knowledge through an explicit interaction. Compatible skills mechanisms may also be used where available. |
 | Use stable, enumerated diagnostic codes. | Return only free-text errors. | An agent can learn, branch on, test against, and recover from a closed diagnostic vocabulary. Human-readable messages remain useful, but they should not be the only contract. |
 | Defer completeness assertions to a later version. | Include full "the program completely satisfies the goal" assertions in v1. | Completeness is substantially harder than syntax, reference, and execution validation. Deferring it keeps the first version implementable while acknowledging the boundary honestly. |
-| Frame Pilotage around learning, convergence, and scale. | Describe it only as documentation or validation for complex payloads. | Guides and catalogs solve how an agent learns; validation, planning, and tracing solve how it converges; server-published competence solves the ecosystem's scaling problem. All three are necessary to explain the full value. |
+| Frame Pilotage around learning, iteration, and scalability. | Describe it only as documentation or validation for complex payloads. | Guides and catalogs solve the problem of learning; validation, planning, and tracing solve the problem of iteration; server-published competence solves the problem of scalability. All three are necessary to explain the full value. |
 | State the trust boundary explicitly. | Present plans, labels, and traces as independent proof of safety. | Pilotage makes a cooperative server more checkable. It cannot guarantee that a malicious server reports its behavior truthfully. |
 | Allow composable adoption. | Require every server to implement every capability. | Some languages have no live catalog, some operations need validation but no trace, and some read-only systems require little risk planning. Servers should implement the capabilities that have real meaning for their surface. |
 

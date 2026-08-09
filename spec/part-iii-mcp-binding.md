@@ -1257,7 +1257,7 @@ execute
 trace
 ```
 
-These bind the layered loop (manifest → guides → catalog → validate → plan → execute → trace) with the agent at the center deciding what and when to call; the loop is a hub, not a pipeline.
+These bind the layers (manifest, guides, catalog, validate, plan, execute, and trace) with the agent at the center deciding what and when to call; the loop is a hub, not a pipeline.
 
 No Server-initiated stream is required.
 

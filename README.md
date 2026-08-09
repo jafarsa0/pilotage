@@ -22,13 +22,14 @@ teaches once, through a **checkable** interface (a manifest read at the
 handshake, navigable guides, a versioned live catalog, side-effect-free
 validation with closed diagnostic codes, a pre-run plan with comparable
 risk, and an execution trace with branch decisions on the record), and any
-compatible agent learns through one standard loop:
+compatible agent orchestrates whichever of these layers the task needs:
 
 ```
-manifest → guides → catalog → validate → plan → execute → trace
+manifest · guides · catalog · validate · plan · execute · trace
 ```
 
-The agent sits at the center, deciding what to call and when.
+The agent sits at the center, deciding what to call and when: the layers are a
+hub it drives, not a pipeline it must follow.
 
 ## Start here
 

@@ -38,7 +38,7 @@ These abbreviations are exact synonyms for **MUST** and **MAY**. They carry no a
 
 ### 1.2 Unknown members
 
-A receiver MUST ignore members it does not recognize in any Pilotage data structure.
+A client MUST ignore members it does not recognize in any Pilotage data structure.
 
 This rule allows a minor version of Pilotage to add fields without breaking implementations that conform to an earlier minor version.
 
@@ -1276,7 +1276,7 @@ Pilotage defines six abstract operations:
 5. `execute`;
 6. `trace`.
 
-Together these operations realize the layer order **manifest → guides → catalog → validate → plan → execute → trace**, with the agent at the center deciding what and when to call.
+Together these operations realize the layers **manifest, guides, catalog, validate, plan, execute, and trace**, with the agent at the center deciding what and when to call.
 
 This section defines their semantics and information content.
 
@@ -1951,7 +1951,7 @@ The facts (the trace envelope) are the contract. Narration is optional interpret
 
 ### 7.1 Sequence
 
-The layer order is **manifest → guides → catalog → validate → plan → execute → trace**, with the agent at the center deciding what and when to call; the sequence below is the standard path through those layers for one Run.
+The layers are **manifest, guides, catalog, validate, plan, execute, and trace**, with the agent at the center deciding what and when to call; the sequence below is one standard path through those layers for a single Run.
 
 A conformant Client follows this sequence for each Run:
 
