@@ -51,7 +51,9 @@ against the live example server.
 ## Reading paths
 
 - **Evaluating Pilotage?** Read Part I.
-- **Implementing a server?** Part II §§4–6, 10, 12.1 → Part III → Part IV.
+- **Implementing a server?** Start with the step-by-step
+  [IMPLEMENTERS.md](./IMPLEMENTERS.md), then Part II §§4–6, 10, 12.1 →
+  Part III → Part IV.
 - **Implementing a client (agent host)?** Part II §§7–9, 12.2 → Part III
   §§3–4, 7, 10.2.
 - **Citing or comparing?** Part I's prior-art section states precisely what

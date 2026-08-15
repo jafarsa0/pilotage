@@ -35,6 +35,9 @@ hub it drives, not a pipeline it must follow.
 
 - **[SPEC.md](./SPEC.md)**: the specification index (four parts: story,
   abstract model, MCP binding, implementation notes)
+- **[IMPLEMENTERS.md](./IMPLEMENTERS.md)**: adding Pilotage to your own
+  MCP server, step by step, ending with the runnable conformance harness
+  as the definition of done
 - **[guides/](./guides/01-your-first-verified-run.md)**: walk the loop
   against the live example server in five minutes. The guides are *docs
   that execute*: every request/response shown is replayed against the
