@@ -883,6 +883,8 @@ When `plan` is declared and `valid` is true, the response MUST include a plan, e
 
 A plan is the statically derivable preview of what executing a valid program would do.
 
+Validation and the plan answer different questions. Validation judges a program against the Language and the catalog and reports the loud failures as diagnostics. The plan carries no verdict: it shows the expected behavior and risk of a program that already passed, so that silent mismatches between what a program does and what its author intended become visible to the Client before anything runs. A program can be entirely valid and still be the wrong program; the plan is how that is caught.
+
 For a Language with execution mode `"deploy"`, the plan describes the deployed program's body: what it will do when triggered.
 
 The plan does not merely describe installation, because the body's effects are what the Host must evaluate when making a risk decision.
