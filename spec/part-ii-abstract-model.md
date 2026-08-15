@@ -361,10 +361,10 @@ A sub-feature is declared only when:
 
 #### Server-level and Language-level declarations
 
-The manifest MAY contain:
+One Server may expose several Languages whose capabilities largely coincide. So that the manifest does not repeat the same declaration for every Language, capabilities can be declared in two places:
 
-- a Server-level capability declaration that acts as a default;
-- a separate capability declaration on each Language entry.
+- a Server-level capability declaration that acts as a default for every Language;
+- a separate capability declaration on a Language entry, overriding the default for that Language.
 
 The **effective capability map** is computed independently for each Language and each capability identifier.
 
@@ -374,6 +374,20 @@ For a given capability:
 - otherwise, the Server-level declaration governs it.
 
 A Language-level declaration replaces the Server-level declaration for that capability. It does not merge individual sub-feature values with the Server-level declaration.
+
+For example, a Server exposing an executable workflow Language and a validate-only SQL Language may declare execution once, as the default, and withhold it from the SQL Language alone:
+
+```json
+{
+  "capabilities": { "guides": true, "validate": true, "execute": true },
+  "languages": [
+    { "name": "workflow/1" },
+    { "name": "sql/2", "capabilities": { "execute": false } }
+  ]
+}
+```
+
+The effective capability map of `workflow/1` includes `execute` through the Server-level default. The effective capability map of `sql/2` does not: its Language-level declaration governs `execute` in full. (Language entries are abbreviated to the fields relevant here.)
 
 For every Language, at least one of the following MUST exist:
 
