@@ -503,7 +503,7 @@ The manifest:
 |---|---|---|---|
 | `pilotage` | string | M | Pilotage extension version in `major.minor` form, as defined in Section 11.1. |
 | `languages` | array of Language entries | M | One entry for each Language exposed by the Server. The array MUST NOT be empty. |
-| `capabilities` | capability declaration | O | Server-level default capability declaration under Section 4.2. |
+| `capabilities` | capability declaration | O | Server-level default capability declaration under Section 4.2. Optional as a field because the declaration may instead appear on each Language entry; for every Language, at least one of the two MUST exist, and the effective map MUST meet the floor in Section 4.3. |
 
 #### Language entry
 
@@ -516,7 +516,7 @@ Each item in `languages` has the following fields.
 | `guides` | reference | M | Binding-defined reference through which the guide index can be retrieved. |
 | `catalog` | reference | M when `catalog` is declared | Binding-defined reference through which the catalog can be queried. |
 | `loop` | object | M | Binding-defined addresses of the declared loop operations. It MUST satisfy the consistency rule in Section 4.3. |
-| `capabilities` | capability declaration | O | Per-Language capability declaration. |
+| `capabilities` | capability declaration | O | Per-Language capability declaration under Section 4.2. MAY be omitted when the Server-level declaration covers this Language. |
 | `locator` | string | M when `validate` is declared | Diagnostic locator dialect: `"json-pointer"` or `"text-range"`. |
 | `context_schema` | JSON Schema | Conditional | MUST be present when the Language requires validation context. It MUST otherwise be absent. |
 | `execution` | string | M when `execute` is declared | Execution mode: `"immediate"`, `"deploy"`, or `"both"`. |
