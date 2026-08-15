@@ -1,7 +1,8 @@
 # Your first verified run
 
 This guide walks the whole Pilotage loop once, against a real server:
-**discover → learn → look up → validate → execute → trace.** Every request
+discover the manifest, learn from the guides, look up the catalog,
+validate, read the plan, execute, and read the trace. Every request
 and response below is live output from the public example server; a CI
 check replays this page against the server on every change, so what you
 read here is what you will get.

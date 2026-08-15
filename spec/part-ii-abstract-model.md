@@ -101,7 +101,7 @@ Pilotage distinguishes between the party that provides a Language and the compon
 | **Host** | The non-model software component of the Client. The Host is responsible for policy enforcement, including the risk gate defined in Section 7.3, and for transmitting execute requests. These responsibilities MUST NOT be delegated to the Model. |
 | **Model** | The component of the Client that authors and revises programs and evaluates their results against the user's task. |
 | **Surface** | An informal collective term for everything exposed by a Server through Pilotage, including its manifest, guides, catalog, and loop operations. This term introduces no requirements of its own. |
-| **Loop operations** | The per-Language operations validate, execute, and trace, defined in Section 6. Unlike guides and catalog access, their tool addresses are chosen by the Server and published in the `loop` field of the Language entry (Section 5.1). The name refers to the standard Client loop in Section 7. Loop constructs inside a program are an unrelated use of the word. |
+| **Loop operations** | The per-Language operations validate, execute, and trace, defined in Section 6. Unlike guides and catalog access, their operation addresses are chosen by the Server and published in the `loop` field of the Language entry (Section 5.1). The name refers to the standard Client loop in Section 7. Loop constructs inside a program are an unrelated use of the word. |
 
 Normative duties in this specification are assigned only to the following defined parties:
 
@@ -299,7 +299,7 @@ The retention value `"session"` defined in Section 6.6 refers to this Session de
 
 Pilotage is composable.
 
-Every Language is reached through its manifest (Section 5.1), which every conformant Server always provides. Beyond the manifest, a Server declares, for each Language, only the capabilities that are meaningful and genuinely supported for that Language.
+Every Language is reached through the manifest (Section 5.1), which every conformant Server always provides. Beyond the manifest, a Server declares, for each Language, only the capabilities that are meaningful and genuinely supported for that Language.
 
 A Language is not required to expose the complete capability set. However, every declaration is subject to the minimum capability floor, the capability requirements, and the consistency requirements defined below.
 
@@ -1236,7 +1236,7 @@ Plan correspondence for the call is based on the calling step's base identifier.
 
 ---
 
-#### 5.8.4 Plan–trace correspondence
+#### 5.8.4 Plan-trace correspondence
 
 For an `"immediate"` execution or `test_run` of a program at a given `catalog_version`, the following rules apply.
 
@@ -1865,8 +1865,6 @@ The trace is one layer with two doors:
 
 - the **inline door** (mandatory wherever `execute` is declared): the trace envelope rides the execute response, as defined in Sections 5.8 and 6.5;
 - the **fetch door** (optional, and requiring storage): the same stored envelope can be retrieved later by `run_id` through the `trace` operation defined in this section.
-
-One trace, two doors: it rides the execute response; if the run was stored, the same trace can be fetched later by `run_id`.
 
 The fetch door is available only when `trace_fetch` is declared.
 
@@ -2542,7 +2540,7 @@ For each Language:
    - branch-arm and loop-body steps are marked;
    - risk hints are correctly aggregated;
    - deploy-mode plans describe the body;
-   - plan–trace correspondence is enforced.
+   - plan-trace correspondence is enforced.
 
 7. **Execution**
    Where `execute` is declared:

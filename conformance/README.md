@@ -67,7 +67,8 @@ exercised by PIL-EXECUTE-STORE-UNSUPPORTED-B.)
 
 ## Status
 
-These vectors accompany specification version 1.1, and the runnable harness
+These vectors accompany wire version 1.1 of the specification, and the
+runnable harness
 in `harness/` executes them against a live server (see above). The vectors
 remain usable by hand for anyone binding them to a different Server.
 

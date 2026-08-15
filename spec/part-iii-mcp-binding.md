@@ -33,8 +33,7 @@ The conventions defined in Part II Section 1 apply throughout this part, includi
 This binding supports MCP revision `2025-06-18` and later, including:
 
 - `2025-11-25`;
-- the stateless `2026-07-28` revision (a release candidate at the time of
-  writing; final scheduled 2026-07-28).
+- the stateless `2026-07-28` revision.
 
 Where the stateless revision changes the applicable mechanism, this part states the difference explicitly.
 

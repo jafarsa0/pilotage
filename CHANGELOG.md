@@ -58,14 +58,15 @@ multi-round adversarial review. Wire version: `1.1`.
 - **Applicability pinned**: the Program-vs-Record test, the definition of a
   closed Language, Server-scoped language identifiers.
 - **Capabilities formalized**: declaration mechanics with per-Language
-  override, dependency rules, the guides+validate floor, manifest
+  override, capability requirements (declaration-time composition
+  rules), the guides+validate floor, manifest
   consistency rules.
 - **Data model completed**: per-field tables for every shape; diagnostic
   locator dialects (`json-pointer` / `text-range`) with reserved codes
   `constraint`, `input_binding`, `context_binding`; plan `arm`/`loop`
   marking; six reserved outcome statuses including the new
   `promotion_drift`; trace identity grammar (iteration `#n`, expansion
-  `/`, reserved characters) with a computable plan–trace correspondence
+  `/`, reserved characters) with a computable plan-trace correspondence
   algorithm; the trace-envelope definition.
 - **Operations pinned**: execute processing order (well-formedness → drift
   → re-validation/baseline → binding → run), mandatory re-validation guard,

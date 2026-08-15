@@ -185,7 +185,7 @@ However, the same scalability problem reappears one level above the connection.
 
 The problem of scalability is a separation-of-concerns problem. When the
 knowledge required to operate a server lives inside each agent's prompts,
-client code, or training, every agentâ€“server pairing must maintain its own
+client code, or training, every agent-server pairing must maintain its own
 version of that knowledge. Adding more agents or servers multiplies the work.
 
 An agent may be able to discover and invoke an MCP tool while still lacking
@@ -472,7 +472,7 @@ programs against live environments.
 | **SEP-1862: "tools/resolve"** | Proposed pre-flight refinement of tool metadata, including more precise read-only or destructive-operation hints for a particular call. | It does not validate arguments and does not describe a multi-step program or its execution plan. | Complementary. "tools/resolve" refines call metadata; Pilotage evaluates the authored program and its expected multi-step effects. |
 | **A2A Traceability Extension** | Adds identifiers, timing, cost, and other traceability metadata to agent-to-agent runs. | It does not define program-level step inputs and outputs, branch decisions, or reasons for execution choices. | Neighboring work. Pilotage traces focus on how a server interpreted and executed an authored program. |
 | **FINOS OpenEAGO** | A compliance-oriented control plane for multi-agent and tool orchestration, including planning gates, approval controls, risk assessment, and audit trails. | Its primary object is orchestration governance and regulatory compliance, not the semantics of agent-authored programs. It does not define Pilotage-style closed diagnostics, live language catalogs, or branch-decision traces. | A close neighbor in pre-execution control and auditability, but aimed at a different layer. |
-| **OpenAPI Arazzo** | Provider-published descriptions of multi-step API workflows, including dependencies and success criteria. | It is centered on OpenAPI and AsyncAPI operations, does not define an MCP-native step model, and does not provide a server-side validateâ€“reviseâ€“execute loop. | Strong evidence that provider-published sequencing is valuable. Pilotage applies a related principle to MCP and adds interactive checking. |
+| **OpenAPI Arazzo** | Provider-published descriptions of multi-step API workflows, including dependencies and success criteria. | It is centered on OpenAPI and AsyncAPI operations, does not define an MCP-native step model, and does not provide a server-side validate-revise-execute loop. | Strong evidence that provider-published sequencing is valuable. Pilotage applies a related principle to MCP and adds interactive checking. |
 | **SEP-2106: full JSON Schema support** | Brings full JSON Schema 2020-12 capabilities to MCP tool input and output schemas. | It validates the structural shape of a single tool call. It does not describe program grammar, live references, session rules, operation ordering, or validity against changing server state. | Foundational. JSON Schema defines the call boundary; Pilotage addresses the semantic layer above that boundary. |
 
 The important distinction is not whether neighboring systems provide guidance,
@@ -519,7 +519,7 @@ This changed the scaling model.
 
 An editor could implement LSP once and gain access to many languages. A
 language implementation could expose one server and become usable from many
-editors. The ecosystem moved from separate editorâ€“language pairings toward a
+editors. The ecosystem moved from separate editor-language pairings toward a
 shared N + M model.
 
 Pilotage follows the same architectural principle.

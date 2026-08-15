@@ -44,7 +44,7 @@ A document release that changes any requirement increments the wire minor
    where applicable, SPEC.md front matter, CHANGELOG.md, CITATION.cff
    (version, date-released, and the version sentence in the abstract),
    .zenodo.json (version and the version sentence in the description),
-   llms.txt, index.html (the version chip), the current-release note in
+   llms.txt, the current-release note in
    README.md, the harness package.json, the two "currently" markers in
    this file, and (for wire-version changes) a new `schemas/<version>/`
    directory plus the links that reference it.
