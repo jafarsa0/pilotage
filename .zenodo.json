@@ -1,6 +1,6 @@
 {
   "title": "Pilotage: an MCP extension for guided program authoring and verified execution",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "upload_type": "publication",
   "publication_type": "technicalnote",
   "creators": [
@@ -30,5 +30,5 @@
       "scheme": "url"
     }
   ],
-  "description": "Pilotage is an extension of the Model Context Protocol (MCP) for tools whose arguments are programs: queries, workflows, automation rules. It standardizes the checkable competence layer a server publishes so any compatible agent can learn the payload language (navigable guides), discover the live environment (a versioned catalog), check candidate programs before execution (side-effect-free validation with closed diagnostic codes and risk-annotated plans), and verify afterwards what actually ran (execution traces with branch decisions), through one standard client loop. Version 1.1.1 comprises a four-part specification (story and positioning; the normative abstract model; the normative MCP binding; implementation notes), JSON Schemas for every data shape, and engine-neutral conformance test vectors. Note: the schemas/ and conformance/ directories and the repository's runnable tooling are licensed Apache-2.0; the record license covers the specification text."
+  "description": "Pilotage is an extension of the Model Context Protocol (MCP) for tools whose arguments are programs: queries, workflows, automation rules. It standardizes the checkable competence layer a server publishes so any compatible agent can learn the payload language (navigable guides), discover the live environment (a versioned catalog), check candidate programs before execution (side-effect-free validation with closed diagnostic codes and risk-annotated plans), and verify afterwards what actually ran (execution traces with branch decisions), through one standard client loop. Version 1.1.2 comprises a four-part specification (story and positioning; the normative abstract model; the normative MCP binding; implementation notes), JSON Schemas for every data shape, and engine-neutral conformance test vectors. Note: the schemas/ and conformance/ directories and the repository's runnable tooling are licensed Apache-2.0; the record license covers the specification text."
 }

@@ -2,6 +2,36 @@
 
 All notable changes to the Pilotage specification.
 
+## 1.1.2 (2026-08-15)
+
+Clarity and presentation patch following a full production review; no
+model or wire changes (the wire version stays `1.1`).
+
+- **Layers presented as a composable set**: ordered arrow chains and the
+  "seven layers, five tools, one handshake" slogan removed everywhere.
+  The layer list is written out (manifest, guides, catalog, validate,
+  plan, execute, trace) with the agent at the center deciding what to
+  call and when.
+- **Capabilities section restructured** (Part II Section 4): the
+  capability table's Dependency column folded into a renamed "Capability
+  requirements" subsection (declaration-time composition rules), a
+  manifest row added to the table, and a worked declaration example
+  added to Section 4.2.
+- **Validate and plan division made explicit** (Part II Section 5.6):
+  validation reports what is wrong with the program; the plan makes
+  visible what will happen when it runs.
+- **Terminology and tables hardened** (Part II): "Loop operations"
+  defined in Section 2; loop operations have operation addresses; an
+  Example column added to every data-shape field table in Section 5;
+  the individually optional capabilities fields explained against the
+  guides+validate floor in Section 5.1.
+- **Citation simplified**: CITATION.cff carries the concept DOI only,
+  and the legacy landing page is a thin redirect to the website.
+- **Editorial fixes**: four double-encoded en-dashes repaired in Part I;
+  the release-candidate hedge on MCP `2026-07-28` removed (the revision
+  shipped final on schedule); stale cross-references aligned across
+  README, VERSIONING, conformance, and the guides.
+
 ## 1.1.1 (2026-07-26)
 
 Documentation and packaging patch; no model or wire changes (the wire

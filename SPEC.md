@@ -1,10 +1,10 @@
-# Pilotage: Specification, version 1.1.1
+# Pilotage: Specification, version 1.1.2
 
 **An MCP extension for guided program authoring and verified execution.**
 
 - **Extension identifier:** `io.github.jafarsa0/pilotage`
 - **Wire version:** `1.1` (the manifest's `pilotage` field; Part II §11.1)
-- **Document version:** 1.1.1
+- **Document version:** 1.1.2
 - **Status:** Release
 - **Author:** Jaafar Nadher Jaafar Alaboosi
 - **License:** specification text CC BY 4.0; schemas, conformance
@@ -60,6 +60,6 @@ against the live example server.
 ## Versioning
 
 The wire version is `major.minor` (`1.1`); minor versions are strictly
-additive. Document releases carry an additional patch number (1.1.1) that
+additive. Document releases carry an additional patch number (1.1.2) that
 never appears on the wire. Policy: [VERSIONING.md](./VERSIONING.md) ·
 history: [CHANGELOG.md](./CHANGELOG.md).

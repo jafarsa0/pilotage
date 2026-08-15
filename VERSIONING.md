@@ -17,7 +17,7 @@ The manifest's `pilotage` field carries the wire version as `major.minor`
 
 ## Document releases
 
-Specification documents carry `major.minor.patch` (currently **1.1.1**).
+Specification documents carry `major.minor.patch` (currently **1.1.2**).
 The patch component is editorial only (clarifications, typo fixes, example
 corrections that change no requirement) and never appears on the wire.
 

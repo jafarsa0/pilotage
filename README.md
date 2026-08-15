@@ -66,11 +66,12 @@ the specification.
 
 ## Status
 
-- **1.1.1**, the current release: the four-part specification, JSON
+- **1.1.2**, the current release: the four-part specification, JSON
   Schemas, conformance vectors with a runnable harness, and executable
   guides backed by a public example server. Supports MCP `2025-06-18` and later,
   including the stateless `2026-07-28` revision.
-- Earlier: 1.1.0 (2026-07-26), the restructured four-part release; 1.0.1
+- Earlier: 1.1.1 (2026-07-26), documentation and packaging patch; 1.1.0
+  (2026-07-26), the restructured four-part release; 1.0.1
   (2026-07-18), the first published specification, refined from the first
   reference implementation. See [CHANGELOG.md](./CHANGELOG.md).
 
