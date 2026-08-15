@@ -101,6 +101,7 @@ Pilotage distinguishes between the party that provides a Language and the compon
 | **Host** | The non-model software component of the Client. The Host is responsible for policy enforcement, including the risk gate defined in Section 7.3, and for transmitting execute requests. These responsibilities MUST NOT be delegated to the Model. |
 | **Model** | The component of the Client that authors and revises programs and evaluates their results against the user's task. |
 | **Surface** | An informal collective term for everything exposed by a Server through Pilotage, including its manifest, guides, catalog, and loop operations. This term introduces no requirements of its own. |
+| **Loop operations** | The per-Language operations validate, execute, and trace, defined in Section 6. Unlike guides and catalog access, their tool addresses are chosen by the Server and published in the `loop` field of the Language entry (Section 5.1). The name refers to the standard Client loop in Section 7. Loop constructs inside a program are an unrelated use of the word. |
 
 Normative duties in this specification are assigned only to the following defined parties:
 
@@ -460,7 +461,7 @@ that it does not actually provide.
 
 The effective capability map is authoritative.
 
-The `loop`, `guides`, and `catalog` fields of each Language entry MUST identify exactly the operations and surfaces declared by that effective map.
+The `loop` (Section 5.1), `guides`, and `catalog` fields of each Language entry MUST identify exactly the operations and surfaces declared by that effective map.
 
 Specifically:
 
