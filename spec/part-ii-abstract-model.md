@@ -499,31 +499,31 @@ The manifest:
 
 #### Manifest fields
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `pilotage` | string | M | Pilotage extension version in `major.minor` form, as defined in Section 11.1. |
-| `languages` | array of Language entries | M | One entry for each Language exposed by the Server. The array MUST NOT be empty. |
-| `capabilities` | capability declaration | O | Server-level default capability declaration under Section 4.2. Optional as a field because the declaration may instead appear on each Language entry; for every Language, at least one of the two MUST exist, and the effective map MUST meet the floor in Section 4.3. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `pilotage` | string | M | Pilotage extension version in `major.minor` form, as defined in Section 11.1. | `"1.1"` |
+| `languages` | array of Language entries | M | One entry for each Language exposed by the Server. The array MUST NOT be empty. | `[ { "name": "workflow/v1", ... } ]` |
+| `capabilities` | capability declaration | O | Server-level default capability declaration under Section 4.2. Optional as a field because the declaration may instead appear on each Language entry; for every Language, at least one of the two MUST exist, and the effective map MUST meet the floor in Section 4.3. | `{ "guides": true, "validate": true, ... }` |
 
 #### Language entry
 
 Each item in `languages` has the following fields.
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `name` | string | M | Language identifier defined in Section 3.3. |
-| `title` | string | M | Human-readable Language name. |
-| `guides` | reference | M | Binding-defined reference through which the guide index can be retrieved. |
-| `catalog` | reference | M when `catalog` is declared | Binding-defined reference through which the catalog can be queried. |
-| `loop` | object | M | Binding-defined addresses of the declared loop operations. It MUST satisfy the consistency rule in Section 4.3. |
-| `capabilities` | capability declaration | O | Per-Language capability declaration under Section 4.2. MAY be omitted when the Server-level declaration covers this Language. |
-| `locator` | string | M when `validate` is declared | Diagnostic locator dialect: `"json-pointer"` or `"text-range"`. |
-| `context_schema` | JSON Schema | Conditional | MUST be present when the Language requires validation context. It MUST otherwise be absent. |
-| `execution` | string | M when `execute` is declared | Execution mode: `"immediate"`, `"deploy"`, or `"both"`. |
-| `trace` | string | M when `execute` is declared | Highest trace level supported by the Language: `"summary"` or `"full"`. |
-| `trace_subprogram` | string | O | Sub-program trace behavior: `"opaque"` or `"expanded"`. Default: `"opaque"`. |
-| `retention` | string | M when `execute` is declared | Run retention policy: `"none"`, `"session"`, or an ISO 8601 duration. |
-| `promotion_authority` | string | O | Authority model for promoted programs: `"caller"` or `"promoter"`. Default: `"caller"`. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `name` | string | M | Language identifier defined in Section 3.3. | `"workflow/v1"` |
+| `title` | string | M | Human-readable Language name. | `"Workflow documents"` |
+| `guides` | reference | M | Binding-defined reference through which the guide index can be retrieved. | `"pilotage_get_guide"` |
+| `catalog` | reference | M when `catalog` is declared | Binding-defined reference through which the catalog can be queried. | `"pilotage_catalog"` |
+| `loop` | object | M | Binding-defined addresses of the declared loop operations. It MUST satisfy the consistency rule in Section 4.3. | `{ "validate": "validate_workflow", ... }` |
+| `capabilities` | capability declaration | O | Per-Language capability declaration under Section 4.2. MAY be omitted when the Server-level declaration covers this Language. | `{ "catalog": { "search": true } }` |
+| `locator` | string | M when `validate` is declared | Diagnostic locator dialect: `"json-pointer"` or `"text-range"`. | `"json-pointer"` |
+| `context_schema` | JSON Schema | Conditional | MUST be present when the Language requires validation context. It MUST otherwise be absent. | `{ "type": "object", ... }` |
+| `execution` | string | M when `execute` is declared | Execution mode: `"immediate"`, `"deploy"`, or `"both"`. | `"immediate"` |
+| `trace` | string | M when `execute` is declared | Highest trace level supported by the Language: `"summary"` or `"full"`. | `"full"` |
+| `trace_subprogram` | string | O | Sub-program trace behavior: `"opaque"` or `"expanded"`. Default: `"opaque"`. | `"opaque"` |
+| `retention` | string | M when `execute` is declared | Run retention policy: `"none"`, `"session"`, or an ISO 8601 duration. | `"PT1H"` |
+| `promotion_authority` | string | O | Authority model for promoted programs: `"caller"` or `"promoter"`. Default: `"caller"`. | `"caller"` |
 
 ---
 
@@ -533,17 +533,17 @@ A guide is one teaching unit associated with a Language.
 
 #### Guide fields
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `id` | string | M | Identifier unique among all guides exposed by the Server. |
-| `title` | string | M | Human-readable guide title. |
-| `level` | string | M | One of `"core"`, `"reference"`, or `"examples"`. |
-| `topics` | array of strings | M | Topic identifiers covered by the guide. They MUST be stable within a guide version and are otherwise free-form, except for the reserved identifier `closed-sets`. |
-| `language` | string | M | Identifier of the Language taught by the guide. |
-| `version` | string | M | Guide version. It MUST change whenever the guide content changes. |
-| `size_bytes` | integer | M | UTF-8 size of the guide body in bytes. |
-| `tokens_estimate` | integer | O | Informative estimate of the guide's token count. This field is not normative or testable; `size_bytes` is the normative size field. |
-| `format` | string | O | Media type of the guide body. Default: `"text/markdown"`. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `id` | string | M | Identifier unique among all guides exposed by the Server. | `"quickstart"` |
+| `title` | string | M | Human-readable guide title. | `"Workflow quickstart"` |
+| `level` | string | M | One of `"core"`, `"reference"`, or `"examples"`. | `"core"` |
+| `topics` | array of strings | M | Topic identifiers covered by the guide. They MUST be stable within a guide version and are otherwise free-form, except for the reserved identifier `closed-sets`. | `[ "steps", "calls" ]` |
+| `language` | string | M | Identifier of the Language taught by the guide. | `"workflow/v1"` |
+| `version` | string | M | Guide version. It MUST change whenever the guide content changes. | `"3"` |
+| `size_bytes` | integer | M | UTF-8 size of the guide body in bytes. | `4096` |
+| `tokens_estimate` | integer | O | Informative estimate of the guide's token count. This field is not normative or testable; `size_bytes` is the normative size field. | `1024` |
+| `format` | string | O | Media type of the guide body. Default: `"text/markdown"`. | `"text/markdown"` |
 
 #### Core guide
 
@@ -616,18 +616,18 @@ Risk appears on:
 
 Wherever risk appears, both of the following representations are REQUIRED.
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `risk` | string | M | Engine-defined risk level, such as `safe`, `write`, or `destructive`. This value is informative to generic Clients. |
-| `risk_hints` | object | M | Generic boolean risk indicators used by Host policy gates. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `risk` | string | M | Engine-defined risk level, such as `safe`, `write`, or `destructive`. This value is informative to generic Clients. | `"safe"` |
+| `risk_hints` | object | M | Generic boolean risk indicators used by Host policy gates. | `{ "readOnly": true, "destructive": false, "openWorld": false }` |
 
 The `risk_hints` object contains:
 
-| Field | Meaning |
-|---|---|
-| `readOnly` | The operation creates no persistent state change and no state change observable outside the Run. |
-| `destructive` | The operation may delete state or alter it irreversibly. |
-| `openWorld` | The operation may reach a system outside the Server's own domain. |
+| Field | Meaning | Example |
+|---|---|---|
+| `readOnly` | The operation creates no persistent state change and no state change observable outside the Run. | `true` |
+| `destructive` | The operation may delete state or alter it irreversibly. | `false` |
+| `openWorld` | The operation may reach a system outside the Server's own domain. | `false` |
 
 The engine-defined `risk` value MUST be consistent with `risk_hints`.
 
@@ -671,18 +671,18 @@ A catalog entry describes one environment-bound name.
 
 #### Catalog entry fields
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `id` | string | M | Stable identifier unique within the catalog. |
-| `kind` | string | M | Member of the Language's engine-defined entry-kind set. |
-| `name` | string | M | Human-readable name. |
-| `description` | string | O | Human-readable description. This is Server-authored text. |
-| `input_schema` | JSON Schema | M for callable kinds | Declared shape of the callable entry's input. |
-| `output_schema` | JSON Schema or null | O | Declared output shape when statically known. |
-| `risk` and `risk_hints` | Section 5.3 | M | Maximum-effect risk associated with the entry. |
-| `tags` | array of strings | O | Engine-specific, informative grouping labels. |
-| `languages` | array of strings | O | Languages that may reference this entry. Absence means every Language exposed by the Server may reference it. |
-| `revision` | string | O | Opaque token that changes when the entry changes. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `id` | string | M | Stable identifier unique within the catalog. | `"cap_read_user_profile"` |
+| `kind` | string | M | Member of the Language's engine-defined entry-kind set. | `"capability"` |
+| `name` | string | M | Human-readable name. | `"Read user profile"` |
+| `description` | string | O | Human-readable description. This is Server-authored text. | `"Returns the stored profile for a user."` |
+| `input_schema` | JSON Schema | M for callable kinds | Declared shape of the callable entry's input. | `{ "type": "object", "properties": { ... } }` |
+| `output_schema` | JSON Schema or null | O | Declared output shape when statically known. | `{ "type": "object", ... }` |
+| `risk` and `risk_hints` | Section 5.3 | M | Maximum-effect risk associated with the entry. | `"safe"` and `{ "readOnly": true, ... }` |
+| `tags` | array of strings | O | Engine-specific, informative grouping labels. | `[ "users", "read" ]` |
+| `languages` | array of strings | O | Languages that may reference this entry. Absence means every Language exposed by the Server may reference it. | `[ "workflow/v1" ]` |
+| `revision` | string | O | Opaque token that changes when the entry changes. | `"rev_18c2"` |
 
 #### `catalog_version`
 
@@ -770,14 +770,14 @@ A diagnostic is one validation finding.
 
 #### Diagnostic fields
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `severity` | string | M | One of `"error"` or `"warning"`. |
-| `code` | string | M | Member of the Language's closed diagnostic-code set. |
-| `path` | locator | M | Location to which the finding applies. |
-| `range` | object | O | Position within a text value addressed by `path`, of the form `{start: {line, column}, end: {line, column}}` with 1-based lines and columns. |
-| `message` | string | M | Human-readable explanation. This is Server-authored text. |
-| `hint` | string | O | Suggested correction. This is Server-authored text. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `severity` | string | M | One of `"error"` or `"warning"`. | `"error"` |
+| `code` | string | M | Member of the Language's closed diagnostic-code set. | `"unknown_capability"` |
+| `path` | locator | M | Location to which the finding applies. | `"/steps/0/capability"` |
+| `range` | object | O | Position within a text value addressed by `path`, of the form `{start: {line, column}, end: {line, column}}` with 1-based lines and columns. | `{ "start": { "line": 1, "column": 9 }, ... }` |
+| `message` | string | M | Human-readable explanation. This is Server-authored text. | `"unknown capability 'cap_read_user_profil'"` |
+| `hint` | string | O | Suggested correction. This is Server-authored text. | `"close match: cap_read_user_profile"` |
 
 #### Locator dialects
 
@@ -892,21 +892,21 @@ The plan does not merely describe installation, because the body's effects are w
 
 #### Plan fields
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `steps` | array of plan steps | M | Steps in expected execution order. |
-| `max_risk` | string | M | Engine-defined maximum risk level. Informative to generic Clients. |
-| `max_risk_hints` | object | M | Aggregate risk hints computed under Section 5.3. The Host gate operates on this field. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `steps` | array of plan steps | M | Steps in expected execution order. | `[ { "id": "profile", ... } ]` |
+| `max_risk` | string | M | Engine-defined maximum risk level. Informative to generic Clients. | `"safe"` |
+| `max_risk_hints` | object | M | Aggregate risk hints computed under Section 5.3. The Host gate operates on this field. | `{ "readOnly": true, "destructive": false, "openWorld": false }` |
 
 #### Plan step
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `id` | string | M | Program step identifier. |
-| `calls` | string | Conditional | Catalog entry or promoted-program reference invoked by the step. MUST be present for an invoking step and absent for non-referencing steps. |
-| `arm` | object | M for a step inside a branch arm | `{branch, label}`, identifying the enclosing branch and the arm containing the step. |
-| `loop` | string | M for a step inside a loop body | Identifier of the innermost enclosing loop. |
-| `risk` and `risk_hints` | Section 5.3 | M | Risk associated with this use of the step. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `id` | string | M | Program step identifier. | `"profile"` |
+| `calls` | string | Conditional | Catalog entry or promoted-program reference invoked by the step. MUST be present for an invoking step and absent for non-referencing steps. | `"cap_read_user_profile"` |
+| `arm` | object | M for a step inside a branch arm | `{branch, label}`, identifying the enclosing branch and the arm containing the step. | `{ "branch": "check_tier", "label": "gold" }` |
+| `loop` | string | M for a step inside a loop body | Identifier of the innermost enclosing loop. | `"each_user"` |
+| `risk` and `risk_hints` | Section 5.3 | M | Risk associated with this use of the step. | `"safe"` and `{ "readOnly": true, ... }` |
 
 #### Plan derivation
 
@@ -929,11 +929,11 @@ An outcome is the closed classification of a Run's result.
 
 #### Outcome fields
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `ok` | boolean | M | Whether the Run completed successfully. |
-| `status` | string | M | Member of the Language's run-level outcome status set. |
-| `error` | string or null | M | Human-readable failure summary. MUST be `null` when `ok` is true and non-null when `ok` is false. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `ok` | boolean | M | Whether the Run completed successfully. | `true` |
+| `status` | string | M | Member of the Language's run-level outcome status set. | `"success"` |
+| `error` | string or null | M | Human-readable failure summary. MUST be `null` when `ok` is true and non-null when `ok` is false. | `null` |
 
 #### Reserved statuses
 
@@ -990,24 +990,24 @@ Its trust status is defined in Section 9.
 
 #### Trace fields
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `run_id` | string | M | Identifier unique among all Runs of the Server. |
-| `level` | string | M | Effective trace level: `"summary"` or `"full"`. |
-| `steps` | array of trace steps | M | Steps in flat execution order. |
-| `stats` | object | O | Engine-specific, informative aggregate statistics. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `run_id` | string | M | Identifier unique among all Runs of the Server. | `"run_7d3f0a9c21be"` |
+| `level` | string | M | Effective trace level: `"summary"` or `"full"`. | `"full"` |
+| `steps` | array of trace steps | M | Steps in flat execution order. | `[ { "id": "profile", ... } ]` |
+| `stats` | object | O | Engine-specific, informative aggregate statistics. | `{ "total_ms": 84 }` |
 
 #### Trace step
 
-| Field | Type | Req | Description |
-|---|---|---|---|
-| `id` | string | M | Trace step identifier. |
-| `calls` | string | O | Catalog entry or program reference invoked by the step. |
-| `input` | any | Conditional | MUST be present at `full` for non-control-flow steps. MUST be absent at `summary` and for control-flow steps. |
-| `output` | any | Conditional | MUST be present at `full` for non-control-flow steps. MAY be present in truncated form at `summary`. MUST be absent for control-flow entries. |
-| `outcome` | object | M | Step-level outcome. |
-| `t_ms` | integer | O | Step duration in milliseconds. |
-| `decisions` | array | M for control-flow steps | Decisions made by a branch or loop. |
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `id` | string | M | Trace step identifier. | `"profile"` |
+| `calls` | string | O | Catalog entry or program reference invoked by the step. | `"cap_read_user_profile"` |
+| `input` | any | Conditional | MUST be present at `full` for non-control-flow steps. MUST be absent at `summary` and for control-flow steps. | `{ "user_id": "42" }` |
+| `output` | any | Conditional | MUST be present at `full` for non-control-flow steps. MAY be present in truncated form at `summary`. MUST be absent for control-flow entries. | `{ "name": "Amira Hassan", "tier": "gold" }` |
+| `outcome` | object | M | Step-level outcome. | `{ "ok": true, "status": "success", "error": null }` |
+| `t_ms` | integer | O | Step duration in milliseconds. | `84` |
+| `decisions` | array | M for control-flow steps | Decisions made by a branch or loop. | `[ { "at": "check_tier", "took": "gold", ... } ]` |
 
 Each decision has the following form:
 
