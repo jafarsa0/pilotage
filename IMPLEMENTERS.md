@@ -709,6 +709,59 @@ conformant answer looks like.
 
 ---
 
+## Beyond the common path
+
+The warehouse walked the common path: one Language, JSON programs,
+immediate execution. The standard defines more. None of it is required
+reading before you ship the common path, but each feature below is
+normative and tested by the vectors when declared, so this is the
+complete map of what remains, and where each piece is defined:
+
+- **Promoted programs and `program_ref`**: store a validated program
+  server-side and let agents invoke it by reference, with a recorded
+  compatibility baseline that catches silent catalog changes.
+  [Part II §3.5, §5.4, and §6.5](./spec/part-ii-abstract-model.md).
+- **Deploy mode**: Languages whose programs are installed and run later
+  on triggers (`execution: "deploy"` or `"both"`, the `mode` argument);
+  the plan then describes the deployed body, not the installation.
+  [Part II §5.6 and §6.5](./spec/part-ii-abstract-model.md);
+  [Part III §4.4](./spec/part-iii-mcp-binding.md).
+- **Test runs**: side-effect-free trial evaluation for deploying
+  Languages (`execute.test_run`).
+  [Part II §4.1 and §6.5](./spec/part-ii-abstract-model.md).
+- **Idempotency keys**: safe retries for execute requests
+  (`execute.idempotency`).
+  [Part II §4.1](./spec/part-ii-abstract-model.md);
+  [Part IV §8, Idempotency in practice](./spec/part-iv-implementation-notes.md).
+- **Text-valued Languages**: SQL-style string programs, `text-range`
+  locators, and deterministic generated step identifiers.
+  [Part II §3.4 and §5.5](./spec/part-ii-abstract-model.md);
+  [Part IV §7, Text-valued Languages](./spec/part-iv-implementation-notes.md).
+- **Multi-Language servers**: server-level capability defaults with
+  per-Language overrides, and loop tools shared between Languages
+  through distinct program arguments.
+  [Part II §4.2](./spec/part-ii-abstract-model.md);
+  [Part III §4.3 and §5](./spec/part-iii-mcp-binding.md).
+- **Sub-program traces**: whether a step that runs another program
+  traces it opaquely or expanded (`trace_subprogram`, and the `/`
+  identity grammar). [Part II §5.8](./spec/part-ii-abstract-model.md).
+- **Trace narration**: server-generated prose answers about a stored
+  run (`trace_fetch.narrate`, the `question` argument).
+  [Part II §6.6](./spec/part-ii-abstract-model.md).
+- **Sessions, transports, and authorization identity**: what `"session"`
+  retention binds to, stateless deployment, and whose catalog view a
+  token represents. [Part III §8](./spec/part-iii-mcp-binding.md).
+- **Optional resource surfaces**: serving the manifest, guides, and
+  catalog additionally as MCP resources.
+  [Part III §3.2 and §8.3](./spec/part-iii-mcp-binding.md).
+- **Security requirements**: the trust boundary and the server-side
+  obligations that follow from it.
+  [Part II §9 and §10](./spec/part-ii-abstract-model.md).
+- **Building a client instead?** The standard Client loop, the Host's
+  risk gate, and Client conformance.
+  [Part II §7 and §12.2](./spec/part-ii-abstract-model.md);
+  [Part III §10.2](./spec/part-iii-mcp-binding.md).
+
 ## Where to go deeper
 
 - [Part II, Abstract model](./spec/part-ii-abstract-model.md): the
